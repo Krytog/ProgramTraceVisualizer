@@ -5,6 +5,12 @@ project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(3rdparty/glfw)
+add_subdirectory(3rdparty/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
+add_subdirectory(src/GUI)
+add_subdirectory(src/Utils)
 
-add_executable(CubeDataVisualizer src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE GUI)
+target_link_libraries(${PROJECT_NAME} PRIVATE Utils)
