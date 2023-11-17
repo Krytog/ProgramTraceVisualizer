@@ -24,6 +24,7 @@ Window::Window(int width, int height, const char* title) {
 
 Window::~Window() {
 	--kCounter_;
+	glfwDestroyWindow(window_);
 	if (!kCounter_) {
 		glfwTerminate();
 	}
