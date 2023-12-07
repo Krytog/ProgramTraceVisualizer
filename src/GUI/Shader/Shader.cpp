@@ -67,7 +67,7 @@ GLuint Shader::CreateSingleShader(SourceType source_type, const char* source, Sh
             error_message += std::string(" with exceptions: ");
             error_message += e.what();
             LOGGER_CLASS::GetInstance().AddToLog(error_message);
-            throw std::runtime_error(UNKNONW_SHADER_TYPE_MESSAGE);
+            throw std::runtime_error(FILE_READING_SHADER_MESSAGE);
         }
     }
     GLuint shader;
