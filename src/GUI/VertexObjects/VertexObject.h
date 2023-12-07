@@ -5,36 +5,33 @@
 class VertexObject {
 public:
     enum class MemoryMode {
-        STATIC,
-        DYNAMIC,
-        STREAM
+        STATIC = GL_STATIC_DRAW,
+        DYNAMIC = GL_DYNAMIC_DRAW,
+        STREAM = GL_STREAM_DRAW
     };
 
     /* The array will be copied into GPU memory, so it's ok to delete it right after the VertexObject was created */
-    VertexObject(const GLfloat* data, MemoryMode memory_mode);
-    virtual ~VertexObjectBase();
+    VertexObject(const GLfloat* data, GLsizei data_size, GLuint args_per_vertex, MemoryMode memory_mode);
+
+    virtual ~VertexObject();
 
     enum class DrawMode {
-        GL_POINTS,
-        GL_LINE_STRIP,
-        GL_LINE_LOOP,
-        GL_LINES,
-        GL_LINE_STRIP_ADJACENCY,
-        GL_LINES_ADJACENCY,
-        GL_TRIANGLE_STRIP,
-        GL_TRIANGLE_FAN,
-        GL_TRIANGLES,
-        GL_TRIANGLE_STRIP_ADJACENCY,
-        GL_TRIANGLES_ADJACENCY,
-        GL_PATCHES
+        POINTS = GL_POINTS,
+        LINE_STRIP = GL_LINE_STRIP,
+        LINE_LOOP = GL_LINE_LOOP,
+        LINES = GL_LINES,
+        LINE_STRIP_ADJACENCY = GL_LINE_STRIP_ADJACENCY,
+        LINES_ADJACENCY = GL_LINES_ADJACENCY,
+        TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+        TRIANGLE_FAN = GL_TRIANGLE_FAN,
+        TRIANGLES = GL_TRIANGLES,
+        TRIANGLE_STRIP_ADJECENCY = GL_TRIANGLE_STRIP_ADJACENCY,
+        TRIANGLES_ADJACENCY = GL_TRIANGLES_ADJACENCY,
+        PATHCES = GL_PATCHES
     };
 
     /* Draws the object into the buffer */
     void Draw(DrawMode draw_mode) const;
-
-protected:
-    GLenum GetGLenumFromMemoryMode(MemoryMode memory_mode) const;
-    GLenum GetGLenumFromDrawMode(DrawMode draw_mode) const;
 
 private:
     GLuint VBO_;

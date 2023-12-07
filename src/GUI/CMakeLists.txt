@@ -1,6 +1,8 @@
 add_library(GUI
 	Window/Window.cpp
 	Shader/Shader.cpp
+	VertexObjects/VertexObject.cpp
+	VertexObjects/VertexObjectIndexed.cpp
 		)
 
 target_link_libraries(GUI PRIVATE glfw)

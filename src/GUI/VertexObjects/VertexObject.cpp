@@ -1,37 +1,28 @@
 #include "VertexObject.h"
 
-VertexObject::VertexObject(const GLfloat* data, MemoryMode memory_mode) {
+VertexObject::VertexObject(const GLfloat* data, GLsizei data_size, GLuint args_per_vertex, MemoryMode memory_mode) {
     glGenBuffers(1, &VBO_);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-    GLuint memory_mode_bits = -1;
-    switch (memory_mode) {
-        case MemoryMode::STATIC {
-            memory_mode_bits = GL_STATIC_DRAW;
-            break;
-        }
-        case MemoryMode::DYNAMIC {
-            memory_mode_bits = GL_STATIC_DYNAMIC;
-            break;
-        }
-        case MemoryMode::STREAM {
-            memory_mode_bits = GL_STATIC_STREAM;
-            break;
-        }
-    }
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, memory_mode_bits);
+    const GLenum memory_mode_inner = (GLenum)memory_mode;
+    glBufferData(GL_ARRAY_BUFFER, data_size, data, memory_mode_inner);
     glGenVertexArrays(1, &VAO_);
     glBindVertexArray(VAO_);
     const GLuint attribute_offset = 0;
-    const GLuint arg_count = 3;
-    const GLvoid* data_offset = (GLvoid*)0;
-    glVertexAttribPointer(attribute_offset, arg_count, GL_FLOAT, GL_FALSE, arg_count * sizeof(GLfloat), data_offset);
+    glVertexAttribPointer(attribute_offset, args_per_vertex, GL_FLOAT, GL_FALSE, args_per_vertex * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    count_ = data_size / (args_per_vertex * sizeof(GLfloat));
 }
 
-void VertexObject::Draw() {
+void VertexObject::Draw(DrawMode draw_mode) const {
     glBindVertexArray(VAO_);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    const GLenum draw_mode_inner = (GLenum)draw_mode;
+    glDrawArrays(draw_mode_inner, 0, count_);
     glBindVertexArray(0);
+}
+
+VertexObject::~VertexObject() {
+    glDeleteVertexArrays(1, &VAO_);
+    glDeleteBuffers(1, &VBO_);
 }
