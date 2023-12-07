@@ -10,10 +10,13 @@ VertexObject::VertexObject(const GLfloat* data, GLsizei data_size, GLuint args_p
     const GLuint attribute_offset = 0;
     glVertexAttribPointer(attribute_offset, args_per_vertex, GL_FLOAT, GL_FALSE, args_per_vertex * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     count_ = data_size / (args_per_vertex * sizeof(GLfloat));
 }
+
+VertexObject::VertexObject(const ArgPack& arg_pack) : VertexObject(arg_pack.data, arg_pack.data_size, arg_pack.args_per_vertex,
+    arg_pack.memory_mode) {}
 
 void VertexObject::Draw(DrawMode draw_mode) const {
     glBindVertexArray(VAO_);

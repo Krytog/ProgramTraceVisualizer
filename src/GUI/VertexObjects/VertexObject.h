@@ -13,6 +13,15 @@ public:
     /* The array will be copied into GPU memory, so it's ok to delete it right after the VertexObject was created */
     VertexObject(const GLfloat* data, GLsizei data_size, GLuint args_per_vertex, MemoryMode memory_mode);
 
+    struct ArgPack {
+        const GLfloat* data;
+        GLsizei data_size;
+        GLuint args_per_vertex;
+        MemoryMode memory_mode;
+    };
+
+    explicit VertexObject(const ArgPack& arg_pack);
+
     virtual ~VertexObject();
 
     enum class DrawMode {
@@ -31,10 +40,10 @@ public:
     };
 
     /* Draws the object into the buffer */
-    void Draw(DrawMode draw_mode) const;
+    virtual void Draw(DrawMode draw_mode) const;
 
-private:
+protected:
+    GLsizei count_;
     GLuint VBO_;
     GLuint VAO_;
-    GLsizei count_;
 };
