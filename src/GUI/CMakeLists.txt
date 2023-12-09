@@ -1,13 +1,15 @@
 add_library(GUI
 	Window/Window.cpp
-	Shader/Shader.cpp
-	VertexObjects/VertexObject.cpp
-	VertexObjects/VertexObjectIndexed.cpp
 		)
 
+add_subdirectory(Graphics)
+
+target_link_libraries(GUI PRIVATE Utils)
+target_link_libraries(GUI PRIVATE Graphics)
 target_link_libraries(GUI PRIVATE glfw)
 target_link_libraries(GUI PRIVATE libglew_static)
-target_link_libraries(GUI PRIVATE Utils)
-target_include_directories(GUI PUBLIC ..)
-target_include_directories(GUI PUBLIC ../../3rdparty/glwf/includes)
-target_include_directories(GUI PUBLIC ../../3rdparty/glew/include)
+
+target_include_directories(GUI PUBLIC .)
+
+target_include_directories(GUI PUBLIC ../../../3rdparty/glwf/includes)
+target_include_directories(GUI PUBLIC ../../../3rdparty/glew/include)
