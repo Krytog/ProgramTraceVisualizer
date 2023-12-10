@@ -25,6 +25,10 @@ Window::Window(int width, int height, const char* title) {
 	++kCounter_;
 }
 
+struct GLFWwindow* Window::GetInnerWindowPointer() const {
+	return window_;
+}
+
 Window::~Window() {
 	--kCounter_;
 	glfwDestroyWindow(window_);

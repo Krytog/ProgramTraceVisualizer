@@ -20,6 +20,9 @@ public:
 	/* Swaps rendering buffers, thereby showing updated buffer on the screen */
 	void Render() const;
 
+	/* Returns the underlaying GLFWwindow pointer, should be used only to syncronize with other rendering libraries */
+	[[nodiscard]] struct GLFWwindow* GetInnerWindowPointer() const;
+
 	~Window();
 private:
 	/* Set hints for GLFW */
