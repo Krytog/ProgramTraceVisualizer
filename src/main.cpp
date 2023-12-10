@@ -1,14 +1,13 @@
-#define GLEW_STATIC
 #include <GL/glew.h>
 
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <GUI/Window/Window.h>
-#include <GUI/Shader/Shader.h>
+#include <Graphics/Shader/Shader.h>
 #include <Utils/LightTimer/LightTimer.h>
 #include <thread>
-#include "GUI/VertexObjects/VertexObject.h"
-#include "GUI/VertexObjects/VertexObjectIndexed.h"
+#include <Graphics/VertexObjects/VertexObjectIndexed.h>
+#include <UI/UIManager/UIManager.h>
 
 const GLchar* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 position;\n"
@@ -55,6 +54,9 @@ int main(int argc, char** argv) {
 
     VertexObjectIndexed figure(arg_pack);
 
+    auto ptr = window.GetInnerWindowPointer();
+    UIManager ui_manager(ptr);
+
 	while (!window.IsPendingClose()) {
 		time.ResetTime();
 
@@ -67,6 +69,8 @@ int main(int argc, char** argv) {
         shader.Use();
         
         figure.Draw(VertexObject::DrawMode::TRIANGLES);
+
+        ui_manager.DrawUI();
 
 		window.Render();
 		glfwPollEvents();
