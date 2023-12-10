@@ -3,13 +3,15 @@ add_library(GUI
 		)
 
 add_subdirectory(Graphics)
+add_subdirectory(UI)
 
 target_link_libraries(GUI PRIVATE Utils)
 target_link_libraries(GUI PRIVATE Graphics)
+target_link_libraries(GUI PRIVATE UI)
 target_link_libraries(GUI PRIVATE glfw)
 target_link_libraries(GUI PRIVATE libglew_static)
 
 target_include_directories(GUI PUBLIC .)
 
-target_include_directories(GUI PUBLIC ../../../3rdparty/glwf/includes)
-target_include_directories(GUI PUBLIC ../../../3rdparty/glew/include)
+target_include_directories(GUI PUBLIC ../../3rdparty/glwf/includes)
+target_include_directories(GUI PUBLIC ../../3rdparty/glew/include)
