@@ -11,6 +11,7 @@ set(glew-cmake_BUILD_SHARED FALSE)
 
 add_subdirectory(3rdparty/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
 add_subdirectory(3rdparty/glew ${CMAKE_CURRENT_BINARY_DIR}/glew)
+add_subdirectory(3rdparty/GLM ${CMAKE_CURRENT_BINARY_DIR}/glm)
 add_subdirectory(src/GUI)
 add_subdirectory(src/Utils)
 
@@ -20,3 +21,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${PROJECT_NAME} PRIVATE GUI)
 target_link_libraries(${PROJECT_NAME} PRIVATE Utils)
 target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
