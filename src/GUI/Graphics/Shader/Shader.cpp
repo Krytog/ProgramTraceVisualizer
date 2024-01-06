@@ -56,6 +56,7 @@ GLuint Shader::CreateSingleShader(SourceType source_type, const char* source, Sh
         std::ifstream shader_file;
         shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try {
+            shader_file.open(source);
             std::stringstream shader_stream;
             shader_stream << shader_file.rdbuf();
             shader_file.close();
