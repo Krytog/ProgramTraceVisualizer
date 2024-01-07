@@ -8,19 +8,13 @@
 #include <thread>
 #include <Graphics/VertexObjects/VertexObjectIndexed.h>
 #include <UI/UIManager/UIManager.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 
-const GLchar* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 position;\n"
-"void main()\n"
-"{\n"
-"gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-"}\0";
-const GLchar* fragmentShaderSource = "#version 330 core\n"
-"out vec4 color;\n"
-"void main()\n"
-"{\n"
-"color = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}\n\0";
+const GLchar* vertexShaderSource = "../src/Resources/Shaders/default.vert";
+const GLchar* fragmentShaderSource = "../src/Resources/Shaders/default.frag";
 
 int main(int argc, char** argv) {
 	Window window(1000, 800, "Test window!");
@@ -31,31 +25,42 @@ int main(int argc, char** argv) {
 	LightTimer time;
 
     Shader::ShaderConfig config;
-    config.VertexShaderSourceType = Shader::SourceType::STRING;
+    config.VertexShaderSourceType = Shader::SourceType::FILE;
     config.VertexShaderSource = vertexShaderSource;
-    config.FragmentShaderSourceType = Shader::SourceType::STRING;
+    config.FragmentShaderSourceType = Shader::SourceType::FILE;
     config.FragmentShaderSource = fragmentShaderSource;
     config.GeometryShaderSourceType = Shader::SourceType::NONE;
     config.GeometryShaderSource = "aboba/none.nothing";
 
     Shader shader(config);
 
-    GLfloat vertices[] = { -0.3, -0.3, 0.0, 0.3, -0.3, 0.0, 0.3, 0.3, 0.0, -0.3, 0.3, 0.0 };
+    GLfloat vertices[] = { -0.3, -0.3, 0.0, 1.0, 1.0,
+                            0.3, -0.3, 0.0, 1.0, 0.0, 
+                            0.3, 0.3, 0.0, 0.0, 1.0, 
+                            -0.3, 0.3, 0.0, 0.0, 0.0 };
 
     GLuint indices[] = { 0, 1, 2, 0, 2, 3 };
 
     VertexObjectIndexed::ArgPack arg_pack;
     arg_pack.data = vertices;
     arg_pack.data_size = sizeof(vertices);
-    arg_pack.args_per_vertex = 3;
+    arg_pack.args_per_vertex = 5;
     arg_pack.indices = indices;
     arg_pack.indices_size = sizeof(indices);
     arg_pack.memory_mode = VertexObject::MemoryMode::STATIC;
 
     VertexObjectIndexed figure(arg_pack);
+    figure.SetAttribute(0, 3, static_cast<GLvoid*>(0));
+    figure.SetAttribute(1, 2, reinterpret_cast<GLvoid*>(3 * sizeof(GLfloat)));
 
     auto ptr = window.GetInnerWindowPointer();
     UIManager ui_manager(ptr);
+
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 matrix = glm::mat4(1.0f);
+
+    matrix = glm::translate(matrix, glm::vec3(1.0f, 0.0f, 0.0f));
+    vec = matrix * vec;
 
 	while (!window.IsPendingClose()) {
 		time.ResetTime();
