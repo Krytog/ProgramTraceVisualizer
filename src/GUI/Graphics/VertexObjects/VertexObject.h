@@ -42,8 +42,12 @@ public:
     /* Draws the object into the buffer */
     virtual void Draw(DrawMode draw_mode) const;
 
+    /* Sets the given attribure for the VAO */
+    void SetAttribute(GLuint index, GLuint args_per_vertex, const void* offset) const;
+
 protected:
     GLsizei count_;
+    GLsizei stride_;
     GLuint VBO_;
     GLuint VAO_;
 };

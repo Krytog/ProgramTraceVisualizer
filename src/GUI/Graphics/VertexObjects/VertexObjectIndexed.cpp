@@ -18,7 +18,7 @@ VertexObjectIndexed::VertexObjectIndexed(const ArgPack& arg_pack) : VertexObject
 
 void VertexObjectIndexed::Draw(VertexObject::DrawMode draw_mode) const {
 	glBindVertexArray(VAO_);
-	const GLenum draw_mode_inner = (GLenum)draw_mode;
+	const GLenum draw_mode_inner = static_cast<GLenum>(draw_mode);
 	glDrawElements(draw_mode_inner, indices_count_, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
