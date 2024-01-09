@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "Utils/Logger/ConsoleLogger.h"
+#include <glm/gtc/type_ptr.hpp>
 
 #include <string>
 #include <sstream>
@@ -9,8 +10,9 @@
 #define FILE_READING_SHADER_MESSAGE "Shader: error when reading file"
 #define SHADER_COMPILE_ERROR_MESSAGE "Shader: compile error"
 #define SHADER_LINKING_ERROR_MESSAGE "Shader: linking error"
+#define SHADER_SET_UNIFORM_ERROR_MESSAGE "Shader: set unifrom error"
 
-#define LOGGER_CLASS ConsoleLogger
+#define ADD_TO_LOG(x) ConsoleLogger::GetInstance().AddToLog(x)
 
 Shader::Shader(const Shader::ShaderConfig& config) {
     descriptor_ = -1;
@@ -35,7 +37,7 @@ Shader::Shader(const Shader::ShaderConfig& config) {
         const size_t buffer_size = 1024;
         GLchar error_info_buffer[buffer_size];
         glGetProgramInfoLog(descriptor, buffer_size, NULL, error_info_buffer);
-        LOGGER_CLASS::GetInstance().AddToLog(error_info_buffer);
+        ADD_TO_LOG(error_info_buffer);
         throw std::runtime_error(SHADER_LINKING_ERROR_MESSAGE);
     }
     if (vertex_shader != -1) {
@@ -67,7 +69,7 @@ GLuint Shader::CreateSingleShader(SourceType source_type, const char* source, Sh
             error_message += std::string(source);
             error_message += std::string(" with exceptions: ");
             error_message += e.what();
-            LOGGER_CLASS::GetInstance().AddToLog(error_message);
+            ADD_TO_LOG(error_message);
             throw std::runtime_error(FILE_READING_SHADER_MESSAGE);
         }
     }
@@ -95,7 +97,7 @@ GLuint Shader::CreateSingleShader(SourceType source_type, const char* source, Sh
         const size_t buffer_size = 1024;
         GLchar error_info_buffer[buffer_size];
         glGetShaderInfoLog(shader, buffer_size, NULL, error_info_buffer);
-        LOGGER_CLASS::GetInstance().AddToLog(error_info_buffer);
+        ADD_TO_LOG(error_info_buffer);
         throw std::runtime_error(SHADER_COMPILE_ERROR_MESSAGE);
     }
     return shader;
@@ -107,8 +109,7 @@ bool Shader::IsShaderCompiledSuccessfully(GLuint shader) {
     return output;
 }
 
-bool Shader::IsShaderLinkedSuccessfully(GLuint shader_program)
-{
+bool Shader::IsShaderLinkedSuccessfully(GLuint shader_program) {
     GLint output;
     glGetProgramiv(shader_program, GL_LINK_STATUS, &output);
     return output;
@@ -122,4 +123,64 @@ Shader::~Shader() {
 
 void Shader::Use() const {
     glUseProgram(descriptor_);
+}
+
+GLint Shader::GetUniformLocation(const std::string& name) {
+    if (cached_uniforms_locations_.contains(name)) {
+        return cached_uniforms_locations_[name];
+    }
+    GLint location = glGetUniformLocation(descriptor_, static_cast<const GLchar*>(name.c_str()));
+    if (location == -1) {
+        std::string error_message = "Shader: error when settting an uniform: ";
+        error_message += std::string(name);
+        ADD_TO_LOG(error_message);
+        throw std::runtime_error(SHADER_SET_UNIFORM_ERROR_MESSAGE);
+    }
+    cached_uniforms_locations_[name] = location;
+    return location;
+}
+
+void Shader::SetUniform(const std::string& name, GLfloat value) {
+    GLint location = GetUniformLocation(name);
+    glUniform1f(location, value);
+}
+
+void Shader::SetUniform(const std::string& name, GLint value) {
+    GLint location = GetUniformLocation(name);
+    glUniform1i(location, value);
+}
+
+void Shader::SetUniform(const std::string& name, GLuint value) {
+    GLint location = GetUniformLocation(name);
+    glUniform1ui(location, value);
+}
+
+void Shader::SetUniform(const std::string& name, const glm::vec2& value) {
+    GLint location = GetUniformLocation(name);
+    glUniform2fv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(const std::string& name, const glm::vec3& value) {
+    GLint location = GetUniformLocation(name);
+    glUniform3fv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(const std::string& name, const glm::vec4& value) {
+    GLint location = GetUniformLocation(name);
+    glUniform4fv(location, 1, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(const std::string& name, const glm::mat2& value) {
+    GLint location = GetUniformLocation(name);
+    glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(const std::string& name, const glm::mat3& value) {
+    GLint location = GetUniformLocation(name);
+    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(const std::string& name, const glm::mat4& value) {
+    GLint location = GetUniformLocation(name);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
