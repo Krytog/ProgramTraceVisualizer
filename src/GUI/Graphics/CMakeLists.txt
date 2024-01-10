@@ -2,6 +2,7 @@ add_library(Graphics
 	Shader/Shader.cpp
 	VertexObjects/VertexObject.cpp
 	VertexObjects/VertexObjectIndexed.cpp
+	Primitives/Cube/Cube.cpp
 		)
 
 target_link_libraries(Graphics PRIVATE glfw)
