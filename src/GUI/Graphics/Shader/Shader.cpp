@@ -142,45 +142,54 @@ GLint Shader::GetUniformLocation(const std::string& name) {
 
 void Shader::SetUniform(const std::string& name, GLfloat value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniform1f(location, value);
 }
 
 void Shader::SetUniform(const std::string& name, GLint value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniform1i(location, value);
 }
 
 void Shader::SetUniform(const std::string& name, GLuint value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniform1ui(location, value);
 }
 
 void Shader::SetUniform(const std::string& name, const glm::vec2& value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniform2fv(location, 1, glm::value_ptr(value));
 }
 
 void Shader::SetUniform(const std::string& name, const glm::vec3& value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniform3fv(location, 1, glm::value_ptr(value));
 }
 
 void Shader::SetUniform(const std::string& name, const glm::vec4& value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniform4fv(location, 1, glm::value_ptr(value));
 }
 
 void Shader::SetUniform(const std::string& name, const glm::mat2& value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::SetUniform(const std::string& name, const glm::mat3& value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::SetUniform(const std::string& name, const glm::mat4& value) {
     GLint location = GetUniformLocation(name);
+    Use();
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
