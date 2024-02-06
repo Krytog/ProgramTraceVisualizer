@@ -7,14 +7,14 @@ public:
 	~UIManager();
 
 	/* Draws all the UI into the render buffer */
-	void DrawUI();
+	void DrawUI(long long unsigned textureID);
 
 private:
 	/* Inits underlying ImGui library that is used for UI handling. Should be called in the c-tor */
 	void InitImGui(struct GLFWwindow* glfw_window) const;
 
 	/* This functions is called inside DrawUI to create the UI that will be rendered */
-	void MakeUIMarkUp();
+	void MakeUIMarkUp(long long unsigned textureID);
 
 	float color_;
 };

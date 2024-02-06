@@ -12,11 +12,11 @@ UIManager::UIManager(GLFWwindow* glfw_window) {
 	InitImGui(glfw_window);
 }
 
-void UIManager::DrawUI() {
+void UIManager::DrawUI(long long unsigned textureID) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	MakeUIMarkUp();
+	MakeUIMarkUp(textureID);
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -28,7 +28,7 @@ void UIManager::InitImGui(GLFWwindow* glfw_window) const {
 	ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
 
-void UIManager::MakeUIMarkUp() {
+void UIManager::MakeUIMarkUp(long long unsigned textureID) {
 	ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f), 0);
 	ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 35.0f), 0);
@@ -39,6 +39,10 @@ void UIManager::MakeUIMarkUp() {
 	ImGui::Button("Option3");
 	ImGui::SameLine();
 	ImGui::Button("Option4");
+	ImGui::End();
+	ImGui::Begin("Scene");
+	ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+	ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ viewportPanelSize.x, viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 	ImGui::End();
 }
 

@@ -9,9 +9,11 @@ add_library(UI
 	${DearImGui_DIR}/backends/imgui_impl_glfw.cpp
 	
 	UIManager/UIManager.cpp
+	ViewScene/ViewScene.cpp
 		)
 
 target_link_libraries(UI PRIVATE glfw)
 target_link_libraries(UI PRIVATE Utils)
 
 target_include_directories(UI PRIVATE ${DearImGui_DIR})
+target_include_directories(UI PRIVATE ../Graphics)
