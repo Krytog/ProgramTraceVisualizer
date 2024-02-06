@@ -31,7 +31,7 @@ Cube::Cube() : mesh_(kArgs), shader_(kShaderConfig) {
 	mesh_.SetAttribute(1, 3, reinterpret_cast<GLvoid*>(3 * sizeof(GLfloat))); // color
 }
 
-void Cube::Draw() const {
+void Cube::Render() const {
 	shader_.Use();
 	mesh_.Draw(VertexObject::DrawMode::TRIANGLES);
 }

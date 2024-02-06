@@ -2,21 +2,21 @@
 
 #include "../../VertexObjects/VertexObjectIndexed.h"
 #include "../../Shader/Shader.h"
+#include "../IRenderable.h"
 
 #include <GLM/glm.hpp> 
 
-class Cube {
+class Cube : public IRenderable {
 public:
 	Cube();
 
 	/* Renders the cube */
-	void Draw() const;
+	void Render() const override;
 
 	/* Sets the position of the cube */
 	void SetTransform(const glm::mat4& position);
 
 private:
 	VertexObjectIndexed mesh_;
-public:
 	Shader shader_;
 };
