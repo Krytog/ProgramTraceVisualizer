@@ -8,10 +8,13 @@
 #include <thread>
 #include <Graphics/VertexObjects/VertexObjectIndexed.h>
 #include <UI/UIManager/UIManager.h>
+#include <UI/ViewScene/ViewScene.h>
+#include <Graphics/RenderBuffer/RenderBuffer.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <filesystem>
+#include <Graphics/Primitives/Cube/Cube.h>
 
 const GLchar* vertexShaderSource = "../src/Resources/Shaders/default.vert";
 const GLchar* fragmentShaderSource = "../src/Resources/Shaders/default.frag";
@@ -55,13 +58,17 @@ int main(int argc, char** argv) {
 
     auto ptr = window.GetInnerWindowPointer();
     UIManager ui_manager(ptr);
+    ViewScene scene;
 
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
     glm::mat4 matrix = glm::mat4(1.0f);
 
-    matrix = glm::translate(matrix, glm::vec3(1.0f, 0.0f, 0.0f));
-    vec = matrix * vec;
+    Cube cube;
 
+    RenderBuffer render_buffer(1000, 800);
+
+    glEnable(GL_DEPTH_TEST);
+
+    LightTimer run_timer;
 	while (!window.IsPendingClose()) {
 		time.ResetTime();
 
@@ -69,13 +76,20 @@ int main(int argc, char** argv) {
         glViewport(0, 0, size.first, size.second);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.Use();
-        
-        figure.Draw(VertexObject::DrawMode::TRIANGLES);
+        auto transform_matrix = glm::rotate(matrix, static_cast<float>(run_timer.EvaluateTime()), glm::vec3(0.3f, 1.0f, 0.0f));
+        transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer.EvaluateTime()), std::cos(run_timer.EvaluateTime()), 0.0f));
+        auto view_matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -5.0f));
+        glm::mat4 projection_matrix = glm::perspective(45.0f, static_cast<float>(size.first) / size.second, 0.1f, 100.0f);
+        auto final_matrix = projection_matrix * view_matrix * transform_matrix;
+        cube.SetTransform(final_matrix);
+        render_buffer.Bind();
+        render_buffer.Clear();
+        cube.Render();
+        render_buffer.Unbind();
 
-        ui_manager.DrawUI();
+        ui_manager.DrawUI(render_buffer.GetTextureID());
 
 		window.Render();
 		glfwPollEvents();
