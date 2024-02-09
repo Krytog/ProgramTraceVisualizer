@@ -16,12 +16,21 @@ public:
 	/* Clears the content of this buffer */
 	void Clear() const;
 
+	/* Resizes the buffer, the current content of the buffer is discraded */
+	void Resize(GLint width, GLint height);
+
 	[[nodiscard]] GLuint GetTextureID() const;
 
 private:
+	/* Creates the inner OpenGL buffers, should be used only inside of c-tor and Resize method */
+	void CreateBuffers(GLint width, GLint height);
+
+	/* Deletes the inner OpenGL buffers, should be used only inside of d-tor and Resize method */
+	void DeleteBuffers();
+
 	GLint width_;
 	GLint height_;
-	GLuint FBO_;
-	GLuint TextureID_;
-	GLuint DepthId_;
+	GLuint FBO_ = 0;
+	GLuint TextureID_ = 0;
+	GLuint DepthId_ = 0;
 };
