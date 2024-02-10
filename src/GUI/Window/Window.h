@@ -10,7 +10,7 @@ public:
 	/* Returns whether the window is pending to be closed(the user has pressed alt + f4 or cross) */
 	bool IsPendingClose() const;
 
-	/* Makes the context of the window to be the current Openl GL contex.If should_init_opengl = true,
+	/* Makes the context of the window the current OpenGL contex. If should_init_opengl = true,
 	then it also inits (finds the function pointers) OpenGL (via GLEW). The initialization should be done at least once. */
 	void CaptureContext(bool should_init_opengl = false) const;
 
