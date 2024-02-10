@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <utility>
 
 class RenderBuffer {
 public:
@@ -19,6 +20,10 @@ public:
 	/* Resizes the buffer, the current content of the buffer is discraded */
 	void Resize(GLint width, GLint height);
 
+	/* Returns the current size of this buffer */
+	[[nodiscard]] std::pair<GLint, GLint> GetSize() const;
+
+	/* Returns the ID that can be used to access the content of this buffer */
 	[[nodiscard]] GLuint GetTextureID() const;
 
 private:

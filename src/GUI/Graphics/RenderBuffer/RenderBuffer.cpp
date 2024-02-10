@@ -69,3 +69,7 @@ void RenderBuffer::DeleteBuffers() {
     glDeleteTextures(1, &TextureID_);
     glDeleteTextures(1, &DepthId_);
 }
+
+std::pair<GLint, GLint> RenderBuffer::GetSize() const {
+    return { width_, height_ };
+}
