@@ -1,10 +1,11 @@
 #pragma once
 
 #include <UI/ViewScene/ViewScene.h>
+#include <utility>
 
 class UIManager {
 public:
-	UIManager(struct GLFWwindow* glfw_window);
+	UIManager(struct GLFWwindow* glfw_window, const std::pair<int, int>& size);
 
 	~UIManager();
 
