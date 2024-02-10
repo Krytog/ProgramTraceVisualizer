@@ -12,7 +12,7 @@
 #include <Graphics/Primitives/Cube/Cube.h>
 
 int main(int argc, char** argv) {
-	Window window(1000, 800, "Test window!");
+	Window window(1600, 960, "CubeDataVisualizer!");
 	window.CaptureContext(true);
 
 	const int FPS = 144;
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	LightTimer time;
 
     auto ptr = window.GetInnerWindowPointer();
-    UIManager ui_manager(ptr);
+    UIManager ui_manager(ptr, window.GetWindowSize());
 
     glm::mat4 matrix = glm::mat4(1.0f);
 
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
         {
             auto transform_matrix = glm::rotate(matrix, static_cast<float>(run_timer.EvaluateTime()), glm::vec3(0.3f, 1.0f, 0.0f));
-            transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer.EvaluateTime()), std::cos(run_timer.EvaluateTime()), 0.0f));
+            transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer.EvaluateTime()), std::cos(run_timer.EvaluateTime()), std::sin(run_timer.EvaluateTime()) * std::cos(run_timer.EvaluateTime())));
             auto view_matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -5.0f));
             glm::mat4 projection_matrix = glm::perspective(45.0f, static_cast<float>(size.first) / size.second, 0.1f, 100.0f);
             auto final_matrix = projection_matrix * view_matrix * transform_matrix;
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
         }
         {
             auto transform_matrix = glm::rotate(matrix, static_cast<float>(run_timer2.EvaluateTime()), glm::vec3(0.3f, 1.0f, 0.0f));
-            transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer2.EvaluateTime()), std::cos(run_timer2.EvaluateTime()), 0.0f));
+            transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer2.EvaluateTime()), std::cos(run_timer2.EvaluateTime()), std::sin(run_timer2.EvaluateTime()) * std::cos(run_timer2.EvaluateTime())));
             auto view_matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -5.0f));
             glm::mat4 projection_matrix = glm::perspective(45.0f, static_cast<float>(size.first) / size.second, 0.1f, 100.0f);
             auto final_matrix = projection_matrix * view_matrix * transform_matrix;
