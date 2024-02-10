@@ -15,5 +15,6 @@ add_library(UI
 target_link_libraries(UI PRIVATE glfw)
 target_link_libraries(UI PRIVATE Utils)
 
-target_include_directories(UI PRIVATE ${DearImGui_DIR})
-target_include_directories(UI PRIVATE ../Graphics)
+target_include_directories(UI PUBLIC ${DearImGui_DIR})
+target_include_directories(UI PUBLIC ../../../3rdparty/glew/include)
+target_include_directories(UI PUBLIC ..)
