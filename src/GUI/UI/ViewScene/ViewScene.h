@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Graphics/RenderBuffer/RenderBuffer.h>
+#include <Utils/LightTimer/LightTimer.h>
 
 #include <unordered_set>
 #include <memory>
@@ -9,7 +10,7 @@ class IRenderable;	// Forward declaration
 
 class ViewScene {
 public:
-	ViewScene(GLint width, GLint height);
+	ViewScene(const std::pair<float, float>& position, const std::pair<float, float>& size);
 
 	/* Callback triggered when mouse moves */
 	void OnMouseMove(double x, double y);
@@ -18,7 +19,10 @@ public:
 	void OnMouseScroll(double delta);
 
 	/* Renders the scene*/
-	void Render();
+	void Render() const;
+
+	/* Resizes the scene and the underlaying render buffer */
+	void Resize(const std::pair<float, float>& new_size);
 
 	/* Adds an object to this scene. Returns true if the object is added for the first time and false otherwise */
 	bool AddObject(const std::shared_ptr<IRenderable>& object);
@@ -31,11 +35,13 @@ private:
 	void RenderObjects() const;
 
 	/* Renders UI elements of the scene, draws the content of the inner buffer */
-	void RenderUI();
-
-	/* Resizes the underlying rendering buffer if the widget's size doesn't fit. Returns the current size */
-	std::pair<GLint, GLint> TryResize();
+	void RenderUI() const;
 
 	std::unordered_set<std::shared_ptr<IRenderable>> renderable_objects_;
 	RenderBuffer render_buffer_;
+	mutable LightTimer render_timer_;
+
+	/* It will be used as ImVec2 from DearImGui, but it's preferable to avoid leaking DearImGui into the headers */
+	std::pair<float, float> position_;
+	std::pair<float, float> size_;
 };
