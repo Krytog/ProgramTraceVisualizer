@@ -21,18 +21,41 @@ namespace {
 		const float width = kViewSceneWidthCoef * window_size.first;
 		return { width, height };
 	}
+
+	static const constexpr std::pair<float, float> GetDetailsScenePos(const std::pair<int, int>& window_size) {
+		return { 0.0f, kOptionsWidgetHeight };
+	}
+
+	static const constexpr std::pair<float, float> GetDetailsSceneSize(const std::pair<int, int>& window_size) {
+		const float height = window_size.second - kOptionsWidgetHeight;
+		const float width = (1.0f - kViewSceneWidthCoef) * window_size.first;
+		return { width, height };
+	}
+
+	static const constexpr std::pair<float, float> GetOptionsScenePos(const std::pair<int, int>& window_size) {
+		(void)window_size;
+		return { 0.0f, 0.0f };
+	}
+
+	static const constexpr std::pair<float, float> GetOptionsSceneSize(const std::pair<int, int>& window_size) {
+		const float height = kOptionsWidgetHeight;
+		const float width = window_size.first;
+		return { width, height };
+	}
 }
 
-UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_size): view_scene_(GetViewScenePos(window_size), GetViewSceneSize(window_size)) {
+UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_size): 
+	view_scene_(GetViewScenePos(window_size), GetViewSceneSize(window_size)),
+	details_scene_(GetDetailsScenePos(window_size), GetDetailsSceneSize(window_size)),
+	options_scene_(GetOptionsScenePos(window_size), GetOptionsSceneSize(window_size)) {
 	InitImGui(glfw_window);
 }
 
-void UIManager::DrawUI() {
+void UIManager::DrawUI() const {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	MakeUIMarkUp();
-	view_scene_.Render();
+	RenderAllScenes();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -44,20 +67,6 @@ void UIManager::InitImGui(GLFWwindow* glfw_window) const {
 	ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
 
-void UIManager::MakeUIMarkUp() {
-	ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
-	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f), 0);
-	ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, kOptionsWidgetHeight), 0);
-	ImGui::Button("Option1");
-	ImGui::SameLine();
-	ImGui::Button("Option2");
-	ImGui::SameLine();
-	ImGui::Button("Option3");
-	ImGui::SameLine();
-	ImGui::Button("Option4");
-	ImGui::End();
-}
-
 UIManager::~UIManager() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -66,4 +75,18 @@ UIManager::~UIManager() {
 
 ViewScene& UIManager::GetViewScene() {
 	return view_scene_;
+}
+
+DetailsScene& UIManager::GetDetailsScene() {
+	return details_scene_;
+}
+
+OptionsScene& UIManager::GetOptionsScene() {
+	return options_scene_;
+}
+
+void UIManager::RenderAllScenes() const {
+	view_scene_.Render();
+	details_scene_.Render();
+	options_scene_.Render();
 }
