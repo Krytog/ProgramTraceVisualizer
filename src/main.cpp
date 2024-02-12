@@ -40,6 +40,8 @@ int main(int argc, char** argv) {
 
     LightTimer run_timer2;
 
+    LightTimer text_timer;
+
 	while (!window.IsPendingClose()) {
 		time.ResetTime();
 
@@ -66,6 +68,10 @@ int main(int argc, char** argv) {
             cube2->SetTransform(final_matrix);
         }
         
+        if (text_timer.EvaluateTime() > 0.5f) {
+            ui_manager.GetDetailsScene().PushLine("Some new detail has just showed up!");
+            text_timer.ResetTime();
+        }
 
         ui_manager.DrawUI();
 
