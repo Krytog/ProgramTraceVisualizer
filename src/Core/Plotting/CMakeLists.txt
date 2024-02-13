@@ -1,6 +1,6 @@
 add_library(Plotting
 	Plot2DMesh/Plot2DMesh.cpp
-	HillbertCurve/HillbertCurve.cpp
+	HilbertCurve/HilbertCurve.cpp
 		)
 
 target_link_libraries(Plotting PRIVATE Utils)

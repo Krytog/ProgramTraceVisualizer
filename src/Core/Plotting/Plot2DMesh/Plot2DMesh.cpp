@@ -33,7 +33,7 @@ void Plot2DMesh::Render() const {
 
 void Plot2DMesh::SetGridSize(const size_t grid_size) {
 	grid_size_ = grid_size;
-	shader_.SetUniform(ShaderUnifromName_GridSize, 0.5f / grid_size);
+	shader_.SetUniform(ShaderUnifromName_GridSize, 1.0f / grid_size); // it's 1.0f instead of 0.5f, becasuse OpenGl has coords [-1, 1]
 }
 
 size_t Plot2DMesh::GetGridSize() const {
