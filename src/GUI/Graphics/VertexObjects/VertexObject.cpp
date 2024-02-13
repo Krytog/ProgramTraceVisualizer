@@ -1,14 +1,10 @@
 #include "VertexObject.h"
 
 VertexObject::VertexObject(const GLfloat* data, GLsizei data_size, GLuint args_per_vertex, MemoryMode memory_mode) {
-    glGenBuffers(1, &VBO_);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-    const GLenum memory_mode_inner = static_cast<GLenum>(memory_mode);
-    glBufferData(GL_ARRAY_BUFFER, data_size, data, memory_mode_inner);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glGenVertexArrays(1, &VAO_);
     stride_ = args_per_vertex * sizeof(GLfloat);
-    count_ = data_size / stride_;
+    glGenBuffers(1, &VBO_);
+    LoadData(data, data_size, memory_mode);
+    glGenVertexArrays(1, &VAO_);
 }
 
 VertexObject::VertexObject(const ArgPack& arg_pack) : VertexObject(arg_pack.data, arg_pack.data_size, arg_pack.args_per_vertex,
@@ -33,4 +29,12 @@ void VertexObject::SetAttribute(GLuint index, GLuint args_per_vertex, const void
     glEnableVertexAttribArray(index);
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void VertexObject::LoadData(const GLfloat* data, GLsizei data_size, MemoryMode memory_mode) {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_);
+    const GLenum memory_mode_inner = static_cast<GLenum>(memory_mode);
+    glBufferData(GL_ARRAY_BUFFER, data_size, data, memory_mode_inner);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    count_ = data_size / stride_;
 }

@@ -22,6 +22,9 @@ public:
 
     explicit VertexObject(const ArgPack& arg_pack);
 
+    VertexObject(const VertexObject& other) = delete;
+    VertexObject& operator=(const VertexObject& other) = delete;
+
     virtual ~VertexObject();
 
     enum class DrawMode {
@@ -34,7 +37,7 @@ public:
         TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
         TRIANGLE_FAN = GL_TRIANGLE_FAN,
         TRIANGLES = GL_TRIANGLES,
-        TRIANGLE_STRIP_ADJECENCY = GL_TRIANGLE_STRIP_ADJACENCY,
+        TRIANGLE_STRIP_ADJACENCY = GL_TRIANGLE_STRIP_ADJACENCY,
         TRIANGLES_ADJACENCY = GL_TRIANGLES_ADJACENCY,
         PATHCES = GL_PATCHES
     };
@@ -44,6 +47,9 @@ public:
 
     /* Sets the given attribure for the VAO */
     void SetAttribute(GLuint index, GLuint args_per_vertex, const void* offset) const;
+
+    /* Loades new data into the VertexObject. It's not possible to override args_per_vertex, as it would take to reset the vertex attributes */
+    void LoadData(const GLfloat* data, GLsizei data_size, MemoryMode memory_mode);
 
 protected:
     GLsizei count_;

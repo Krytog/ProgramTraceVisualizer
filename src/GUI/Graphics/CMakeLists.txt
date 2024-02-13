@@ -2,6 +2,7 @@ add_library(Graphics
 	Shader/Shader.cpp
 	VertexObjects/VertexObject.cpp
 	VertexObjects/VertexObjectIndexed.cpp
+	VertexObjects/VertexObjectCustom.cpp
 	RenderBuffer/RenderBuffer.cpp
 	Primitives/Cube/Cube.cpp
 		)
