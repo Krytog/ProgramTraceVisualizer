@@ -48,10 +48,12 @@ void ViewScene::RenderUI() const {
 	const double current_frametime = render_timer_.EvaluateTime();
 	const unsigned long long current_framerate = 1.0 / current_frametime;
 	ImGui::Text(ViewScene_InnerName " \t FrameTime: %.8f \t FPS: %llu", current_frametime, current_framerate);
+	const float text_height_offset = 30.0f; // it's magic constant 
 
 	const GLuint texture_id = render_buffer_.GetTextureID();
 	const long long unsigned texture_id_upcast = static_cast<long long unsigned>(texture_id); // upcasting GLuint to a bigger intenger type for safety reasons
-	ImGui::Image(reinterpret_cast<void*>(texture_id_upcast), ImVec2{ size_.first, size_.second }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+	ImGui::Image(reinterpret_cast<void*>(texture_id_upcast), ImVec2{ size_.first, size_.second - text_height_offset }, 
+				 ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 }
 
 void ViewScene::Resize(const std::pair<float, float>& new_size) {
