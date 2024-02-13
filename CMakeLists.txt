@@ -14,6 +14,7 @@ add_subdirectory(3rdparty/glew ${CMAKE_CURRENT_BINARY_DIR}/glew)
 add_subdirectory(3rdparty/GLM ${CMAKE_CURRENT_BINARY_DIR}/glm)
 add_subdirectory(src/GUI)
 add_subdirectory(src/Utils)
+add_subdirectory(src/Core)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
@@ -22,3 +23,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE GUI)
 target_link_libraries(${PROJECT_NAME} PRIVATE Utils)
 target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static)
 target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE Core)
