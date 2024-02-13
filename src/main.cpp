@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Graphics/Primitives/Cube/Cube.h>
+#include <Core/Plotting/Plot2DMesh/Plot2DMesh.h>
 
 int main(int argc, char** argv) {
 	Window window(1600, 960, "CubeDataVisualizer!");
@@ -38,6 +39,19 @@ int main(int argc, char** argv) {
 
     ui_manager.GetViewScene().AddObject(cube2);
 
+    std::shared_ptr<Plot2DMesh> plot = std::make_shared<Plot2DMesh>(2048);
+
+    ui_manager.GetViewScene().AddObject(plot);
+
+    GLfloat data[] = {
+        0.3f, -0.3f, 1.0f,
+        0.3f, 0.3f, 0.66f,
+        -0.3f, 0.3f, 0.33f,
+        -0.3f, -0.3f, 0.0f
+    };
+
+    plot->LoadData(data, sizeof(data));
+
     LightTimer run_timer2;
 
     LightTimer text_timer;
@@ -50,6 +64,8 @@ int main(int argc, char** argv) {
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        /*
 
         {
             auto transform_matrix = glm::rotate(matrix, static_cast<float>(run_timer.EvaluateTime()), glm::vec3(0.3f, 1.0f, 0.0f));
@@ -68,6 +84,8 @@ int main(int argc, char** argv) {
             cube2->SetTransform(final_matrix);
         }
         
+        */
+
         if (text_timer.EvaluateTime() > 0.5f) {
             ui_manager.GetDetailsScene().PushLine("Some new detail has just showed up!");
             text_timer.ResetTime();
