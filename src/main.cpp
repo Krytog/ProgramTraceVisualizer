@@ -11,6 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <Graphics/Primitives/Cube/Cube.h>
 #include <Core/Plotting/Plot2DMesh/Plot2DMesh.h>
+#include <Core/Plotting/HilbertCurve/HilbertCurve.h>
 
 int main(int argc, char** argv) {
 	Window window(1600, 960, "CubeDataVisualizer!");
@@ -31,26 +32,31 @@ int main(int argc, char** argv) {
 
     glEnable(GL_DEPTH_TEST);
 
-    LightTimer run_timer;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-
     std::shared_ptr<Cube> cube2 = std::make_shared<Cube>();
 
     ui_manager.GetViewScene().AddObject(cube2);
 
-    std::shared_ptr<Plot2DMesh> plot = std::make_shared<Plot2DMesh>(2048);
+    const size_t cells = 16;
+
+    std::shared_ptr<Plot2DMesh> plot = std::make_shared<Plot2DMesh>(cells);
 
     ui_manager.GetViewScene().AddObject(plot);
 
-    GLfloat data[] = {
-        0.3f, -0.3f, 1.0f,
-        0.3f, 0.3f, 0.66f,
-        -0.3f, 0.3f, 0.33f,
-        -0.3f, -0.3f, 0.0f
-    };
+    LightTimer run_timer;
+    HilbertCurve2D hilbert_curve(4);
+    std::cout << "Hilbert Curve took " << run_timer.EvaluateTime() << std::endl;
 
-    plot->LoadData(data, sizeof(data));
+    run_timer.ResetTime();
+    std::vector<GLfloat> data;
+    data.reserve(cells * cells * 3);
+    for (size_t i = 0; i < cells * cells; ++i) {
+        auto point = hilbert_curve.Seq2XY(i);
+        data.push_back(2 * point.x - 1);
+        data.push_back(2 * point.y - 1);
+        data.push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+    }
+    plot->LoadData(data.data(), data.size() * sizeof(GLfloat)); 
+    std::cout << "Preparing data took " << run_timer.EvaluateTime() << std::endl;
 
     LightTimer run_timer2;
 
