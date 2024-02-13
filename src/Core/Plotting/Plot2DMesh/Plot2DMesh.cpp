@@ -18,9 +18,12 @@ namespace {
 	static constexpr const GLuint kTemperatureArgs = 1;
 }
 
-Plot2DMesh::Plot2DMesh(const size_t grid_size) : grid_size_(grid_size), shader_(kShaderConfig), mesh_(kVertexObjectConfig) {
+#define ShaderUnifromName_GridSize "grid_size"
+
+Plot2DMesh::Plot2DMesh(const size_t grid_size) : shader_(kShaderConfig), mesh_(kVertexObjectConfig) {
 	mesh_.SetAttribute(kPositionIndex, kPositionArgs, reinterpret_cast<GLvoid*>(0)); // position
 	mesh_.SetAttribute(kTemperatureIndex, kTemperatureArgs, reinterpret_cast<GLvoid*>(kPositionArgs * sizeof(GLfloat))); // color
+	SetGridSize(grid_size);
 }
 
 void Plot2DMesh::Render() const {
@@ -30,6 +33,7 @@ void Plot2DMesh::Render() const {
 
 void Plot2DMesh::SetGridSize(const size_t grid_size) {
 	grid_size_ = grid_size;
+	shader_.SetUniform(ShaderUnifromName_GridSize, 0.5f / grid_size);
 }
 
 size_t Plot2DMesh::GetGridSize() const {

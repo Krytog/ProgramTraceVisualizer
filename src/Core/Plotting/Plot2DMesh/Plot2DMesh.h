@@ -17,7 +17,7 @@ public:
 	void SetGridSize(const size_t grid_size);
 
 	/* Returns the current grid_size */
-	size_t GetGridSize() const;
+	[[nodiscard]] size_t GetGridSize() const;
 
 	/* Loads new data to be rendered. Data format is as follows: [x, y, temperature] per vertex, for a total of grid_size * grid_size vertices */
 	void LoadData(const GLfloat* data, GLsizei data_size);

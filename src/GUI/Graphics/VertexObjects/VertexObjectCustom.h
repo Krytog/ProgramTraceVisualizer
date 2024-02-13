@@ -10,7 +10,7 @@ public:
 	~VertexObjectCustom() override;
 
 	/* Generates and prepares for usage a new vertex buffer. This VertexObject has the ownership of the generated buffer */
-	GLuint GenerateNewVetexBuffer();
+	[[nodiscard]] GLuint GenerateNewVetexBuffer();
 
 	/* Sets the given attribure for the VAO, using target_buffer as the buffer */
 	void SetAttribute(GLuint target_buffer, GLuint index, GLuint args_per_vertex, const void* offset) const;
