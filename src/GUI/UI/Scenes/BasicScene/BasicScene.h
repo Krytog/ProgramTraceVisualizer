@@ -10,6 +10,8 @@ public:
 	/* Renders the scene */
 	void Render() const;
 
+	virtual ~BasicScene();
+
 protected:
 	/* Prepares the scene for rendering: moves it to the correct position and resizes */
 	void MoveAndResize() const;

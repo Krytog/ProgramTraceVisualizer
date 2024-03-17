@@ -23,3 +23,5 @@ void BasicScene::Render() const {
 	RenderInner();
 	ImGui::End();
 }
+
+BasicScene::~BasicScene() = default;
