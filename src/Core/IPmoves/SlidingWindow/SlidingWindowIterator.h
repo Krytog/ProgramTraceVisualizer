@@ -20,7 +20,7 @@ public:
 	}
 
 	[[nodiscard]] operator bool() const {
-		return begin_ + window_size_ <= container_end_;
+		return window_size_ <= container_end_ - begin_;
 	}
 
 	SlidingWindowIterator& operator+=(size_t offset) {
@@ -39,6 +39,10 @@ public:
 	SlidingWindowIterator& operator++() {
 		++begin_;
 		return* this;
+	}
+
+	void Restart() {
+		begin_ = container_begin_;
 	}
 
 private:
