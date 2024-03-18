@@ -12,14 +12,12 @@
 #include <Graphics/Primitives/Cube/Cube.h>
 #include <Core/Plotting/Plot2DMesh/Plot2DMesh.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurve.h>
+#include <Core/IPmoves/Clamping/DataClamper.h>
+#include <Utils/FrameRater/FrameRater.h>
 
 int main(int argc, char** argv) {
-	Window window(1600, 960, "CubeDataVisualizer!");
+	Window window(1600, 960, "ProgramTraceVisualizer!");
 	window.CaptureContext(true);
-
-	const int FPS = 144;
-	const double frametime = 1.0f / FPS;
-	LightTimer time;
 
     auto ptr = window.GetInnerWindowPointer();
     UIManager ui_manager(ptr, window.GetWindowSize());
@@ -36,34 +34,26 @@ int main(int argc, char** argv) {
 
     ui_manager.GetViewScene().AddObject(cube2);
 
-    const size_t cells = 16;
+    const size_t cells = 64;
 
     std::shared_ptr<Plot2DMesh> plot = std::make_shared<Plot2DMesh>(cells);
 
     ui_manager.GetViewScene().AddObject(plot);
 
     LightTimer run_timer;
-    HilbertCurve2D hilbert_curve(4);
+    HilbertCurve2D hilbert_curve(6);
     std::cout << "Hilbert Curve took " << run_timer.EvaluateTime() << std::endl;
 
-    run_timer.ResetTime();
-    std::vector<GLfloat> data;
-    data.reserve(cells * cells * 3);
-    for (size_t i = 0; i < cells * cells; ++i) {
-        auto point = hilbert_curve.Seq2XY(i);
-        data.push_back(2 * point.x - 1);
-        data.push_back(2 * point.y - 1);
-        data.push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+    std::vector<int> values;
+    for (int i = 0; i < cells * cells; ++i) {
+        values.push_back(i);
     }
-    plot->LoadData(data.data(), data.size() * sizeof(GLfloat)); 
-    std::cout << "Preparing data took " << run_timer.EvaluateTime() << std::endl;
+    std::shared_ptr<DataClamper<int>> data_clamper = std::make_shared<MinMaxDataClamper<int>>(values);
 
-    LightTimer run_timer2;
-
-    LightTimer text_timer;
-
+    size_t step = 0;
+    run_timer.ResetTime();
+    FrameRater<144> frame_rater;
 	while (!window.IsPendingClose()) {
-		time.ResetTime();
 
         const auto size = window.GetWindowSize();
         glViewport(0, 0, size.first, size.second);
@@ -71,38 +61,35 @@ int main(int argc, char** argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        /*
 
-        {
-            auto transform_matrix = glm::rotate(matrix, static_cast<float>(run_timer.EvaluateTime()), glm::vec3(0.3f, 1.0f, 0.0f));
-            transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer.EvaluateTime()), std::cos(run_timer.EvaluateTime()), std::sin(run_timer.EvaluateTime()) * std::cos(run_timer.EvaluateTime())));
-            auto view_matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -5.0f));
-            glm::mat4 projection_matrix = glm::perspective(45.0f, static_cast<float>(size.first) / size.second, 0.1f, 100.0f);
-            auto final_matrix = projection_matrix * view_matrix * transform_matrix;
-            cube->SetTransform(final_matrix);
-        }
-        {
-            auto transform_matrix = glm::rotate(matrix, static_cast<float>(run_timer2.EvaluateTime()), glm::vec3(0.3f, 1.0f, 0.0f));
-            transform_matrix = glm::translate(transform_matrix, 2.5f * glm::vec3(std::sin(run_timer2.EvaluateTime()), std::cos(run_timer2.EvaluateTime()), std::sin(run_timer2.EvaluateTime()) * std::cos(run_timer2.EvaluateTime())));
-            auto view_matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -5.0f));
-            glm::mat4 projection_matrix = glm::perspective(45.0f, static_cast<float>(size.first) / size.second, 0.1f, 100.0f);
-            auto final_matrix = projection_matrix * view_matrix * transform_matrix;
-            cube2->SetTransform(final_matrix);
-        }
+        std::vector<GLfloat> data;
         
-        */
-
-        if (text_timer.EvaluateTime() > 0.5f) {
-            ui_manager.GetDetailsScene().PushLine("Some new detail has just showed up!");
-            text_timer.ResetTime();
+        size_t seq_number = data_clamper->GetClamped(values[step]) * (cells * cells - 1);
+        const auto point = hilbert_curve.Seq2XY(seq_number);
+        data.push_back(2 * point.x - 1);
+        data.push_back(2 * point.y - 1);
+        data.push_back(1.0f);
+        ++step;
+        if (step == values.size()) {
+            step = 0;
+            break;
         }
+
+        plot->LoadData(data.data(), data.size() * sizeof(GLfloat));
+
+        auto& detail_scene = ui_manager.GetDetailsScene();
+        if (!detail_scene.GetInnerBuffer().empty()) {
+            detail_scene.PopFrontLine();
+        }
+        detail_scene.PushLine(std::to_string(step));
 
         ui_manager.DrawUI();
 
 		window.Render();
 		glfwPollEvents();
 
-		std::this_thread::sleep_for(std::chrono::microseconds(int(1000000 * (frametime - time.EvaluateTime()))));
+        frame_rater.Sleep();
 	}
+    std::cout << "IT TOOK " << run_timer.EvaluateTime() << std::endl;
 	return 0;
 }
