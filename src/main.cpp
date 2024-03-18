@@ -13,6 +13,7 @@
 #include <Core/Plotting/Plot2DMesh/Plot2DMesh.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurve.h>
 #include <Core/IPmoves/Clamping/DataClamper.h>
+#include <Core/IPmoves/SlidingWindow/SlidingWindowIterator.h>
 #include <Utils/FrameRater/FrameRater.h>
 
 int main(int argc, char** argv) {
@@ -34,14 +35,14 @@ int main(int argc, char** argv) {
 
     ui_manager.GetViewScene().AddObject(cube2);
 
-    const size_t cells = 64;
+    const size_t cells = 128;
 
     std::shared_ptr<Plot2DMesh> plot = std::make_shared<Plot2DMesh>(cells);
 
     ui_manager.GetViewScene().AddObject(plot);
 
     LightTimer run_timer;
-    HilbertCurve2D hilbert_curve(6);
+    HilbertCurve2D hilbert_curve(7);
     std::cout << "Hilbert Curve took " << run_timer.EvaluateTime() << std::endl;
 
     std::vector<int> values;
@@ -50,7 +51,9 @@ int main(int argc, char** argv) {
     }
     std::shared_ptr<DataClamper<int>> data_clamper = std::make_shared<MinMaxDataClamper<int>>(values);
 
-    size_t step = 0;
+    const size_t sliding_window_size = 100;
+    SlidingWindowIterator sliding_window(values, sliding_window_size);
+
     run_timer.ResetTime();
     FrameRater<144> frame_rater;
 	while (!window.IsPendingClose()) {
@@ -63,25 +66,29 @@ int main(int argc, char** argv) {
 
 
         std::vector<GLfloat> data;
-        
-        size_t seq_number = data_clamper->GetClamped(values[step]) * (cells * cells - 1);
-        const auto point = hilbert_curve.Seq2XY(seq_number);
-        data.push_back(2 * point.x - 1);
-        data.push_back(2 * point.y - 1);
-        data.push_back(1.0f);
-        ++step;
-        if (step == values.size()) {
-            step = 0;
-            break;
-        }
-
-        plot->LoadData(data.data(), data.size() * sizeof(GLfloat));
 
         auto& detail_scene = ui_manager.GetDetailsScene();
         if (!detail_scene.GetInnerBuffer().empty()) {
-            detail_scene.PopFrontLine();
+            for (int i = 0; i < sliding_window_size; ++i) {
+                detail_scene.PopFrontLine();
+            }
         }
-        detail_scene.PushLine(std::to_string(step));
+
+        auto [start, end] = *sliding_window;
+        for (auto cur = start; cur != end; ++cur) {
+            size_t seq_number = data_clamper->GetClamped(*cur) * (cells * cells - 1);
+            const auto point = hilbert_curve.Seq2XY(seq_number);
+            data.push_back(2 * point.x - 1);
+            data.push_back(2 * point.y - 1);
+            data.push_back(1 - static_cast<float>(cur - start + 1) / (end - start));
+            detail_scene.PushLine(std::to_string(*cur));
+        }
+        ++sliding_window;
+        if (!sliding_window) {
+            sliding_window.Restart();
+        }
+
+        plot->LoadData(data.data(), data.size() * sizeof(GLfloat));
 
         ui_manager.DrawUI();
 
