@@ -2,8 +2,13 @@
 
 #include <vector>
 #include <utility>
+#include <concepts>
+#include <iterator>
 
 template <typename Container>
+concept HasRandomAccessIterator = std::random_access_iterator<typename Container::iterator>;
+
+template <HasRandomAccessIterator Container>
 class SlidingWindowIterator {
 	using Iterator = Container::iterator;
 
