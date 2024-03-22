@@ -4,7 +4,7 @@
 #include "../../Shader/Shader.h"
 #include "../IRenderable.h"
 
-#include <GLM/glm.hpp> 
+#include <glm/glm.hpp> 
 
 class Cube : public IRenderable {
 public:
