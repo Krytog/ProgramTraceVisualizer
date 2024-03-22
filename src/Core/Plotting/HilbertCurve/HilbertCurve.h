@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <cstddef>
 
 class HilbertCurve2D {
 public:
