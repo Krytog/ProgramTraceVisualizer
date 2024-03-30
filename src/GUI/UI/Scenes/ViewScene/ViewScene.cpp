@@ -4,11 +4,14 @@
 #include <imgui.h>
 #include <GLFW/glfw3.h>
 #include <Utils/LightTimer/LightTimer.h>
+#include <limits>
 
 #define ViewScene_InnerName "View"
 
 ViewScene::ViewScene(const std::pair<float, float>& position, const std::pair<float, float>& size)
-    : BasicScene(position, size, ViewScene_InnerName), render_buffer_(size.first, size.second) {
+    : BasicScene(position, size, ViewScene_InnerName),
+      render_buffer_(size.first, size.second),
+      frametime_(std::numeric_limits<double>::infinity()) {
 }
 
 bool ViewScene::AddObject(const std::shared_ptr<IRenderable>& object) {
@@ -35,7 +38,6 @@ void ViewScene::RenderInner() const {
 }
 
 void ViewScene::RenderObjects() const {
-    render_timer_.ResetTime();
     render_buffer_.Bind();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     render_buffer_.Clear();
@@ -46,9 +48,8 @@ void ViewScene::RenderObjects() const {
 }
 
 void ViewScene::RenderUI() const {
-    const double current_frametime = render_timer_.EvaluateTime();
-    const unsigned long long current_framerate = 1.0 / current_frametime;
-    ImGui::Text(ViewScene_InnerName " \t FrameTime: %.8f \t FPS: %llu", current_frametime, current_framerate);
+    const unsigned long long framerate = 1.0 / frametime_;
+    ImGui::Text(ViewScene_InnerName " \t FrameTime: %.8f \t FPS: %llu", frametime_, framerate);
     const float text_height_offset = 30.0f;  // it's magic constant
 
     const GLuint texture_id = render_buffer_.GetTextureID();
@@ -63,4 +64,8 @@ void ViewScene::Resize(const std::pair<float, float>& new_size) {
         render_buffer_.Resize(new_size.first, new_size.second);
         size_ = new_size;
     }
+}
+
+void ViewScene::SetFrametime(double frametime) {
+    frametime_ = frametime;
 }

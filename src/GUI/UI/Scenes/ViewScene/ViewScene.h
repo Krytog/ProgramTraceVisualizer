@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Graphics/RenderBuffer/RenderBuffer.h>
-#include <Utils/LightTimer/LightTimer.h>
 #include <UI/Scenes/BasicScene/BasicScene.h>
 
 #include <unordered_set>
@@ -29,6 +28,9 @@ public:
     /* Removes an object from this scene. Returns false if the object isn't present and true otherwise */
     bool RemoveObject(const std::shared_ptr<IRenderable>& object);
 
+    /* Sets frametime that will be rendered and used to calculate FPS */
+    void SetFrametime(double frametime);
+
 private:
     /* Renders the scene*/
     void RenderInner() const override;
@@ -41,5 +43,5 @@ private:
 
     std::unordered_set<std::shared_ptr<IRenderable>> renderable_objects_;
     RenderBuffer render_buffer_;
-    mutable LightTimer render_timer_;
+    double frametime_;;
 };

@@ -4,9 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <GUI/Window/Window.h>
 #include <Utils/LightTimer/LightTimer.h>
-#include <thread>
 #include <UI/UIManager/UIManager.h>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Graphics/Primitives/Cube/Cube.h>
@@ -15,6 +14,7 @@
 #include <Core/IPmoves/Clamping/DataClamper.h>
 #include <Core/IPmoves/SlidingWindow/SlidingWindowIterator.h>
 #include <Utils/FrameRater/FrameRater.h>
+#include <memory>
 
 int main(int argc, char** argv) {
 	Window window(1600, 960, "ProgramTraceVisualizer!");
@@ -23,26 +23,16 @@ int main(int argc, char** argv) {
     auto ptr = window.GetInnerWindowPointer();
     UIManager ui_manager(ptr, window.GetWindowSize());
 
-    glm::mat4 matrix = glm::mat4(1.0f);
-
-    std::shared_ptr<Cube> cube = std::make_shared<Cube>();
-
-    ui_manager.GetViewScene().AddObject(cube);
-
     glEnable(GL_DEPTH_TEST);
 
-    std::shared_ptr<Cube> cube2 = std::make_shared<Cube>();
-
-    ui_manager.GetViewScene().AddObject(cube2);
-
-    const size_t cells = 128;
+    const size_t cells = 1024;
 
     std::shared_ptr<Plot2DMesh> plot = std::make_shared<Plot2DMesh>(cells);
 
     ui_manager.GetViewScene().AddObject(plot);
 
     LightTimer run_timer;
-    HilbertCurve2D hilbert_curve(7);
+    HilbertCurve2D hilbert_curve(10);
     std::cout << "Hilbert Curve took " << run_timer.EvaluateTime() << std::endl;
 
     std::vector<int> values;
@@ -51,10 +41,11 @@ int main(int argc, char** argv) {
     }
     std::shared_ptr<DataClamper<int>> data_clamper = std::make_shared<MinMaxDataClamper<int>>(values);
 
-    const size_t sliding_window_size = 100;
+    const size_t sliding_window_size = 1000;
     SlidingWindowIterator sliding_window(values, sliding_window_size);
 
     run_timer.ResetTime();
+    size_t frames_counter = 0;
     FrameRater<144> frame_rater;
 	while (!window.IsPendingClose()) {
 
@@ -64,7 +55,6 @@ int main(int argc, char** argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
         std::vector<GLfloat> data;
 
         auto& detail_scene = ui_manager.GetDetailsScene();
@@ -73,7 +63,7 @@ int main(int argc, char** argv) {
                 detail_scene.PopFrontLine();
             }
         }
-
+        
         auto [start, end] = *sliding_window;
         for (auto cur = start; cur != end; ++cur) {
             size_t seq_number = data_clamper->GetClamped(*cur) * (cells * cells - 1);
@@ -89,12 +79,19 @@ int main(int argc, char** argv) {
         }
 
         plot->LoadData(data.data(), data.size() * sizeof(GLfloat));
-
+        
         ui_manager.DrawUI();
 
 		window.Render();
 		glfwPollEvents();
 
+        ++frames_counter;
+        if (run_timer.EvaluateTime() >= 0.5) {
+            run_timer.ResetTime();
+            std::cout << frames_counter << std::endl;
+            ui_manager.GetViewScene().SetFrametime(0.5 / frames_counter);
+            frames_counter = 0;
+        }
         frame_rater.Sleep();
 	}
     std::cout << "IT TOOK " << run_timer.EvaluateTime() << std::endl;
