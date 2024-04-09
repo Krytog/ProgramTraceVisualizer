@@ -3,5 +3,3 @@ add_library(Utils
 	Logger/ConsoleLogger.cpp
 	FileReader/FileReader.cpp
 		)
-
-target_include_directories(Utils PUBLIC ..)

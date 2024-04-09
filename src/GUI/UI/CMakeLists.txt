@@ -1,4 +1,4 @@
-set(DearImGui_DIR ../../../3rdparty/DearImGui)
+set(DearImGui_DIR ${BASEPATH}/3rdparty/DearImGui)
 
 add_library(UI
 	${DearImGui_DIR}/imgui.cpp
@@ -19,5 +19,5 @@ target_link_libraries(UI PRIVATE glfw)
 target_link_libraries(UI PRIVATE Utils)
 
 target_include_directories(UI PUBLIC ${DearImGui_DIR})
-target_include_directories(UI PUBLIC ../../../3rdparty/glew/include)
-target_include_directories(UI PUBLIC ..)
+target_include_directories(UI PUBLIC ${BASEPATH}/3rdparty/glew/include)
+target_include_directories(UI PUBLIC ${BASEPATH}/src/GUI)
