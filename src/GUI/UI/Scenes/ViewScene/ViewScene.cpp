@@ -3,7 +3,6 @@
 #include <Graphics/Primitives/IRenderable.h>
 #include <imgui.h>
 #include <GLFW/glfw3.h>
-#include <Utils/LightTimer/LightTimer.h>
 #include <limits>
 
 #define ViewScene_InnerName "View"
