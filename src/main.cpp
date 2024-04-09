@@ -4,8 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <GUI/Window/Window.h>
 #include <Utils/LightTimer/LightTimer.h>
-#include <UI/UIManager/UIManager.h>
-#include <glm.hpp>
+#include <GUI/UI/UIManager/UIManager.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Graphics/Primitives/Cube/Cube.h>
