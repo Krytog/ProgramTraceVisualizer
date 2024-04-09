@@ -14,5 +14,5 @@ target_link_libraries(Graphics PRIVATE glm::glm)
 
 target_include_directories(Graphics PUBLIC ${BASEPATH}/3rdparty/glwf/includes)
 target_include_directories(Graphics PUBLIC ${BASEPATH}/3rdparty/glew/include)
-target_include_directories(Graphics PUBLIC ${BASEPATH}/3rdparty/GLM/glm)
+target_include_directories(Graphics PUBLIC ${BASEPATH}/3rdparty/GLM)
 target_include_directories(Graphics PUBLIC ${BASEPATH}/src)
