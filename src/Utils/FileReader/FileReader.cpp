@@ -3,8 +3,8 @@
 #include <memory>
 #include <stdexcept>
 
-#define ERROR_MESSAGE_FAILED_TO_OPEN "FileHandler: failed to open file with name: "
-#define ERROR_MESSAGE_SEEK_FAILED "FileHandler: seek failed"
+#define ERROR_MESSAGE_FAILED_TO_OPEN "FileReader: failed to open file with name: "
+#define ERROR_MESSAGE_SEEK_FAILED "FileReader: seek failed"
 
 FileReader::FileReader(const std::string& filename): file_(std::ifstream(filename, std::ios::binary)) {
     if (!file_.is_open()) {
