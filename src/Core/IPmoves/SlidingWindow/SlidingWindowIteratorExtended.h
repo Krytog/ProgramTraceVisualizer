@@ -1,12 +1,9 @@
 #pragma once
 
 #include <utility>
-#include <iterator>
+#include <cstddef>
 
 template <typename Container>
-concept HasRandomAccessIterator = std::random_access_iterator<typename Container::iterator>;
-
-template <HasRandomAccessIterator Container>
 class SlidingWindowIteratorExtended {
 	using Iterator = typename Container::iterator;
 
