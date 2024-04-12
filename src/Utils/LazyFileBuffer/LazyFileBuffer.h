@@ -22,16 +22,19 @@ public:
     /* Sets the max amount of memory that the underlaying cache can use */
     void SetMaxMemory(size_t max_memory);
 
+    /* Returns the size of the underlying file */
+    size_t GetFileSize() const;
+
 private:
     /* Returns a pointer to location of at least sizeof(T) bytes, starting from the byte at the given position */
     template <typename T>
     [[nodiscard]] char* GetAtPos(size_t position) {
-    const size_t end_position = position + sizeof(T);
-    if (position < chunk_.from || end_position > chunk_.to) {
-        LoadChunk(position);
+        const size_t end_position = position + sizeof(T);
+        if (position < chunk_.from || end_position > chunk_.to) {
+            LoadChunk(position);
+        }
+        return chunk_.bytes.get() + position - chunk_.from;
     }
-    return chunk_.bytes.get() + position - chunk_.from;
-}
 
     /* Loads a chunk from file, starting from the byte at position "from" */
     void LoadChunk(size_t from);
