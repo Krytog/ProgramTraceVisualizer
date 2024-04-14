@@ -69,7 +69,7 @@ HilbertCurve2D::Point HilbertCurve2D::Seq2XYSlow(size_t seq_num) const {
 	}
 	const float x_f = static_cast<float>(x) / size_;
 	const float y_f = static_cast<float>(y) / size_;
-	const float offset = 0.5f / size_; // forces the point to be the center of the cells, otherwise it's the bottom left corner
+	const float offset = 0.5f / size_; // forces the point to be the center of the cell, otherwise it's the bottom left corner
 	return { x_f + offset, y_f + offset};
 }
 
