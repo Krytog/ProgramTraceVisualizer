@@ -9,6 +9,9 @@
 
 class LazyFileIteratorBase {
 public:
+    template <typename T>
+    friend class LazyFileIterator;
+
     using difference_type = ptrdiff_t;  // NOLINT
 
     LazyFileIteratorBase(LazyFileBuffer* file_buffer, size_t pos);
@@ -37,6 +40,8 @@ class LazyFileIterator : public LazyFileIteratorBase {
 public:
     LazyFileIterator(LazyFileBuffer* file_buffer, size_t pos) : LazyFileIteratorBase(file_buffer, pos) {
     }
+
+    LazyFileIterator(const LazyFileIteratorBase& base): LazyFileIteratorBase(base.file_buffer_, base.element_index_) {}
 
     T operator*() {
         if (!CanReadOneMore()) {

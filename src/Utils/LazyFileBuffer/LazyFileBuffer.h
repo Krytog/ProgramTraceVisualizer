@@ -22,8 +22,11 @@ public:
     /* Sets the max amount of memory that the underlaying cache can use */
     void SetMaxMemory(size_t max_memory);
 
+    /* Returns tha max amount of memory that the underlaying cache can use */
+    [[nodiscard]] size_t GetMaxMemory() const;
+
     /* Returns the size of the underlying file */
-    size_t GetFileSize() const;
+    [[nodiscard]] size_t GetFileSize() const;
 
 private:
     /* Returns a pointer to location of at least sizeof(T) bytes, starting from the byte at the given position */
