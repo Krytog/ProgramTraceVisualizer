@@ -31,5 +31,8 @@ std::pair<std::unique_ptr<char[]>, size_t> FileReader::GetChunk(size_t offset, s
     std::unique_ptr<char[]> array = std::make_unique<char[]>(size);
     file_.read(array.get(), size);
     const auto bytes_read = file_.gcount();
+    if (bytes_read < size && file_.eof()) {
+        file_.clear(); // discard errors, as it's ok that we've read less than expected due to eof
+    }
     return {std::move(array), bytes_read};
 }
