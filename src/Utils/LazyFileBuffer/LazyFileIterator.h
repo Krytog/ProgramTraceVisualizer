@@ -3,12 +3,15 @@
 #include "LazyFileBuffer.h"
 
 #include <stdexcept>
+#include <cstddef>
 
 #define ERROR_MESSAGE_NOT_ENOUGH_BYTES "LazyFileIterator: can't read T: not enough bytes left"
 
 class LazyFileIteratorBase {
 public:
-    LazyFileIteratorBase(LazyFileBuffer* file_buffer);
+    using difference_type = ptrdiff_t;  // NOLINT
+
+    LazyFileIteratorBase(LazyFileBuffer* file_buffer, size_t pos);
 
     LazyFileIteratorBase operator+(size_t offset) const;
     LazyFileIteratorBase operator-(size_t offset) const;
@@ -17,6 +20,11 @@ public:
     LazyFileIteratorBase& operator--();
     LazyFileIteratorBase& operator+=(size_t offset);
     LazyFileIteratorBase& operator-=(size_t offset);
+
+    bool operator==(const LazyFileIteratorBase& other) const;
+    bool operator!=(const LazyFileIteratorBase& other) const;
+
+    difference_type operator-(const LazyFileIteratorBase& other) const;
 
 protected:
     LazyFileBuffer* const file_buffer_;
@@ -27,6 +35,9 @@ protected:
 template <typename T>
 class LazyFileIterator : public LazyFileIteratorBase {
 public:
+    LazyFileIterator(LazyFileBuffer* file_buffer, size_t pos) : LazyFileIteratorBase(file_buffer, pos) {
+    }
+
     T operator*() {
         if (!CanReadOneMore()) {
             throw std::runtime_error(ERROR_MESSAGE_NOT_ENOUGH_BYTES);
