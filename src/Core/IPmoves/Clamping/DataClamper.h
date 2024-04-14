@@ -45,6 +45,7 @@ public:
 
 template <typename T>
 class AbsoluteDataClamper : public DataClamper<T> {
+public:
 	using DataClamper<T>::min_;
 	using DataClamper<T>::max_;
 
