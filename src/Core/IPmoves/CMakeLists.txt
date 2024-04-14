@@ -1,6 +1,7 @@
 add_library(IPmoves
 	Clamping/DataClamper.cpp
 	IPmovesHandler/IPmovesHandler.cpp
+	IPmovesHandler/AddressBuffer.cpp
 		)
 
 target_link_libraries(IPmoves PRIVATE Plotting)
