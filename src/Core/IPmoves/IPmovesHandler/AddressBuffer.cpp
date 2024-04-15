@@ -21,7 +21,7 @@ void AddressBuffer::SetMaxMemory(size_t max_memory) {
 }
 
 size_t AddressBuffer::GetMaxMemory() const {
-    return file_.GetFileSize();
+    return file_.GetMaxMemory();
 }
 
 AddressBuffer::ElementType AddressBuffer::operator[](size_t index) {

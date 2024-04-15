@@ -21,3 +21,7 @@ size_t LazyFileBuffer::GetFileSize() const {
 FileReader* LazyFileBuffer::GetRawFileReader() {
     return &file_;
 }
+
+size_t LazyFileBuffer::GetMaxMemory() const {
+    return chunk_size_;
+}
