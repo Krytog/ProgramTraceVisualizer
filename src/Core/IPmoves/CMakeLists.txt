@@ -1,5 +1,4 @@
 add_library(IPmoves
-	Clamping/DataClamper.cpp
 	IPmovesHandler/IPmovesHandler.cpp
 	IPmovesHandler/AddressBuffer.cpp
 		)
