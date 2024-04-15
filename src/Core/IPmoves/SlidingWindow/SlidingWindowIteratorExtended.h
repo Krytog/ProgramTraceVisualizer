@@ -22,7 +22,7 @@ public:
         return pos_ < container_size_ + window_size_ - 1;
     }
 
-    void Advance(size_t to_advance) {
+    void Advance(size_t to_advance = 1) {
         pos_ += to_advance;
     }
 
