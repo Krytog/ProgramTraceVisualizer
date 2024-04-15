@@ -40,7 +40,7 @@ namespace {
 }
 
 void IPmovesHandler::FindAndSetMaxMin() {
-    const size_t file_size = file_.GetSize();
+    const size_t file_size = data_buffer_.GetSize();
     const size_t total_addresses = file_size / sizeof(uintptr_t);
     const int threads = std::thread::hardware_concurrency();
     const size_t per_thread = total_addresses / threads;
@@ -52,8 +52,8 @@ void IPmovesHandler::FindAndSetMaxMin() {
     for (int i = 0; i < threads - 1; ++i) {
         workers.emplace_back(MinMaxWorkerArgs{
             .mutex = &mutex,
-            .file = &file_,
-            .chunk_size = max_chunk_size_,
+            .file = data_buffer_.GetRawFileReader(),
+            .chunk_size = max_memory_,
             .from = i * per_thread * sizeof(uintptr_t),
             .to = (i + 1) * per_thread * sizeof(uintptr_t),
             .min = mins.data() + i,
@@ -62,8 +62,8 @@ void IPmovesHandler::FindAndSetMaxMin() {
     }
     workers.emplace_back(MinMaxWorkerArgs{
         .mutex = &mutex,
-        .file = &file_,
-        .chunk_size = max_chunk_size_,
+        .file = data_buffer_.GetRawFileReader(),
+        .chunk_size = max_memory_,
         .from = (threads - 1) * per_thread * sizeof(uintptr_t),
         .to = file_size,
         .min = mins.data() + (threads - 1),
