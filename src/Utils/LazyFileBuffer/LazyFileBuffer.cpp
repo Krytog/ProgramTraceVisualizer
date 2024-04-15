@@ -1,4 +1,5 @@
 #include "LazyFileBuffer.h"
+#include "FileReader/FileReader.h"
 
 LazyFileBuffer::LazyFileBuffer(const std::string& name) : file_(name) {
 }
@@ -15,4 +16,8 @@ void LazyFileBuffer::LoadChunk(size_t position) {
 
 size_t LazyFileBuffer::GetFileSize() const {
     return file_.GetSize();
+}
+
+FileReader* LazyFileBuffer::GetRawFileReader() {
+    return &file_;
 }

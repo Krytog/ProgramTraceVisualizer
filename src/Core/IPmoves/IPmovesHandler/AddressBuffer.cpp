@@ -1,4 +1,5 @@
 #include "AddressBuffer.h"
+#include "FileReader/FileReader.h"
 #include "LazyFileBuffer/LazyFileBuffer.h"
 
 #include <cstdint>
@@ -49,4 +50,8 @@ AddressBuffer::Iterator AddressBuffer::end() {
 
 size_t AddressBuffer::size() const {
     return GetSize();
+}
+
+FileReader* AddressBuffer::GetRawFileReader() {
+    return file_.GetRawFileReader();
 }

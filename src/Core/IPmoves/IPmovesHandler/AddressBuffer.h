@@ -2,6 +2,7 @@
 
 #include <Utils/LazyFileBuffer/LazyFileBuffer.h>
 #include <Utils/LazyFileBuffer/LazyFileIterator.h>
+#include "FileReader/FileReader.h"
 
 class AddressBuffer {
 public:
@@ -18,6 +19,9 @@ public:
 
     /* Returns the max amount of memory that can be used for caching */
     [[nodiscard]] size_t GetMaxMemory() const;
+
+    /* Returns a pointer to the underlying FileReader. Can be used to read from file without affecting caching systems */
+    [[nodiscard]] FileReader* GetRawFileReader();
 
     /* Returns an element at the given index. This method isn't const, as it can modify the underlying file
      * cache */

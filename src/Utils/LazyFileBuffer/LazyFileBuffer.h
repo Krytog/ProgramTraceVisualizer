@@ -28,6 +28,9 @@ public:
     /* Returns the size of the underlying file */
     [[nodiscard]] size_t GetFileSize() const;
 
+    /* Returns a pointer to the underlying FileReader. Can be used to read without affecting the caching system */
+    [[nodiscard]] FileReader* GetRawFileReader();
+
 private:
     /* Returns a pointer to location of at least sizeof(T) bytes, starting from the byte at the given position */
     template <typename T>
