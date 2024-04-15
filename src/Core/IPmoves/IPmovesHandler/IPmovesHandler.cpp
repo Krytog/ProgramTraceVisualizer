@@ -1,5 +1,7 @@
 #include "IPmovesHandler.h"
 
+#include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
+
 #include <cstdint>
 #include <limits>
 #include <thread>
@@ -40,7 +42,7 @@ namespace {
 }
 
 void IPmovesHandler::FindAndSetMaxMin() {
-    const size_t file_size = data_buffer_.GetSize();
+    const size_t file_size = data_buffer_.GetRawFileReader()->GetSize();
     const size_t total_addresses = file_size / sizeof(uintptr_t);
     const int threads = std::thread::hardware_concurrency();
     const size_t per_thread = total_addresses / threads;
@@ -49,11 +51,12 @@ void IPmovesHandler::FindAndSetMaxMin() {
     std::mutex mutex;
     std::vector<uintptr_t> mins(threads, std::numeric_limits<uintptr_t>::max());
     std::vector<uintptr_t> maxs(threads, std::numeric_limits<uintptr_t>::min());
+    const size_t max_memory = data_buffer_.GetMaxMemory();
     for (int i = 0; i < threads - 1; ++i) {
         workers.emplace_back(MinMaxWorkerArgs{
             .mutex = &mutex,
             .file = data_buffer_.GetRawFileReader(),
-            .chunk_size = max_memory_,
+            .chunk_size = max_memory,
             .from = i * per_thread * sizeof(uintptr_t),
             .to = (i + 1) * per_thread * sizeof(uintptr_t),
             .min = mins.data() + i,
@@ -63,7 +66,7 @@ void IPmovesHandler::FindAndSetMaxMin() {
     workers.emplace_back(MinMaxWorkerArgs{
         .mutex = &mutex,
         .file = data_buffer_.GetRawFileReader(),
-        .chunk_size = max_memory_,
+        .chunk_size = max_memory,
         .from = (threads - 1) * per_thread * sizeof(uintptr_t),
         .to = file_size,
         .min = mins.data() + (threads - 1),
@@ -82,3 +85,27 @@ void IPmovesHandler::FindAndSetMaxMin() {
     }
 }
 
+void IPmovesHandler::SetMaxMemory(size_t max_memory) {
+    data_buffer_.SetMaxMemory(max_memory);
+}
+
+size_t IPmovesHandler::GetMaxMemory() const {
+    return data_buffer_.GetMaxMemory();
+}
+
+void IPmovesHandler::SetProgress(float alpha) {
+    sliding_window_.SetProgress(alpha);
+}
+
+float IPmovesHandler::GetProgress() const {
+    return sliding_window_.GetProgress();
+}
+
+void IPmovesHandler::SetHilbertDegree(unsigned degree) {
+    hilbert_degree_ = degree;
+    hilbert_curve_ = HilbertCurveManager::GetHilbertCurve(degree);
+}
+
+unsigned IPmovesHandler::GetHilbertDegree() const {
+    return hilbert_degree_;
+}

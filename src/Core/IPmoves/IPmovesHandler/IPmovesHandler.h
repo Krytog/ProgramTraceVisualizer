@@ -46,6 +46,5 @@ private:
     std::shared_ptr<Plot2DMesh> plot_;
 
     /* Parameters */
-    size_t max_memory_;
     unsigned hilbert_degree_;
 };
