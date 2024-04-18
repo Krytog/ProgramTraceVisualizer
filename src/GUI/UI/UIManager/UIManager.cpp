@@ -12,12 +12,14 @@ static const constexpr float kOptionsWidgetHeight = 35.0f;
 
 static const constexpr float kViewSceneWidthCoef = 0.75f;
 
+static const constexpr float kIPmovesControlSceneHeight = 30.0f;
+
 static const constexpr std::pair<float, float> GetViewScenePos(const std::pair<int, int>& window_size) {
     return {(1.0f - kViewSceneWidthCoef) * window_size.first, kOptionsWidgetHeight};
 }
 
 static const constexpr std::pair<float, float> GetViewSceneSize(const std::pair<int, int>& window_size) {
-    const float height = window_size.second - kOptionsWidgetHeight;
+    const float height = window_size.second - kOptionsWidgetHeight - kIPmovesControlSceneHeight;
     const float width = kViewSceneWidthCoef * window_size.first;
     return {width, height};
 }
@@ -42,6 +44,17 @@ static const constexpr std::pair<float, float> GetOptionsSceneSize(const std::pa
     const float width = window_size.first;
     return {width, height};
 }
+
+static const constexpr std::pair<float, float> GetIPmovesControlScenePos(const std::pair<int, int>& window_size) {
+    return {(1.0f - kViewSceneWidthCoef) * window_size.first, window_size.second - kIPmovesControlSceneHeight};
+}
+
+static const constexpr std::pair<float, float> GetIPmovesControlSceneSize(const std::pair<int, int>& window_size) {
+    const float height = kIPmovesControlSceneHeight;
+    const float width = kViewSceneWidthCoef * window_size.first;
+    return {width, height};
+}
+
 }  // namespace
 
 UIManager* UIManager::k_main_ui_manager = nullptr;
@@ -49,7 +62,8 @@ UIManager* UIManager::k_main_ui_manager = nullptr;
 UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_size)
     : view_scene_(GetViewScenePos(window_size), GetViewSceneSize(window_size)),
       details_scene_(GetDetailsScenePos(window_size), GetDetailsSceneSize(window_size)),
-      options_scene_(GetOptionsScenePos(window_size), GetOptionsSceneSize(window_size)) {
+      options_scene_(GetOptionsScenePos(window_size), GetOptionsSceneSize(window_size)),
+      ipmovescontrol_scene_(GetIPmovesControlScenePos(window_size), GetIPmovesControlSceneSize(window_size)) {
     InitImGui(glfw_window);
 }
 
@@ -87,10 +101,15 @@ OptionsScene& UIManager::GetOptionsScene() {
     return options_scene_;
 }
 
+IPmovesControlScene& UIManager::GetIPmovesControlScene() {
+    return ipmovescontrol_scene_;
+}
+
 void UIManager::RenderAllScenes() const {
     view_scene_.Render();
     details_scene_.Render();
     options_scene_.Render();
+    ipmovescontrol_scene_.Render();
 }
 
 void UIManager::MarkAsMain() {

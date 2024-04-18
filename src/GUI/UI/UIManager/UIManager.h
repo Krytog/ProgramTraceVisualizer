@@ -3,6 +3,7 @@
 #include <UI/Scenes/ViewScene/ViewScene.h>
 #include <UI/Scenes/DetailsScene/DetailsScene.h>
 #include <UI/Scenes/OptionsScene/OptionsScene.h>
+#include <UI/Scenes/IPmovesControlScene/IPmovesControlScene.h>
 
 #include <utility>
 
@@ -24,6 +25,9 @@ public:
     /* Returns the reference to the OptionsScene of the UI */
     OptionsScene& GetOptionsScene();
 
+    /* Returns the reference to the ProgressBarScene of the UI */
+    IPmovesControlScene& GetIPmovesControlScene();
+
     /* Returns a pointer to a UIManager that is marked as main */
     static UIManager* GetMainUIManager();
 
@@ -40,6 +44,7 @@ private:
     ViewScene view_scene_;
     DetailsScene details_scene_;
     OptionsScene options_scene_;
+    IPmovesControlScene ipmovescontrol_scene_;
 
     static UIManager* k_main_ui_manager;
 };
