@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Graphics/VertexObjects/VertexObject.h>
-#include <Graphics/Shader/Shader.h>
-#include <Graphics/Primitives/IRenderable.h>
+#include <GUI/Graphics/VertexObjects/VertexObject.h>
+#include <GUI/Graphics/Shader/Shader.h>
+#include <GUI/Graphics/Primitives/IRenderable.h>
 
 #include <cstddef>
 
