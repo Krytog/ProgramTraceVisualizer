@@ -23,6 +23,7 @@ add_subdirectory(src/GUI)
 add_subdirectory(src/Utils)
 add_subdirectory(src/Core)
 add_subdirectory(src/App)
+add_subdirectory(src/Controllers)
 
 add_executable(${PROJECT_NAME} src/main.cpp) #external-utilities/Coverage/covers.cpp)
 

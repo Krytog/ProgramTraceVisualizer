@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
+#include <Controllers/IPmovesController/IPmovesController.h>
 
 #define WINDOW_NAME "ProgramTRaceVisualizer"
 
@@ -30,12 +31,8 @@ void App::LoopIteration() {
 }
 
 void App::FrameMainLogic() {
-    auto& detail_scene = ui_manager_->GetDetailsScene();
-    while (!detail_scene.GetInnerBuffer().empty()) {
-        detail_scene.PopFrontLine();
-    }
     ip_moves_handler_->Update();
-    detail_scene.PushLine(std::to_string(ip_moves_handler_->GetProgress()));
+    controllers::ipmoves::Synchronize(ui_manager_.get(), ip_moves_handler_.get());
 }
 
 void App::CountFPS() {
@@ -66,8 +63,8 @@ void App::InitializeHilbertCurves() {
 
 void App::InitializationIPmoves() {
     ip_moves_handler_ = std::make_unique<IPmovesHandler>("captured_ip.trace");
-    ip_moves_handler_->SetAdvanceCount(1);
+    ip_moves_handler_->SetAdvanceCount(20);
     ip_moves_handler_->SetHilbertDegree(5);
-    ip_moves_handler_->SetWindowSize(10);
+    ip_moves_handler_->SetWindowSize(20);
     ui_manager_->GetViewScene().AddObject(ip_moves_handler_->GetPlot());
 }
