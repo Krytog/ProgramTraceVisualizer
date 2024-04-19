@@ -37,6 +37,7 @@ void App::FrameMainLogic() {
 
 void App::CountFPS() {
     static size_t frames_count = 0;
+    ++frames_count;
     const constexpr float kFpsPeriod = 0.2f;
     if (run_timer_.EvaluateTime() >= kFpsPeriod) {
         run_timer_.ResetTime();
