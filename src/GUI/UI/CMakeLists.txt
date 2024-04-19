@@ -20,6 +20,7 @@ add_library(UI
 
 target_link_libraries(UI PRIVATE glfw)
 target_link_libraries(UI PRIVATE Utils)
+target_link_libraries(UI PRIVATE Graphics)
 
 target_include_directories(UI PUBLIC ${DearImGui_DIR})
 target_include_directories(UI PUBLIC ${BASEPATH}/3rdparty/glew/include)
