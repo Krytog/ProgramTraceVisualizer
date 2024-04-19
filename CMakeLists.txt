@@ -22,15 +22,11 @@ add_subdirectory(3rdparty/GLM ${CMAKE_CURRENT_BINARY_DIR}/glm)
 add_subdirectory(src/GUI)
 add_subdirectory(src/Utils)
 add_subdirectory(src/Core)
+add_subdirectory(src/App)
 
 add_executable(${PROJECT_NAME} src/main.cpp) #external-utilities/Coverage/covers.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
-target_link_libraries(${PROJECT_NAME} PRIVATE GUI)
-target_link_libraries(${PROJECT_NAME} PRIVATE Utils)
-target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static)
-target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
-target_link_libraries(${PROJECT_NAME} PRIVATE Core)
+target_link_libraries(${PROJECT_NAME} PRIVATE App)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${BASEPATH}/src)
 
