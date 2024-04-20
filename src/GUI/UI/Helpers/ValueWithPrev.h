@@ -6,7 +6,7 @@
 namespace {
 template <typename T>
 [[nodiscard]] static bool HasChanged(T lhs, T rhs) {
-    return lhs == rhs;
+    return lhs != rhs;
 }
 
 template <>
@@ -43,9 +43,14 @@ template <typename T>
 
 template <typename T, int size>
 [[nodiscard]] std::pair<bool, T[size]> GetValueAndChange(ValueWithPrev<T[size]>& value) {
-    if (HasChangedMultiple(value.cur_value_, value.prev_value_, size)) {
-        value.prev_value_ = value.cur_value_;
-        return {true, value.cur_value_};
+    std::pair<bool, T[size]> output;
+    output.first = false;
+    for (int i = 0; i < size; ++i) {
+        value.prev_value_[i] = value.cur_value_[i];
+        output.second[i] = value.cur_value_[i];
     }
-    return {false, value.cur_value_};
+    if (HasChangedMultiple(value.cur_value_, value.prev_value_, size)) {
+        output.first = true;
+    }
+    return output;
 }
