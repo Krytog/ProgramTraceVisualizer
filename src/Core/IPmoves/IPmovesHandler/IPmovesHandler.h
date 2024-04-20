@@ -46,6 +46,12 @@ public:
     /* Returns a shared_ptr to the current plot */
     [[nodiscard]] std::shared_ptr<Plot2DMesh> GetPlot() const;
 
+    /* Pauses the sliding window */
+    void Pause();
+
+    /* Resumes the movement of the sliding window */
+    void Unpause();
+
     /* Updates the IPMH for the next frame. In particular, this method moves the sliding window, prepares data
        and loads it into mesh_plot */
     void Update();
@@ -81,4 +87,5 @@ private:
     unsigned hilbert_degree_;
     size_t cells_;
     size_t advance_count_;
+    bool is_paused_{false};
 };

@@ -200,7 +200,18 @@ void IPmovesHandler::LoadDataForRendering() const {
     plot_->LoadData(ready_data.data(), ready_data.size() * sizeof(GLfloat));
 }
 
+void IPmovesHandler::Pause() {
+    is_paused_ = true;
+}
+
+void IPmovesHandler::Unpause() {
+    is_paused_ = false;
+}
+
 void IPmovesHandler::Update() {
+    if (is_paused_) {
+        return;
+    }
     if (!sliding_window_) {
         sliding_window_.Restart();
     }
