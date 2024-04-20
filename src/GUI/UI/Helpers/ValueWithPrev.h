@@ -41,9 +41,9 @@ template <typename T>
     return {false, value.cur_value_};
 }
 
-template <typename T>
-[[nodiscard]] std::pair<bool, T[]> GetValueAndChange(ValueWithPrev<T[]>& value, size_t count) {
-    if (HasChangedMultiple(value.cur_value_, value.prev_value_, count)) {
+template <typename T, int size>
+[[nodiscard]] std::pair<bool, T[size]> GetValueAndChange(ValueWithPrev<T[size]>& value) {
+    if (HasChangedMultiple(value.cur_value_, value.prev_value_, size)) {
         value.prev_value_ = value.cur_value_;
         return {true, value.cur_value_};
     }
