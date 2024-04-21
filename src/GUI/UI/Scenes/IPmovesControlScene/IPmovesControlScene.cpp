@@ -101,7 +101,7 @@ void IPmovesControlScene::SettingsButton() const {
         ImGui::Text("Degree of Hilbert Curve: ");
         ImGui::SliderInt("##Degree of Hilbert Curve", &hilbert_degree_.cur_value_, 1, 10);
 
-        ImGui::Text("Max memory for caching: ");
+        ImGui::Text("Max memory for caching (Mb): ");
         ImGui::InputInt("##Max memory for caching", &max_memory_.cur_value_);
 
         ImGui::Text("Color of the newest element: ");
