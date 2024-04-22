@@ -2,27 +2,39 @@
 
 #include <imgui.h>
 #include <UI/Helpers/Alignment.h>
-#include <cmath>
 #include "UI/Helpers/ValueWithPrev.h"
 
 #define IPmovesControlScene_InnerName "IPmovesControl"
 
+#define UnpackColor(x) x[0], x[1], x[2], x[3]
+#define DoubleInit(x) \
+    { x, x }
+
 namespace {
 const constexpr ImGuiColorEditFlags kColorEditFlags =
     ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview;
-}
+
+static const constexpr float kInitProgress = 0.0f;
+static const constexpr bool kInitPause = true;
+static const constexpr float kInitNewColor[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+static const constexpr float kInitOldColor[4] = {0.0f, 0.0f, 1.0f, 1.0f};
+static const constexpr int kInitSlidingWindowSize = 10;
+static const constexpr int kInitAdvance = 1;
+static const constexpr int kInitHilbertDegree = 5;
+static const constexpr int kInitMaxMemory = 1;
+}  // namespace
 
 IPmovesControlScene::IPmovesControlScene(const std::pair<float, float>& position,
                                          const std::pair<float, float>& size)
     : BasicScene(position, size, IPmovesControlScene_InnerName),
-      progress_(0),
-      pause_(false),
-      new_color_({1.0f, 0.0f, 0.0f, 1.0f}),
-      old_color_({0.0f, 0.0f, 1.0f, 1.0f}),
-      sliding_window_size_(10),
-      advance_(1),
-      hilbert_degree_(5),
-      max_memory_(1) {
+      progress_(DoubleInit(kInitProgress)),
+      pause_(DoubleInit(kInitPause)),
+      new_color_(DoubleInit(UnpackColor(kInitNewColor))),
+      old_color_(DoubleInit(UnpackColor(kInitOldColor))),
+      sliding_window_size_(DoubleInit(kInitSlidingWindowSize)),
+      advance_(DoubleInit(kInitAdvance)),
+      hilbert_degree_(DoubleInit(kInitHilbertDegree)),
+      max_memory_(DoubleInit(kInitMaxMemory)) {
 }
 
 void IPmovesControlScene::RenderInner() const {
@@ -117,5 +129,33 @@ void IPmovesControlScene::SettingsButton() const {
 }
 
 void IPmovesControlScene::ProgressSlider() const {
-    ALIGNMENT_AT_CENTER(ImGui::SliderFloat("##Progress", &progress_.cur_value_, 0.0f, 100.0f, "%.2f%%"));
+    static const constexpr float kSliderMin = 0.0f;
+    static const constexpr float kSliderMax = 100.0f;
+    ALIGNMENT_AT_CENTER(
+        ImGui::SliderFloat("##Progress", &progress_.cur_value_, kSliderMin, kSliderMax, "%.2f%%"));
+}
+
+IPmovesControlScene::IPmovesControlState IPmovesControlScene::GetState() const {
+    IPmovesControlState state{
+        .progress = progress_.cur_value_ / 100,  // as user inputs it in percents
+        .paused = pause_.cur_value_,
+        .new_color = {UnpackColor(new_color_.cur_value_)},
+        .old_color = {UnpackColor(old_color_.cur_value_)},
+        .sliding_window_size = sliding_window_size_.cur_value_,
+        .advance = advance_.cur_value_,
+        .hilbert_degree = hilbert_degree_.cur_value_,
+        .max_memory = (1ull << 20) * max_memory_.cur_value_,  // as user inputs it in megabytes
+    };
+    return state;
+}
+
+void IPmovesControlScene::ResetState() {
+    progress_ = DoubleInit(kInitProgress);
+    pause_ = DoubleInit(kInitPause);
+    new_color_ = DoubleInit(UnpackColor(kInitNewColor));
+    old_color_ = DoubleInit(UnpackColor(kInitOldColor));
+    sliding_window_size_ = DoubleInit(kInitSlidingWindowSize);
+    advance_ = DoubleInit(kInitAdvance);
+    hilbert_degree_ = DoubleInit(kInitHilbertDegree);
+    max_memory_ = DoubleInit(kInitMaxMemory);
 }
