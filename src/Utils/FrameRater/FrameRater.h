@@ -13,7 +13,7 @@ public:
     /* Forces the current thread to sleep until the beginning of the next frame */
     void Sleep() {
         time_point_ += frame_time_;
-		if (false && time_point_ < std::chrono::steady_clock::now()) {
+		if (time_point_ < std::chrono::steady_clock::now()) {
 			time_point_ = std::chrono::steady_clock::now();
 			return;
 		} 
