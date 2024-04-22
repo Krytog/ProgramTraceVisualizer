@@ -6,7 +6,6 @@
 #include <Core/IPmoves/IPmovesHandler/AddressBuffer.h>
 #include <Core/IPmoves/Clamping/DataClamper.h>
 #include <Core/IPmoves/SlidingWindow/SlidingWindowIteratorExtended.h>
-#include <memory>
 
 class IPmovesHandler {
 public:
@@ -42,7 +41,7 @@ public:
     [[nodiscard]] size_t GetAdvanceCount() const;
 
     /* Returns a shared_ptr to the current plot */
-    [[nodiscard]] std::shared_ptr<Plot2DMesh> GetPlot() const;
+    [[nodiscard]] const Plot2DMesh* GetPlot() const;
 
     /* Sets the color for the newest elements */
     void SetColorForNewest(const float* color);
@@ -74,7 +73,7 @@ private:
 
     /* Reads, prepares and loads data from the sliding window into the PlotMesh. Should be called exactly once
      * per update */
-    void LoadDataForRendering() const;
+    void LoadDataForRendering();
 
     /* Data from file */
     AddressBuffer data_buffer_;
@@ -85,7 +84,7 @@ private:
     DataClamper<uintptr_t> data_clamper_;
     HilbertCurve2D* hilbert_curve_;
     SlidingWindowIteratorExtended<AddressBuffer> sliding_window_;
-    std::shared_ptr<Plot2DMesh> plot_;
+    Plot2DMesh plot_;
 
     /* Parameters */
     unsigned hilbert_degree_;

@@ -116,7 +116,7 @@ void IPmovesHandler::SetHilbertDegree(unsigned degree) {
     hilbert_degree_ = degree;
     hilbert_curve_ = HilbertCurveManager::GetHilbertCurve(degree);
     const size_t cells = 1ull << degree;
-    plot_->SetGridSize(cells);
+    plot_.SetGridSize(cells);
     cells_ = cells;
 }
 
@@ -140,16 +140,15 @@ size_t IPmovesHandler::GetSlidingWindowSize() const {
     return sliding_window_.GetWindowSize();
 }
 
-std::shared_ptr<Plot2DMesh> IPmovesHandler::GetPlot() const {
-    return plot_;
+const Plot2DMesh* IPmovesHandler::GetPlot() const {
+    return &plot_;
 }
 
 IPmovesHandler::IPmovesHandler(const std::string& filename)
-    : data_buffer_(filename), sliding_window_(data_buffer_) {
+    : data_buffer_(filename), sliding_window_(data_buffer_), plot_(1) {
 
     const unsigned basic_hilbert_degree = 10;
     const size_t cells = 1ull << basic_hilbert_degree;
-    plot_ = std::make_unique<Plot2DMesh>(cells);
     SetHilbertDegree(basic_hilbert_degree);
 
     const size_t basic_max_memory = 1ull << 20;
@@ -197,10 +196,10 @@ std::vector<float> IPmovesHandler::GetPreparedDataForRendering(
     return output;
 }
 
-void IPmovesHandler::LoadDataForRendering() const {
+void IPmovesHandler::LoadDataForRendering() {
     const auto data_with_temperatures = GetDataWithTemperatures();
     const auto ready_data = GetPreparedDataForRendering(data_with_temperatures);
-    plot_->LoadData(ready_data.data(), ready_data.size() * sizeof(GLfloat));
+    plot_.LoadData(ready_data.data(), ready_data.size() * sizeof(GLfloat));
 }
 
 void IPmovesHandler::Pause() {
@@ -223,9 +222,9 @@ void IPmovesHandler::Update() {
 }
 
 void IPmovesHandler::SetColorForNewest(const float* color) {
-    plot_->SetColorForNewest(color);
+    plot_.SetColorForNewest(color);
 }
 
 void IPmovesHandler::SetColorForOldest(const float* color) {
-    plot_->SetColorForOldest(color);
+    plot_.SetColorForOldest(color);
 }
