@@ -63,9 +63,5 @@ void App::InitializeHilbertCurves() {
 }
 
 void App::InitializationIPmoves() {
-    ip_moves_handler_ = std::make_unique<IPmovesHandler>("captured_ip.trace");
-    ip_moves_handler_->SetAdvanceCount(20);
-    ip_moves_handler_->SetHilbertDegree(5);
-    ip_moves_handler_->SetWindowSize(20);
-    ui_manager_->GetViewScene().AddObject(ip_moves_handler_->GetPlot());
+    ip_moves_handler_ = controllers::ipmoves::Initialize(ui_manager_.get());
 }
