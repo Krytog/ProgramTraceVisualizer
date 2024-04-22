@@ -116,7 +116,7 @@ void IPmovesHandler::SetHilbertDegree(unsigned degree) {
     hilbert_degree_ = degree;
     hilbert_curve_ = HilbertCurveManager::GetHilbertCurve(degree);
     const size_t cells = 1ull << degree;
-    plot_ = std::make_shared<Plot2DMesh>(cells);
+    plot_->SetGridSize(cells);
     cells_ = cells;
 }
 
@@ -146,7 +146,10 @@ std::shared_ptr<Plot2DMesh> IPmovesHandler::GetPlot() const {
 
 IPmovesHandler::IPmovesHandler(const std::string& filename)
     : data_buffer_(filename), sliding_window_(data_buffer_) {
+
     const unsigned basic_hilbert_degree = 10;
+    const size_t cells = 1ull << basic_hilbert_degree;
+    plot_ = std::make_unique<Plot2DMesh>(cells);
     SetHilbertDegree(basic_hilbert_degree);
 
     const size_t basic_max_memory = 1ull << 20;

@@ -29,9 +29,7 @@ public:
     /* Returns current progress (relative position of the sliding window in the file) */
     [[nodiscard]] float GetProgress() const;
 
-    /* Sets the Hilbert Curve degree. If new_degree != old_degree, then a new curve and plot are created.
-     * Before doing that, old plot must be removed from any rendering system, and such a removal is user's
-     * duty */
+    /* Sets the Hilbert Curve degree. If new_degree != old_degree, then a new curve is created */
     void SetHilbertDegree(unsigned degree);
 
     /* Returns the degree of the current Hilbert Curve */

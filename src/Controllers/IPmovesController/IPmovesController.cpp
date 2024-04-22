@@ -3,21 +3,6 @@
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <GUI/UI/UIManager/UIManager.h>
 
-namespace {
-    void UpdatePlot(UIManager* ui_manager, IPmovesHandler* handler, int hilbert_degree) {
-        auto& view_scene = ui_manager->GetViewScene();
-        view_scene.RemoveObject(handler->GetPlot());
-        handler->SetHilbertDegree(hilbert_degree);
-        const auto state = ui_manager->GetIPmovesControlScene().GetState();
-        
-        /* Colors are passed into shaders, when a new plot is created, it contains a new shader, so we need to pass colors once again */
-        handler->SetColorForNewest(state.new_color);
-        handler->SetColorForOldest(state.old_color);
-
-        view_scene.AddObject(handler->GetPlot());
-    }
-}
-
 namespace controllers::ipmoves {
 void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     auto& controls = ui_manager->GetIPmovesControlScene();
@@ -67,7 +52,7 @@ void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     {  // hilbert_degree
         const auto [has_new_input, hilbert_degree] = controls.GetInputHilbertDegree();
         if (has_new_input) {
-            UpdatePlot(ui_manager, handler, hilbert_degree);
+            handler->SetHilbertDegree(hilbert_degree);
         }
     }
     {  // max_memory
@@ -82,18 +67,22 @@ std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager) {
     auto& controls = ui_manager->GetIPmovesControlScene();
     const std::string filename = "captured_ip.trace";  // TODO : get it from ui_manager;
     std::unique_ptr<IPmovesHandler> handler = std::make_unique<IPmovesHandler>(filename);
-    controls.ResetState();
+    static const constexpr float kInitProgress = 0.0f;
+    controls.SetProgressValue(kInitProgress);
     const auto state = controls.GetState();
     handler->SetProgress(state.progress);
     handler->SetAdvanceCount(state.advance);
     handler->SetWindowSize(state.sliding_window_size);
+    handler->SetHilbertDegree(state.hilbert_degree);
+    handler->SetColorForNewest(state.new_color);
+    handler->SetColorForOldest(state.old_color);
     handler->SetMaxMemory(state.max_memory);
     if (state.paused) {
         handler->Pause();
     } else {
         handler->Unpause();
     }
-    UpdatePlot(ui_manager, handler.get(), state.hilbert_degree);
+    ui_manager->GetViewScene().AddObject(handler->GetPlot());
     return handler;
 }
 }  // namespace controllers::ipmoves
