@@ -1,5 +1,6 @@
 #include "App.h"
 
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
@@ -50,6 +51,8 @@ void App::Initialization() {
     window_.CaptureContext(true);
     ui_manager_ = std::make_unique<UIManager>(window_.GetInnerWindowPointer(), window_.GetWindowSize());
     glEnable(GL_DEPTH_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
     InitializeHilbertCurves();
     InitializationIPmoves();
 }
