@@ -4,7 +4,6 @@
 #include <UI/Scenes/BasicScene/BasicScene.h>
 
 #include <unordered_set>
-#include <memory>
 
 class IRenderable;  // Forward declaration
 
@@ -23,10 +22,10 @@ public:
 
     /* Adds an object to this scene. Returns true if the object is added for the first time and false
      * otherwise */
-    bool AddObject(const std::shared_ptr<IRenderable>& object);
+    bool AddObject(const IRenderable* object);
 
     /* Removes an object from this scene. Returns false if the object isn't present and true otherwise */
-    bool RemoveObject(const std::shared_ptr<IRenderable>& object);
+    bool RemoveObject(const IRenderable* object);
 
     /* Sets frametime that will be rendered and used to calculate FPS */
     void SetFrametime(double frametime);
@@ -41,7 +40,7 @@ private:
     /* Renders UI elements of the scene, draws the content of the inner buffer */
     void RenderUI() const;
 
-    std::unordered_set<std::shared_ptr<IRenderable>> renderable_objects_;
+    std::unordered_set<const IRenderable*> renderable_objects_;
     RenderBuffer render_buffer_;
     double frametime_;;
 };

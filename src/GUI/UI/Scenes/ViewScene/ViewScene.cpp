@@ -13,7 +13,7 @@ ViewScene::ViewScene(const std::pair<float, float>& position, const std::pair<fl
       frametime_(std::numeric_limits<double>::infinity()) {
 }
 
-bool ViewScene::AddObject(const std::shared_ptr<IRenderable>& object) {
+bool ViewScene::AddObject(const IRenderable* object) {
     bool output = true;
     if (renderable_objects_.contains(object)) {
         output = false;
@@ -22,7 +22,7 @@ bool ViewScene::AddObject(const std::shared_ptr<IRenderable>& object) {
     return output;
 }
 
-bool ViewScene::RemoveObject(const std::shared_ptr<IRenderable>& object) {
+bool ViewScene::RemoveObject(const IRenderable* object) {
     auto iterator = renderable_objects_.find(object);
     if (iterator == renderable_objects_.end()) {
         return false;
