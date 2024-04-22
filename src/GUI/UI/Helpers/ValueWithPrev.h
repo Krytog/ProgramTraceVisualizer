@@ -44,13 +44,10 @@ template <typename T>
 template <typename T, int size>
 [[nodiscard]] std::pair<bool, T[size]> GetValueAndChange(ValueWithPrev<T[size]>& value) {
     std::pair<bool, T[size]> output;
-    output.first = false;
+    output.first = HasChangedMultiple(value.cur_value_, value.prev_value_, size);
     for (int i = 0; i < size; ++i) {
         value.prev_value_[i] = value.cur_value_[i];
         output.second[i] = value.cur_value_[i];
-    }
-    if (HasChangedMultiple(value.cur_value_, value.prev_value_, size)) {
-        output.first = true;
     }
     return output;
 }
