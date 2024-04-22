@@ -3,8 +3,6 @@
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <GUI/UI/UIManager/UIManager.h>
 
-#include <iostream>
-
 namespace controllers::ipmoves {
 void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     auto& controls = ui_manager->GetIPmovesControlScene();
@@ -70,7 +68,7 @@ void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
 
 std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager) {
     auto& controls = ui_manager->GetIPmovesControlScene();
-    const std::string filename = "captured_ip.trace"; // TODO : get it from ui_manager;
+    const std::string filename = "captured_ip.trace";  // TODO : get it from ui_manager;
     std::unique_ptr<IPmovesHandler> handler = std::make_unique<IPmovesHandler>(filename);
     controls.ResetState();
     const auto state = controls.GetState();
