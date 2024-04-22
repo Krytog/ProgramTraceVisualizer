@@ -3,6 +3,8 @@
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <GUI/UI/UIManager/UIManager.h>
 
+#include <iostream>
+
 namespace controllers::ipmoves {
 void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     auto& controls = ui_manager->GetIPmovesControlScene();
@@ -28,13 +30,13 @@ void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     {  // new_color
         const auto [has_new_input, new_color] = controls.GetInputNewColor();
         if (has_new_input) {
-            // TODO: pass new_color to the corresponding shader
+            handler->SetColorForNewest(new_color);
         }
     }
     {  // old_color
         const auto [has_new_input, old_color] = controls.GetInputOldColor();
         if (has_new_input) {
-            // TODO: pass old_color to the corresponding shader
+            handler->SetColorForOldest(old_color);
         }
     }
     {  // sliding_window_size
@@ -64,5 +66,27 @@ void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
             handler->SetMaxMemory(max_memory);
         }
     }
+}
+
+std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager) {
+    auto& controls = ui_manager->GetIPmovesControlScene();
+    const std::string filename = "captured_ip.trace"; // TODO : get it from ui_manager;
+    std::unique_ptr<IPmovesHandler> handler = std::make_unique<IPmovesHandler>(filename);
+    controls.ResetState();
+    const auto state = controls.GetState();
+    handler->SetProgress(state.progress);
+    handler->SetAdvanceCount(state.advance);
+    handler->SetColorForNewest(state.new_color);
+    handler->SetColorForOldest(state.old_color);
+    handler->SetWindowSize(state.sliding_window_size);
+    handler->SetHilbertDegree(state.hilbert_degree);
+    handler->SetMaxMemory(state.max_memory);
+    if (state.paused) {
+        handler->Pause();
+    } else {
+        handler->Unpause();
+    }
+    ui_manager->GetViewScene().AddObject(handler->GetPlot());
+    return handler;
 }
 }  // namespace controllers::ipmoves
