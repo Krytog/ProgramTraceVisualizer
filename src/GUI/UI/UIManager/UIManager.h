@@ -25,14 +25,8 @@ public:
     /* Returns the reference to the OptionsScene of the UI */
     OptionsScene& GetOptionsScene();
 
-    /* Returns the reference to the ProgressBarScene of the UI */
+    /* Returns the reference to the IPmovesControlScene of the UI */
     IPmovesControlScene& GetIPmovesControlScene();
-
-    /* Returns a pointer to a UIManager that is marked as main */
-    static UIManager* GetMainUIManager();
-
-    /* Marks a UIManager as main */
-    void MarkAsMain();
 
 private:
     /* Inits underlying ImGui library that is used for UI handling. Should be called in the c-tor */
@@ -45,6 +39,4 @@ private:
     DetailsScene details_scene_;
     OptionsScene options_scene_;
     IPmovesControlScene ipmovescontrol_scene_;
-
-    static UIManager* k_main_ui_manager;
 };

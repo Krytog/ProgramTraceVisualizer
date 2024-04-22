@@ -57,8 +57,6 @@ static const constexpr std::pair<float, float> GetIPmovesControlSceneSize(const 
 
 }  // namespace
 
-UIManager* UIManager::k_main_ui_manager = nullptr;
-
 UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_size)
     : view_scene_(GetViewScenePos(window_size), GetViewSceneSize(window_size)),
       details_scene_(GetDetailsScenePos(window_size), GetDetailsSceneSize(window_size)),
@@ -110,12 +108,4 @@ void UIManager::RenderAllScenes() const {
     details_scene_.Render();
     options_scene_.Render();
     ipmovescontrol_scene_.Render();
-}
-
-void UIManager::MarkAsMain() {
-    k_main_ui_manager = this;
-}
-
-UIManager* UIManager::GetMainUIManager() {
-    return k_main_ui_manager;
 }
