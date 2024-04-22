@@ -5,7 +5,7 @@
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
 
-#define WINDOW_NAME "ProgramTrsaceVisualizer"
+#define WINDOW_NAME "ProgramTraceVisualizer"
 
 App::App(int width, int height): window_(width, height, WINDOW_NAME) {
     Initialization();
