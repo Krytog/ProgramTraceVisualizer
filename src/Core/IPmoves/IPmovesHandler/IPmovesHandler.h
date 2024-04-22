@@ -46,6 +46,12 @@ public:
     /* Returns a shared_ptr to the current plot */
     [[nodiscard]] std::shared_ptr<Plot2DMesh> GetPlot() const;
 
+    /* Sets the color for the newest elements */
+    void SetColorForNewest(const float* color);
+
+    /* Sets the color for the oldest elements */
+    void SetColorForOldest(const float* color);
+
     /* Pauses the sliding window */
     void Pause();
 

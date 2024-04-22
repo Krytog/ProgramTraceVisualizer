@@ -22,6 +22,13 @@ public:
 	/* Loads new data to be rendered. Data format is as follows: [x, y, temperature] per vertex, for a total of grid_size * grid_size vertices */
 	void LoadData(const GLfloat* data, GLsizei data_size);
 
+	/* Sets the color for the newest elements */
+    void SetColorForNewest(const float* color);
+
+    /* Sets the color for the oldest elements */
+    void SetColorForOldest(const float* color);
+
+
 private:
 	size_t grid_size_;
 

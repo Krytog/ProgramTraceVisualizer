@@ -218,3 +218,11 @@ void IPmovesHandler::Update() {
     LoadDataForRendering();
     sliding_window_.Advance(advance_count_);
 }
+
+void IPmovesHandler::SetColorForNewest(const float* color) {
+    plot_->SetColorForNewest(color);
+}
+
+void IPmovesHandler::SetColorForOldest(const float* color) {
+    plot_->SetColorForOldest(color);
+}

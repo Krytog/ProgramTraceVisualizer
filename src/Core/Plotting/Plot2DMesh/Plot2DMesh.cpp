@@ -1,4 +1,5 @@
 #include "Plot2DMesh.h"
+#include "glm/fwd.hpp"
 
 namespace {
 	static constexpr const VertexObject::ArgPack kVertexObjectConfig{.data = nullptr, .data_size = 0, 
@@ -16,6 +17,13 @@ namespace {
 	static constexpr const GLuint kTemperatureIndex = 1;
 	static constexpr const GLuint kPositionArgs = 2;
 	static constexpr const GLuint kTemperatureArgs = 1;
+
+	static const std::string kUniformNameNewestColor = "newest_color";
+	static const std::string kUniformNameOldestColor = "oldest_color";
+
+	glm::vec4 GetGLMColorFromArray(const float* color) {
+		return {color[0], color[1], color[2], color[3]};
+	}
 }
 
 #define ShaderUnifromName_GridSize "grid_size"
@@ -42,4 +50,14 @@ size_t Plot2DMesh::GetGridSize() const {
 
 void Plot2DMesh::LoadData(const GLfloat* data, GLsizei data_size) {
 	mesh_.LoadData(data, data_size, VertexObject::MemoryMode::STREAM);
+}
+
+void Plot2DMesh::SetColorForNewest(const float* color) {
+	const glm::vec4 ready_color = GetGLMColorFromArray(color);
+	shader_.SetUniform(kUniformNameNewestColor, ready_color);
+}
+
+void Plot2DMesh::SetColorForOldest(const float* color) {
+	const glm::vec4 ready_color = GetGLMColorFromArray(color);
+	shader_.SetUniform(kUniformNameOldestColor, ready_color);
 }
