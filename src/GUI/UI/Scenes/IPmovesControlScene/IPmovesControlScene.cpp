@@ -43,7 +43,6 @@ void IPmovesControlScene::RenderInner() const {
     ProgressSlider();
     ImGui::SameLine();
     SettingsButton();
-    // ImGui::ShowDemoWindow();
 }
 
 std::pair<bool, float> IPmovesControlScene::GetInputProgress() {
