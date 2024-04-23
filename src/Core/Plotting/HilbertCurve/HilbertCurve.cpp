@@ -30,12 +30,9 @@ bool HilbertCurve2D::Point::operator==(const Point& other) const{
 }
 
 size_t HilbertCurve2D::Point::Hasher::operator()(const Point& point) const {
-	const unsigned high_bits = *reinterpret_cast<const unsigned*>(&point.x);
-	const unsigned low_bits = *reinterpret_cast<const unsigned*>(&point.y);
-	size_t output = high_bits;
-	output <<= 32; // shifting by number of bits in unsigned
-	output += low_bits;
-	return output;
+	const auto first = std::hash<float>{}(point.x);
+	const auto second = std::hash<float>{}(point.y);
+	return first ^ second;
 }
 
 HilbertCurve2D::Point HilbertCurve2D::Seq2XY(size_t seq_num) const {
