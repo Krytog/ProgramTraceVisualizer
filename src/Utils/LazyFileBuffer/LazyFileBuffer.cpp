@@ -2,6 +2,9 @@
 #include "FileReader/FileReader.h"
 
 LazyFileBuffer::LazyFileBuffer(const std::string& name) : file_(name) {
+    chunk_.from = 0;
+    chunk_.to = 0;
+    chunk_size_ = 0;
 }
 
 void LazyFileBuffer::SetMaxMemory(size_t max_memory) {

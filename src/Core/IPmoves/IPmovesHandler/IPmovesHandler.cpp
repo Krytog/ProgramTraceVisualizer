@@ -5,7 +5,6 @@
 
 #include <cstdint>
 #include <limits>
-#include <memory>
 #include <thread>
 #include <mutex>
 #include <vector>
