@@ -10,3 +10,6 @@
 [submodule "3rdparty/GLM"]
 	path = 3rdparty/GLM
 	url = https://github.com/g-truc/glm.git
+[submodule "3rdparty/pfd"]
+	path = 3rdparty/pfd
+	url = https://github.com/samhocevar/portable-file-dialogs.git
