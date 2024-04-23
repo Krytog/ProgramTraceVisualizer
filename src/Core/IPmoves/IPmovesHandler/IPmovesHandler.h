@@ -49,6 +49,9 @@ public:
     /* Sets the color for the oldest elements */
     void SetColorForOldest(const float* color);
 
+    /* Returns a reference to an array of current addresses in the sliding window */
+    [[nodiscard]] const std::vector<uintptr_t>& GetCurrentAddresses() const;
+
     /* Pauses the sliding window */
     void Pause();
 
@@ -75,10 +78,14 @@ private:
      * per update */
     void LoadDataForRendering();
 
+    /* Fills an inner buffer with current addresses. Then it can be accessed from outside to calculate different metrics */
+    void FillCurrentAddresses();
+
     /* Data from file */
     AddressBuffer data_buffer_;
     uintptr_t max_address_;
     uintptr_t min_address_;
+    std::vector<uintptr_t> current_addresses_;
 
     /* For graphics */
     DataClamper<uintptr_t> data_clamper_;

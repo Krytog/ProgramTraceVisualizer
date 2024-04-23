@@ -7,6 +7,8 @@
 namespace {
 	static constexpr const ImGuiWindowFlags kOverrideWidgerHint = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoTitleBar;
+
+	static const char* default_format = "%s";
 }
 
 DetailsScene::DetailsScene(const std::pair<float, float>& position, const std::pair<float, float>& size) :
@@ -19,7 +21,7 @@ std::deque<std::string>& DetailsScene::GetInnerBuffer() {
 }
 
 void DetailsScene::PushLine(const std::string& line) {
-	lines_.push_back(line);
+	lines_.emplace_back(line);
 }
 
 void DetailsScene::PopFrontLine() {
@@ -36,8 +38,8 @@ void DetailsScene::RenderInner() const {
 }
 
 void DetailsScene::RenderText() const {
-	for (auto line : lines_) {
-		ImGui::Text(line.c_str());
+	for (auto& line : lines_) {
+		ImGui::Text(default_format, line.c_str());
 	}
 }
 

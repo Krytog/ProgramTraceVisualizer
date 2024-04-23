@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 #include <cstdint>
+#include <exception>
 #include <limits>
 #include <thread>
 #include <mutex>
@@ -217,6 +218,7 @@ void IPmovesHandler::Update() {
         sliding_window_.Restart();
     }
     LoadDataForRendering();
+    FillCurrentAddresses();
     sliding_window_.Advance(advance_count_);
 }
 
@@ -226,4 +228,17 @@ void IPmovesHandler::SetColorForNewest(const float* color) {
 
 void IPmovesHandler::SetColorForOldest(const float* color) {
     plot_.SetColorForOldest(color);
+}
+
+void IPmovesHandler::FillCurrentAddresses() {
+    current_addresses_.clear();
+    auto [begin, end] = *sliding_window_;
+    current_addresses_.reserve(end - begin);
+    for (auto iter = begin; iter != end; ++iter) {
+        current_addresses_.push_back(*iter);
+    }
+}
+
+const std::vector<uintptr_t>& IPmovesHandler::GetCurrentAddresses() const {
+    return current_addresses_;
 }
