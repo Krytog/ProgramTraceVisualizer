@@ -103,6 +103,7 @@ size_t IPmovesHandler::GetMaxMemory() const {
 
 void IPmovesHandler::SetProgress(float alpha) {
     sliding_window_.SetProgress(alpha);
+    LoadDataForRendering(); // this allows to update visualization even when paused, which is expected behaviour
 }
 
 float IPmovesHandler::GetProgress() const {
