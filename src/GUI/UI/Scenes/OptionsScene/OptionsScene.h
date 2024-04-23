@@ -8,4 +8,6 @@ public:
 
 private:
 	void RenderInner() const override;
+
+	void OpenFileButton() const;
 };

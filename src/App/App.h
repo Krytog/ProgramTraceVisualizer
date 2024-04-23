@@ -41,11 +41,17 @@ private:
     /* Initializes all systems of the app. Should be called before Run() */
     void Initialization();
 
+    /* Initialize and configures OpenGL */
+    void InitializeOpenGL();
+
     /* Initializes HilbertCurves that will be used in runtime */
     void InitializeHilbertCurves();
 
     /* Initializes IPmovesHandler module */
-    void InitializationIPmoves();
+    void InitializeIPmoves();
+
+    /* Initializes Portable File Dialogs */
+    void InitializePFD();
 
     LightTimer run_timer_;
     Window window_;

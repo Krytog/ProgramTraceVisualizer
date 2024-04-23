@@ -4,6 +4,9 @@
 #include <GLFW/glfw3.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
+#include "Core/IPmoves/IPmovesHandler/IPmovesHandler.h"
+#include <portable-file-dialogs.h>
+#include <stdexcept>
 
 #define WINDOW_NAME "ProgramTraceVisualizer"
 
@@ -50,11 +53,16 @@ void App::CountFPS() {
 void App::Initialization() {
     window_.CaptureContext(true);
     ui_manager_ = std::make_unique<UIManager>(window_.GetInnerWindowPointer(), window_.GetWindowSize());
+    InitializeOpenGL();
+    InitializePFD();
+    InitializeHilbertCurves();
+    InitializeIPmoves();
+}
+
+void App::InitializeOpenGL() {
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    InitializeHilbertCurves();
-    InitializationIPmoves();
 }
 
 void App::InitializeHilbertCurves() {
@@ -65,6 +73,12 @@ void App::InitializeHilbertCurves() {
     }
 }
 
-void App::InitializationIPmoves() {
+void App::InitializeIPmoves() {
     ip_moves_handler_ = controllers::ipmoves::Initialize(ui_manager_.get());
+}
+
+void App::InitializePFD() {
+    if (!pfd::settings::available()) {
+        throw std::runtime_error("Portable file dialog failed to locate any suitable backend.");
+    }
 }
