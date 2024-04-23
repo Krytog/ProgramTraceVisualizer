@@ -35,8 +35,8 @@ void App::LoopIteration() {
 }
 
 void App::FrameMainLogic() {
-    ip_moves_handler_->Update();
     controllers::ipmoves::Synchronize(ui_manager_.get(), ip_moves_handler_.get());
+    ip_moves_handler_->Update();
 }
 
 void App::CountFPS() {
@@ -74,7 +74,9 @@ void App::InitializeHilbertCurves() {
 }
 
 void App::InitializeIPmoves() {
-    ip_moves_handler_ = controllers::ipmoves::Initialize(ui_manager_.get());
+    static const constexpr char* kDefaultName = "captured_ip.trace";
+    ip_moves_handler_ = controllers::ipmoves::Initialize(ui_manager_.get(), kDefaultName);
+    controllers::ipmoves::SetCallbacks(&ip_moves_handler_, ui_manager_.get());
 }
 
 void App::InitializePFD() {

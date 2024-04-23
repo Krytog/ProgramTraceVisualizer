@@ -48,9 +48,11 @@ void OptionsScene::OpenFileButton() const {
     if (ImGui::MenuItem("Open File")) {
         const auto filename = GetFilename();
         if (filename.has_value()) {
-            std::cout << *filename << std::endl;
-        } else {
-            std::cout << "user canceled" << std::endl;
-        }
+			newtrace_callback_(*filename);
+		}
     }
+}
+
+void OptionsScene::SetNewTraceCallback(OptionsScene::NewTraceCallback callback) {
+	newtrace_callback_ = std::move(callback);
 }

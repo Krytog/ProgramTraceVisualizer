@@ -4,6 +4,7 @@
 #include <GUI/UI/UIManager/UIManager.h>
 
 namespace controllers::ipmoves {
+
 void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     auto& controls = ui_manager->GetIPmovesControlScene();
     {  // progress
@@ -63,9 +64,8 @@ void Synchronize(UIManager* ui_manager, IPmovesHandler* handler) {
     }
 }
 
-std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager) {
+std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager, const std::string& filename) {
     auto& controls = ui_manager->GetIPmovesControlScene();
-    const std::string filename = "captured_ip.trace";  // TODO : get it from ui_manager;
     std::unique_ptr<IPmovesHandler> handler = std::make_unique<IPmovesHandler>(filename);
     static const constexpr float kInitProgress = 0.0f;
     controls.SetProgressValue(kInitProgress);
@@ -85,4 +85,12 @@ std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager) {
     ui_manager->GetViewScene().AddObject(handler->GetPlot());
     return handler;
 }
+
+void SetCallbacks(std::unique_ptr<IPmovesHandler>* handler_keeper, UIManager* ui_manager) {
+    ui_manager->GetOptionsScene().SetNewTraceCallback([=](const std::string& filename) mutable {
+        ui_manager->GetViewScene().RemoveObject((*handler_keeper)->GetPlot());
+        *handler_keeper = std::move(Initialize(ui_manager, filename));
+    });
+}
+
 }  // namespace controllers::ipmoves
