@@ -57,3 +57,12 @@ void AppStateMachine::GoToStateWithFile() {
     }
     GoToState(desired_state);
 }
+
+void AppStateMachine::GoToStateIgnoringFile(States desired_state) {
+    const uint32_t file_bit = static_cast<uint32_t>(state_) & static_cast<uint32_t>(States::FILE);
+    const uint32_t mask_without_file_bit = ~static_cast<uint32_t>(States::FILE);
+    const uint32_t desired_state_uint =
+        (static_cast<uint32_t>(desired_state) & mask_without_file_bit) | file_bit;
+    desired_state = static_cast<States>(desired_state_uint);
+    GoToState(desired_state);
+}

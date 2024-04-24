@@ -28,6 +28,10 @@ public:
     /* If currently in NO_FILE_SOME_STATE, then goes to FILE_SOME_STATE. Otherwise, does nothing */
     void GoToStateWithFile();
 
+    /* Changes the file-bit fo desired_state to the file-bit of the current state, then goes to that changed
+     * desired_state */
+    void GoToStateIgnoringFile(States desired_state);
+
     /* Goes to the desired_state, if possible. If it's not, then throws an error */
     void GoToState(States desired_state);
 
