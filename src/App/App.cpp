@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
+#include "App/AppStateMachine.h"
 #include "Core/IPmoves/IPmovesHandler/IPmovesHandler.h"
 #include <portable-file-dialogs.h>
 #include <stdexcept>
@@ -58,6 +59,16 @@ void App::Initialization() {
     InitializePFD();
     InitializeHilbertCurves();
     InitializeIPmoves();
+    InitializeUICallbacks();
+    InitializeStateMachine();
+}
+
+void App::InitializeStateMachine() {
+    using States = AppStateMachine::States;
+    const constexpr States kStartState = States::NO_FILE_IP;
+    state_machine_ = AppStateMachine(kStartState);
+    state_machine_.AddCallback({States::NO_FILE_IP, States::FILE_IP},
+                               []() { std::cout << "File is said to be opened!" << std::endl; });
 }
 
 void App::InitializeOpenGL() {
@@ -77,11 +88,18 @@ void App::InitializeHilbertCurves() {
 void App::InitializeIPmoves() {
     static const constexpr char* kDefaultName = "captured_ip.trace";
     ip_moves_handler_ = controllers::ipmoves::Initialize(ui_manager_.get(), kDefaultName);
-    controllers::ipmoves::SetCallbacks(&ip_moves_handler_, ui_manager_.get());
 }
 
 void App::InitializePFD() {
     if (!pfd::settings::available()) {
         throw std::runtime_error("Portable file dialog failed to locate any suitable backend.");
     }
+}
+
+void App::InitializeUICallbacks() {
+    auto& options_scene = ui_manager_->GetOptionsScene();
+    options_scene.SetOpenFileCallback([this](const std::string& filename) {
+        current_filename_ = filename;
+        state_machine_.GoToStateWithFile();
+    });
 }

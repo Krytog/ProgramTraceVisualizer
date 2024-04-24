@@ -9,9 +9,9 @@ public:
     enum class States : uint32_t {
         FILE = (1u << 31),
         NO_FILE_IP = 1,
-        FILE_IP = FILE + NO_FILE_IP,
+        FILE_IP = FILE | NO_FILE_IP,
         NO_FILE_W2V = (1U << 1),
-        FILE_W2V = FILE + NO_FILE_W2V
+        FILE_W2V = FILE | NO_FILE_W2V
     };
 
     using Callback = std::function<void()>;
@@ -24,6 +24,9 @@ public:
 
     /* Returns current state */
     States GetState() const;
+
+    /* If currently in NO_FILE_SOME_STATE, then goes to FILE_SOME_STATE. Otherwise, does nothing */
+    void GoToStateWithFile();
 
     /* Goes to the desired_state, if possible. If it's not, then throws an error */
     void GoToState(States desired_state);

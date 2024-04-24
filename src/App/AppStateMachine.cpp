@@ -48,3 +48,12 @@ void AppStateMachine::RemoveCallback(const std::pair<States, States>& edge) {
         states_graph_[{edge.first, edge.second}] = []() {};
     }
 }
+
+void AppStateMachine::GoToStateWithFile() {
+    const uint32_t desired_state_uint = static_cast<uint32_t>(state_) | static_cast<uint32_t>(States::FILE);
+    const States desired_state = static_cast<States>(desired_state_uint);
+    if (state_ == desired_state) {
+        return;
+    }
+    GoToState(desired_state);
+}

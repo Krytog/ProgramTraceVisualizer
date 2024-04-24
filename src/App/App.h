@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AppStateMachine.h"
+
 #include <GUI/Window/Window.h>
 #include <GUI/UI/UIManager/UIManager.h>
 #include <Utils/FrameRater/FrameRater.h>
@@ -41,6 +43,9 @@ private:
     /* Initializes all systems of the app. Should be called before Run() */
     void Initialization();
 
+    /* Initializes the state machine */
+    void InitializeStateMachine();
+
     /* Initialize and configures OpenGL */
     void InitializeOpenGL();
 
@@ -53,8 +58,14 @@ private:
     /* Initializes Portable File Dialogs */
     void InitializePFD();
 
+    /* Initializes UI callbacks. In particular, initializes callbacks that will be executed when buttons from
+     * OptionsScene are pressed */
+    void InitializeUICallbacks();
+
     LightTimer run_timer_;
     Window window_;
     std::unique_ptr<UIManager> ui_manager_;
-    std::unique_ptr<IPmovesHandler> ip_moves_handler_;  // temp
+    std::unique_ptr<IPmovesHandler> ip_moves_handler_;
+    AppStateMachine state_machine_;
+    std::string current_filename_;
 };
