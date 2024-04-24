@@ -125,12 +125,4 @@ std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager, const std::str
     handler->SetProgress(state.progress);
     return handler;
 }
-
-void SetCallbacks(std::unique_ptr<IPmovesHandler>* handler_keeper, UIManager* ui_manager) {
-    ui_manager->GetOptionsScene().SetNewTraceCallback([=](const std::string& filename) mutable {
-        ui_manager->GetViewScene().RemoveObject((*handler_keeper)->GetPlot());
-        *handler_keeper = std::move(Initialize(ui_manager, filename));
-    });
-}
-
 }  // namespace controllers::ipmoves
