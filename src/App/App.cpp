@@ -10,13 +10,14 @@
 
 #define WINDOW_NAME "ProgramTraceVisualizer"
 
-App::App(int width, int height): window_(width, height, WINDOW_NAME) {
+App::App(int width, int height) : window_(width, height, WINDOW_NAME) {
     Initialization();
 }
 
 void App::BeginFrame() {
     const auto size = window_.GetWindowSize();
     glViewport(0, 0, size.first, size.second);
+    ui_manager_->Resize(size);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

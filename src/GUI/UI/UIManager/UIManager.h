@@ -13,6 +13,9 @@ public:
 
     ~UIManager();
 
+    /* Resizes all the GUI. Should be called when the window is resized */
+    void Resize(const std::pair<int, int>& new_size);
+
     /* Draws all the UI into the render buffer */
     void DrawUI() const;
 

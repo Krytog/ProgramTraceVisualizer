@@ -56,5 +56,5 @@ private:
     LightTimer run_timer_;
     Window window_;
     std::unique_ptr<UIManager> ui_manager_;
-    std::unique_ptr<IPmovesHandler> ip_moves_handler_; // temp
+    std::unique_ptr<IPmovesHandler> ip_moves_handler_;  // temp
 };

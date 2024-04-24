@@ -7,6 +7,16 @@
 
 #define GLSL_VERSION "#version 330"
 
+#define FOREACH_SCENE(x)         \
+    do {                         \
+        options_scene_.x;        \
+        view_scene_.x;           \
+        details_scene_.x;        \
+        ipmovescontrol_scene_.x; \
+    } while (false)
+
+#define GET_SCENE_POS_AND_SIZE(name, arg) Get##name##ScenePos(arg), Get##name##SceneSize(arg)
+
 namespace {
 static const constexpr float kOptionsWidgetHeight = 20.0f;
 
@@ -107,8 +117,12 @@ IPmovesControlScene& UIManager::GetIPmovesControlScene() {
 }
 
 void UIManager::RenderAllScenes() const {
-    options_scene_.Render();
-    view_scene_.Render();
-    details_scene_.Render();
-    ipmovescontrol_scene_.Render();
+    FOREACH_SCENE(Render());
+}
+
+void UIManager::Resize(const std::pair<int, int>& new_size) {
+    options_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(Options, new_size));
+    view_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(View, new_size));
+    details_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(Details, new_size));
+    ipmovescontrol_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(IPmovesControl, new_size));
 }
