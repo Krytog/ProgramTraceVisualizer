@@ -5,16 +5,33 @@
 
 class OptionsScene : public BasicScene {
 public:
-	using NewTraceCallback = std::function<void(const std::string&)>;
+    using OpenFileCallback = std::function<void(const std::string&)>;
+    using ModeCallback = std::function<void()>;
 
-	OptionsScene(const std::pair<float, float>& position, const std::pair<float, float>& size);
+    OptionsScene(const std::pair<float, float>& position, const std::pair<float, float>& size);
 
-	void SetNewTraceCallback(NewTraceCallback callback);	
+    /* Sets a callback that will be executed when a new filed is opened. The file name will be passed as
+     * argument */
+    void SetOpenFileCallback(OpenFileCallback callback);
+
+    /* Sets a callback that will be executed when ip moves mode is selected */
+    void SetModeIPCallback(ModeCallback callback);
+
+    /* Sets a callback that will be executed when w2v mode is selected */
+    void SetModeW2VCallback(ModeCallback callback);
 
 private:
-	void RenderInner() const override;
+    void RenderInner() const override;
 
-	void OpenFileButton() const;
+    /* Renders File section of menu */
+    void FileMenu() const;
 
-	NewTraceCallback newtrace_callback_;
+    /* Renders Mode section of menu */
+    void ModeMenu() const;
+
+    void OpenFileButton() const;
+
+    OpenFileCallback openfile_callback_;
+    ModeCallback mode_ip_callback_;
+    ModeCallback mode_w2v_callback_;
 };
