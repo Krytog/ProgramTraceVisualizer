@@ -10,7 +10,7 @@ static constexpr const ImGuiWindowFlags kBasicWidgetHint =
 
 BasicScene::BasicScene(const std::pair<float, float>& position, const std::pair<float, float>& size,
                        const std::string& name)
-    : position_(position), size_(size), name_(name), widget_hint_(kBasicWidgetHint) {
+    : position_(position), size_(size), name_(name), widget_hint_(kBasicWidgetHint), visible_(true) {
 }
 
 void BasicScene::UpdateOnResize(const std::pair<float, float>& position,
@@ -26,10 +26,17 @@ void BasicScene::MoveAndResize() const {
 }
 
 void BasicScene::Render() const {
+    if (!visible_) {
+        return;
+    }
     ImGui::Begin(name_.c_str(), nullptr, static_cast<ImGuiWindowFlags>(widget_hint_));
     MoveAndResize();
     RenderInner();
     ImGui::End();
+}
+
+void BasicScene::SetVisibility(bool new_visibility) {
+    visible_ = new_visibility;
 }
 
 BasicScene::~BasicScene() = default;

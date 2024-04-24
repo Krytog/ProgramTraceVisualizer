@@ -15,6 +15,9 @@ public:
      * position to render this scene */
     void UpdateOnResize(const std::pair<float, float>& posiiton, const std::pair<float, float>& size);
 
+    /* Sets the visibility of the scene */
+    void SetVisibility(bool new_visibility);
+
     virtual ~BasicScene();
 
 protected:
@@ -34,4 +37,6 @@ protected:
     int widget_hint_;
 
     std::string name_;
+
+    bool visible_;
 };
