@@ -21,7 +21,7 @@ std::optional<std::string> GetFilename() {
     return f.result().back();
 }
 
-enum class Mode { IP, W2V }
+enum class Mode { IP, W2V };
 
 }  // namespace
 
