@@ -67,8 +67,20 @@ void App::InitializeStateMachine() {
     using States = AppStateMachine::States;
     const constexpr States kStartState = States::NO_FILE_IP;
     state_machine_ = AppStateMachine(kStartState);
-    state_machine_.AddCallback({States::NO_FILE_IP, States::FILE_IP},
-                               []() { std::cout << "File is said to be opened!" << std::endl; });
+    state_machine_.AddCallback({States::NO_FILE_IP, States::FILE_IP}, [this]() {
+        std::cout << "IP New file is opened: " << current_filename_ << std::endl;
+    });
+    state_machine_.AddCallback({States::NO_FILE_W2V, States::FILE_W2V}, [this]() {
+        std::cout << "W2V New file is opened: " << current_filename_ << std::endl;
+    });
+    state_machine_.AddCallback({States::NO_FILE_IP, States::NO_FILE_W2V},
+                               []() { std::cout << "IP -> W2V: NO FILE" << std::endl; });
+    state_machine_.AddCallback({States::NO_FILE_W2V, States::NO_FILE_IP},
+                               []() { std::cout << "W2V -> IP: NO FILE" << std::endl; });
+    state_machine_.AddCallback({States::FILE_IP, States::FILE_W2V},
+                               []() { std::cout << "IP -> W2V: WITH FILE" << std::endl; });
+    state_machine_.AddCallback({States::FILE_W2V, States::FILE_IP},
+                               []() { std::cout << "W2V -> IP: WITH FILE" << std::endl; });
 }
 
 void App::InitializeOpenGL() {
@@ -102,4 +114,8 @@ void App::InitializeUICallbacks() {
         current_filename_ = filename;
         state_machine_.GoToStateWithFile();
     });
+    options_scene.SetModeIPCallback(
+        [this]() { state_machine_.GoToStateIgnoringFile(AppStateMachine::States::FILE_IP); });
+    options_scene.SetModeW2VCallback(
+        [this]() { state_machine_.GoToStateIgnoringFile(AppStateMachine::States::FILE_W2V); });
 }
