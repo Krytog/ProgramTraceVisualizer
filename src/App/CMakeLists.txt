@@ -1,5 +1,6 @@
 add_library(App
 	App.cpp
+	AppStateMachine.cpp
 		)
 
 target_link_libraries(App PRIVATE Core)
