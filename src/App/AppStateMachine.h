@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
+#include <unordered_map>
 
 class AppStateMachine {
 public:
@@ -11,6 +13,8 @@ public:
         NO_FILE_W2V = (1U << 1),
         FILE_W2V = FILE + NO_FILE_W2V
     };
+
+    using Callback = std::function<void()>;
 
     AppStateMachine();
     AppStateMachine(States state);
@@ -27,6 +31,21 @@ public:
     /* Returns true if it's possible to go to the desired_state, false otherwise */
     bool CanGoToState(States desired_state) const;
 
+    /* Binds a callback that will be executed on change edge.first -> edge.second */
+    void AddCallback(const std::pair<States, States>& edge, Callback callback);
+
+    /* Removes a callback associated with the given edge */
+    void RemoveCallback(const std::pair<States, States>& edge);
+
 private:
+    struct Hasher {
+        std::size_t operator()(const std::pair<States, States>& edge) const {
+            const auto first = std::hash<uint32_t>{}(static_cast<uint32_t>(edge.first));
+            const auto second = std::hash<uint32_t>{}(static_cast<uint32_t>(edge.second));
+            return (first * 0x1f1f1f1f) ^ second;
+        }
+    };
+
     States state_;
+    std::unordered_map<std::pair<States, States>, Callback, Hasher> states_graph_;
 };
