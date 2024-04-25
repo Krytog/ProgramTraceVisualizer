@@ -171,5 +171,11 @@ void UIManager::GoToIPmovesMode() {
 }
 
 void UIManager::GoToW2VMode() {
-    GoToWaitingForFileMode();
+    while (!details_scene_.GetInnerBuffer().empty()) {
+        details_scene_.PopBackLine();
+    }
+    details_scene_.PushLine("Oops! This feature is not implemeted yet!");
+    details_scene_.PushLine("There is nothing interesting here now... Change the mode");
+    ipmovescontrol_scene_.SetVisibility(false);
+    mode_ = Mode::Waiting;
 }
