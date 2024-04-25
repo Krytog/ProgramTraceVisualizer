@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <portable-file-dialogs.h>
 #include <optional>
+#include <filesystem>
 
 #define OptionsScene_InnerName "Options"
 
@@ -13,7 +14,7 @@ static constexpr const ImGuiWindowFlags kWidgetHint =
     ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 std::optional<std::string> GetFilename() {
-    auto f = pfd::open_file("Choose files to read", pfd::path::home(),
+    auto f = pfd::open_file("Choose files to read", std::filesystem::current_path(),
                             {"Trace Files (.trace)", "*.trace", "All Files", "*"}, pfd::opt::none);
     if (f.result().empty()) {
         return std::nullopt;
