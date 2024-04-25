@@ -9,6 +9,8 @@
 
 class UIManager {
 public:
+    enum class Mode { Waiting, IP, W2V };
+
     UIManager(struct GLFWwindow* glfw_window, const std::pair<int, int>& size);
 
     ~UIManager();
@@ -31,12 +33,24 @@ public:
     /* Returns the reference to the IPmovesControlScene of the UI */
     IPmovesControlScene& GetIPmovesControlScene();
 
+    /* Sets UI to the waiting for file mode */
+    void GoToWaitingForFileMode();
+
+    /* Sets UI to the ip moves mode */
+    void GoToIPmovesMode();
+
+    /* Sets UI to the w2m mode */
+    void GoToW2VMode();
+
 private:
     /* Inits underlying ImGui library that is used for UI handling. Should be called in the c-tor */
     void InitImGui(struct GLFWwindow* glfw_window) const;
 
     /* Renders all the scenes of the UI */
     void RenderAllScenes() const;
+
+    Mode mode_;
+    std::pair<int, int> current_size_;
 
     ViewScene view_scene_;
     DetailsScene details_scene_;
