@@ -121,7 +121,6 @@ std::unique_ptr<IPmovesHandler> Initialize(UIManager* ui_manager, const std::str
     } else {
         handler->Unpause();
     }
-    ui_manager->GetViewScene().AddObject(handler->GetPlot());
     handler->SetProgress(state.progress);
     return handler;
 }

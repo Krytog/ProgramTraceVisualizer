@@ -52,8 +52,8 @@ private:
     /* Initializes HilbertCurves that will be used in runtime */
     void InitializeHilbertCurves();
 
-    /* Initializes IPmovesHandler module */
-    void InitializeIPmoves();
+    /* Initializes IP moves module */
+    void InitializeIPmovesMode();
 
     /* Initializes Portable File Dialogs */
     void InitializePFD();
@@ -62,10 +62,35 @@ private:
      * OptionsScene are pressed */
     void InitializeUICallbacks();
 
+    /* Initializes all UI systems and prepares them to be rendered */
+    void InitializeUI();
+
+    /* Does all the required work to enter IP moves mode */
+    void EnterIPmovesMode();
+
+    /* Does all the requied work to leave IP moves mode */
+    void LeaveIPmovesMode();
+
+    /* Recreates IPmovesModule. Should be called when the underlying file is updated */
+    void RecreateIPmovesModule();
+
+    /* Does all the required work to enter W2V mode */
+    void EnterW2VMode();
+
+    /* Does all the required work to leave W2V mode */
+    void LeaveW2VMode();
+
+    /* Recreates W2VModule. Should be called when the underlying file is updated */
+    void RecreateW2VModule();
+
+    /* Discards all modules. Should be called when a new file is opened */
+    void DiscardAllModules();
+
     LightTimer run_timer_;
     Window window_;
-    std::unique_ptr<UIManager> ui_manager_;
+    UIManager ui_manager_;
     std::unique_ptr<IPmovesHandler> ip_moves_handler_;
+    std::unique_ptr<int> w2v_module_dummy_;
     AppStateMachine state_machine_;
     std::string current_filename_;
 };
