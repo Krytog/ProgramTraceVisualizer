@@ -13,3 +13,6 @@
 [submodule "3rdparty/pfd"]
 	path = 3rdparty/pfd
 	url = https://github.com/samhocevar/portable-file-dialogs.git
+[submodule "3rdparty/umap"]
+	path = 3rdparty/umap
+	url = https://github.com/LTLA/umappp.git
