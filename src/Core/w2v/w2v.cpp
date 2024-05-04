@@ -5,16 +5,18 @@
 #include <word2vec++/include/word2vec.hpp>
 #include <umap/include/umappp/Umap.hpp>
 #include "Core/Plotting/Plot2DMesh/Plot2DMesh.h"
+#include "Graphics/Primitives/IRenderable.h"
 
 #include <stdexcept>
 #include <thread>
+#include <iomanip>
 
 #define ERROR_MESSAGE_TRAIN_FAILED "W2V: Model failed to train: "
 
 namespace {
     static const constexpr size_t kDefaultCells = 1024;
 
-    static constexpr w2v::trainSettings_t GetW2VModelSettings() {
+    static w2v::trainSettings_t GetW2VModelSettings() {
         w2v::trainSettings_t settings;
         settings.endOfSentenceChars = "";
         settings.wordDelimiterChars = "";
@@ -28,7 +30,28 @@ namespace {
     }
 
     static void TrainModel(w2v::w2vModel_t* model, const w2v::trainSettings_t& settings, const std::string& filename) {
-        const auto trained = model->train(settings, filename, "", nullptr, nullptr, nullptr);
+        const auto trained = model->train(settings, filename, "", [] (float _percent) {
+                                std::cout << "\rParsing train data... "
+                                        << std::fixed << std::setprecision(2)
+                                        << _percent << "%" << std::flush;
+                            },
+                            [] (std::size_t _vocWords, std::size_t _trainWords, std::size_t _totalWords) {
+                                std::cout << std::endl
+                                        << "Vocabulary size: " << _vocWords << std::endl
+                                        << "Train words: " << _trainWords << std::endl
+                                        << "Total words: " << _totalWords << std::endl
+                                        << std::endl;
+                            },
+                            [] (float _alpha, float _percent) {
+                                std::cout << '\r'
+                                        << "alpha: "
+                                        << std::fixed << std::setprecision(6)
+                                        << _alpha
+                                        << ", progress: "
+                                        << std::fixed << std::setprecision(2)
+                                        << _percent << "%"
+                                        << std::flush;
+                            });
         if (!trained) {
             std::string error_message = ERROR_MESSAGE_TRAIN_FAILED;
             error_message += model->errMsg();
@@ -68,7 +91,8 @@ namespace {
 }
 
 W2VHandler::W2VHandler(const std::string& filename): plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells) {
-    
+    InitW2VEmbedding(filename);
+    SetDimension(2);
 }
 
 void W2VHandler::InitW2VEmbedding(const std::string& filename) {
@@ -144,4 +168,9 @@ std::vector<float> W2VHandler::GetPreparedData() const {
         output.push_back(1.0f); // temp no color change
     }
     return output;
+}
+
+
+const IRenderable* W2VHandler::GetPlot() const {
+    return plot_.get();
 }

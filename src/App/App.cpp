@@ -6,8 +6,10 @@
 #include <Controllers/IPmovesController/IPmovesController.h>
 #include "App/AppStateMachine.h"
 #include "Core/IPmoves/IPmovesHandler/IPmovesHandler.h"
+#include "Core/w2v/w2v.h"
 #include "UI/UIManager/UIManager.h"
 #include <portable-file-dialogs.h>
+#include <memory>
 #include <stdexcept>
 
 #define WINDOW_NAME "ProgramTraceVisualizer"
@@ -186,19 +188,34 @@ void App::RecreateIPmovesModule() {
 }
 
 void App::EnterW2VMode() {
+    if (!w2v_handler_) {
+        w2v_handler_ = std::make_unique<W2VHandler>(current_filename_);
+    }
+    ui_manager_.GetViewScene().AddObject(w2v_handler_->GetPlot());
     ui_manager_.GoToW2VMode();
-    // dummy
 }
 
 void App::LeaveW2VMode() {
-    // dummy
+    if (w2v_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(w2v_handler_->GetPlot());
+    }
 }
 
 void App::RecreateW2VModule() {
-    w2v_module_dummy_ = std::move(std::make_unique<int>(27));
+    if (w2v_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(w2v_handler_->GetPlot());
+    }
+    w2v_handler_ = std::move(std::make_unique<W2VHandler>(current_filename_));
+    ui_manager_.GetViewScene().AddObject(w2v_handler_->GetPlot());
 }
 
 void App::DiscardAllModules() {
+    if (ip_moves_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(ip_moves_handler_->GetPlot());
+    }
     ip_moves_handler_ = nullptr;
-    w2v_module_dummy_ = nullptr;
+    if (w2v_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(w2v_handler_->GetPlot());
+    }
+    w2v_handler_ = nullptr;
 }

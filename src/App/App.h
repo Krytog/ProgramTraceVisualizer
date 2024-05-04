@@ -7,6 +7,7 @@
 #include <Utils/FrameRater/FrameRater.h>
 #include <Utils/LightTimer/LightTimer.h>
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
+#include <Core/w2v/w2v.h>
 #include <memory>
 
 class App {
@@ -90,7 +91,7 @@ private:
     Window window_;
     UIManager ui_manager_;
     std::unique_ptr<IPmovesHandler> ip_moves_handler_;
-    std::unique_ptr<int> w2v_module_dummy_;
+    std::unique_ptr<W2VHandler> w2v_handler_;
     AppStateMachine state_machine_;
     std::string current_filename_;
 };
