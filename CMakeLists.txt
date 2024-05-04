@@ -7,6 +7,7 @@ set(PROJECT_NAME ProgramTraceVisualizer)
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Release)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # Just for clangd to work correctly
 
@@ -16,9 +17,14 @@ set(BASEPATH "${CMAKE_SOURCE_DIR}")
 
 #set(CMAKE_CXX_FLAGS -fsanitize-coverage=func,trace-pc-guard)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native -funroll-loops -ftree-vectorize -DNDEBUG")
+
 add_subdirectory(3rdparty/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
 add_subdirectory(3rdparty/glew ${CMAKE_CURRENT_BINARY_DIR}/glew)
 add_subdirectory(3rdparty/GLM ${CMAKE_CURRENT_BINARY_DIR}/glm)
+add_subdirectory(3rdparty/word2vec++ ${CMAKE_CURRENT_BINARY_DIR}/word2vec++)
+add_subdirectory(3rdparty/umap ${CMAKE_CURRENT_BINARY_DIR}/umap)
 add_subdirectory(src/GUI)
 add_subdirectory(src/Utils)
 add_subdirectory(src/Core)
