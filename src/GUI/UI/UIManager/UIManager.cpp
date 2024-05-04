@@ -174,7 +174,6 @@ void UIManager::GoToW2VMode() {
     while (!details_scene_.GetInnerBuffer().empty()) {
         details_scene_.PopBackLine();
     }
-    details_scene_.PushLine("This feature is in development!");
     ipmovescontrol_scene_.SetVisibility(false);
     mode_ = Mode::W2V;
 }
