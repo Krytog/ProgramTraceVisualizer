@@ -16,12 +16,12 @@ void ClearDetails(DetailsScene* details) {
 
 void UpdateParsingProgress(DetailsScene* details, const W2VHandler* handler) {
     const auto parsing_progress = handler->GetParsingProgress();
-    details->PushLine("Current parsing progress: " + std::to_string(parsing_progress));
+    details->PushLine("Current parsing progress: " + std::to_string(parsing_progress) + "%");
 }
 
 void UpdateTrainingProgress(DetailsScene* details, const W2VHandler* handler) {
     const auto training_progress = handler->GetTrainingProgress();
-    details->PushLine("Current training progress: " + std::to_string(training_progress));
+    details->PushLine("Current training progress: " + std::to_string(training_progress) + "%");
 }
 
 void UpdateDifferentWordsCount(DetailsScene* details, const W2VHandler* handler) {
@@ -53,7 +53,6 @@ void Synchronize(UIManager* ui_manager, W2VHandler* handler) {
             ui_manager->GetViewScene().AddObject(handler->GetPlot());
         }
         // apply input;
-        return;
     }
     prev_plot = handler->GetPlot();
     DetailsScene* details = &ui_manager->GetDetailsScene();
