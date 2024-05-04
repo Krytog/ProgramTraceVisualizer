@@ -1,5 +1,6 @@
 add_library(w2v
 	w2v.cpp
+	UmapWrapper.cpp
 		)
 
 target_link_libraries(w2v PRIVATE Plotting)

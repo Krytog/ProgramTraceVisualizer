@@ -1,15 +1,15 @@
 #include "w2v.h"
 #include "Clamping.h"
+#include "UmapWrapper.h"
 
 #include <memory>
+#include <string>
 #include <word2vec++/include/word2vec.hpp>
-#include <umap/include/umappp/Umap.hpp>
 #include "Core/Plotting/Plot2DMesh/Plot2DMesh.h"
 #include "Graphics/Primitives/IRenderable.h"
 
 #include <stdexcept>
 #include <thread>
-#include <iomanip>
 
 #define ERROR_MESSAGE_TRAIN_FAILED "W2V: Model failed to train: "
 
@@ -22,32 +22,34 @@ static w2v::trainSettings_t GetW2VModelSettings() {
     settings.wordDelimiterChars = "";
     settings.minWordFreq = 1;
     settings.withSG = true;
-    settings.threads = 8;
+    settings.threads = std::thread::hardware_concurrency();
     settings.iterations = 40;
     settings.withHS = true;
     settings.maxWordLen = 8;
     return settings;
 }
 
+struct StatsPointers {
+    std::atomic<float>* parsing_progress_;
+    std::atomic<float>* training_progress_;
+    std::atomic<size_t>* different_words_count_;
+    std::atomic<size_t>* total_words_count_;
+};
+
 static void TrainModel(w2v::w2vModel_t* model, const w2v::trainSettings_t& settings,
-                       const std::string& filename) {
+                       const std::string& filename, const StatsPointers* stats) {
     const auto trained = model->train(
-        settings, filename, "",
-        [](float _percent) {
-            std::cout << "\rParsing train data... " << std::fixed << std::setprecision(2) << _percent << "%"
-                      << std::flush;
+        settings, filename, "", [stats](float percent) { *(stats->parsing_progress_) = percent; },
+        [stats](size_t different_words, size_t train_words, size_t total_words) {
+            (void)train_words;
+            *(stats->different_words_count_) =
+                different_words - 1;  // -1 as there will always be technical word </s>
+            *(stats->total_words_count_) = total_words;
+            *(stats->parsing_progress_) = 100.0f;  // just to ensure that this stat is correct
         },
-        [](std::size_t _vocWords, std::size_t _trainWords, std::size_t _totalWords) {
-            std::cout << std::endl
-                      << "Vocabulary size: " << _vocWords << std::endl
-                      << "Train words: " << _trainWords << std::endl
-                      << "Total words: " << _totalWords << std::endl
-                      << std::endl;
-        },
-        [](float _alpha, float _percent) {
-            std::cout << '\r' << "alpha: " << std::fixed << std::setprecision(6) << _alpha
-                      << ", progress: " << std::fixed << std::setprecision(2) << _percent << "%"
-                      << std::flush;
+        [stats](float alpha, float percent) {
+            (void)alpha;
+            *(stats->training_progress_) = percent * std::thread::hardware_concurrency();
         });
     if (!trained) {
         std::string error_message = ERROR_MESSAGE_TRAIN_FAILED;
@@ -75,29 +77,30 @@ static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
 static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, size_t target_dim,
                                             size_t objects_count, size_t initial_dim) {
     std::vector<double> embedding(objects_count * target_dim);
-    umappp::Umap x;
-    x.set_num_threads(std::thread::hardware_concurrency());
-    x.set_parallel_optimization(true);
-    x.set_num_neighbors(20);
-    x.set_num_epochs(50);
-    auto proxy = x.initialize(initial_dim, objects_count, data.data(), target_dim, embedding.data());
-    for (int iter = 0; iter < 50; ++iter) {
-        proxy.run(iter);
-    }
+    umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data());
     return embedding;
 }
 }  // namespace
 
 W2VHandler::W2VHandler(const std::string& filename)
     : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells) {
-    InitW2VEmbedding(filename);
-    SetDimension(2);
+    StartPrepare(filename);
+}
+
+W2VHandler::~W2VHandler() {
+    if (worker_) {
+        worker_->join();
+    }
 }
 
 void W2VHandler::InitW2VEmbedding(const std::string& filename) {
     const auto settings = GetW2VModelSettings();
     auto model = std::make_unique<w2v::w2vModel_t>();
-    TrainModel(model.get(), settings, filename);
+    StatsPointers stats{.parsing_progress_ = &parsing_progress_,
+                        .training_progress_ = &training_progress_,
+                        .different_words_count_ = &different_words_count_,
+                        .total_words_count_ = &total_words_count_};
+    TrainModel(model.get(), settings, filename, &stats);
     initial_dim_ = settings.size;
     w2v_embedding_ = std::move(GetW2VEmbedding(model.get(), initial_dim_));
     objects_count_ = w2v_embedding_.size() / initial_dim_;
@@ -122,8 +125,7 @@ size_t W2VHandler::GetPlotSize() const {
 
 void W2VHandler::SetDimension(size_t dimension) {
     SetUmapEmbedding(dimension);
-    const auto data = std::move(GetPreparedData());
-    plot_->LoadData(data.data(), data.size() * sizeof(GLfloat));
+    is_data_loaded_ = false;
 }
 
 std::vector<double> W2VHandler::GetObjectAtIndex(size_t index) const {
@@ -170,4 +172,54 @@ std::vector<float> W2VHandler::GetPreparedData() const {
 
 const IRenderable* W2VHandler::GetPlot() const {
     return plot_.get();
+}
+
+bool W2VHandler::IsReady() const {
+    return ready_;
+}
+
+void W2VHandler::StartPrepare(const std::string& filename) {
+    worker_ = std::make_unique<std::thread>([this, &filename]() {
+        InitW2VEmbedding(filename);
+        const constexpr size_t kDefaultDimension = 2;
+        SetDimension(kDefaultDimension);
+        ready_ = true;
+        training_progress_ = 100.0f;
+    });
+}
+
+size_t W2VHandler::GetDifferentWordCount() const {
+    return different_words_count_;
+}
+
+size_t W2VHandler::GetTotalWordCount() const {
+    return total_words_count_;
+}
+
+float W2VHandler::GetParsingProgress() const {
+    return parsing_progress_;
+}
+
+float W2VHandler::GetTrainingProgress() const {
+    return training_progress_;
+}
+
+void W2VHandler::LoadData() {
+    const auto data = std::move(GetPreparedData());
+    plot_->LoadData(data.data(), data.size() * sizeof(GLfloat));
+    is_data_loaded_ = true;
+}
+
+void W2VHandler::Update() {
+    if (!ready_) {
+        // some logic when the data is not ready
+        return;
+    }
+    if (is_first_time_ready_) {
+        is_first_time_ready_ = false;
+        plot_ = std::move(std::make_unique<Plot2DMesh>(plot_size_));
+    }
+    if (!is_data_loaded_) {
+        LoadData();
+    }
 }
