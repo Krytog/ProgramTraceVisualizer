@@ -12,9 +12,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             )
 endif()
 
-message(Kekich: ${PROJECT_INCLUDE_DIR})
-message(Lolich: ${PROJECT_SOURCE_DIR})
-
 set(PRJ_SRCS
         ${PROJECT_INCLUDE_DIR}/word2vec.hpp
         ${PROJECT_SOURCE_DIR}/word2vec.cpp
@@ -37,8 +34,6 @@ set(PRJ_SRCS
 
 add_library(${PROJECT_NAME} STATIC ${PRJ_SRCS})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
-
-message(bLYA: ${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${PROJECT_INCLUDE_DIR}/word2vec.hpp DESTINATION include)

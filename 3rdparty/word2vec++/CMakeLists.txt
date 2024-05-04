@@ -1,7 +1,7 @@
 project (word2vec++)
 cmake_minimum_required(VERSION 3.1)
  
-set(PROJECT_ROOT_DIR ${BASEPATH}/3rdparty/w2v)
+set(PROJECT_ROOT_DIR ${BASEPATH}/3rdparty/word2vec++)
 
 set(CMAKE_BINARY_DIR ${PROJECT_ROOT_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -24,6 +24,3 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 add_subdirectory(lib)
-add_subdirectory(tools)
-add_subdirectory(examples/word2vec)
-add_subdirectory(examples/doc2vec)
