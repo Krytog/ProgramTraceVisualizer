@@ -1,17 +1,15 @@
 #include "Plot2DMesh.h"
 #include "glm/fwd.hpp"
 
+#include <Resources/ShadersEmbed/Plot2DShaders.h>
+
 namespace {
 	static constexpr const VertexObject::ArgPack kVertexObjectConfig{.data = nullptr, .data_size = 0, 
 		.args_per_vertex = 3,.memory_mode = VertexObject::MemoryMode::STREAM };
 
-	static constexpr const GLchar* kVertexShaderPath = "../src/Resources/Shaders/Plot2D.vert";
-	static constexpr const GLchar* kFragmentShaderPath = "../src/Resources/Shaders/Plot2D.frag";
-	static constexpr const GLchar* kGeometryShaderPath = "../src/Resources/Shaders/Plot2D.geom";
-
-	static constexpr const Shader::ShaderConfig kShaderConfig{.VertexShaderSourceType = Shader::SourceType::FILE, .VertexShaderSource = kVertexShaderPath,
-		.FragmentShaderSourceType = Shader::SourceType::FILE, .FragmentShaderSource = kFragmentShaderPath,
-		.GeometryShaderSourceType = Shader::SourceType::FILE, .GeometryShaderSource = kGeometryShaderPath};
+	static constexpr const Shader::ShaderConfig kShaderConfig{.VertexShaderSourceType = Shader::SourceType::STRING, .VertexShaderSource = kPlot2DShaderVert,
+		.FragmentShaderSourceType = Shader::SourceType::STRING, .FragmentShaderSource = kPlot2DShaderFrag,
+		.GeometryShaderSourceType = Shader::SourceType::STRING, .GeometryShaderSource = kPlot2DShaderGeom};
 
 	static constexpr const GLuint kPositionIndex = 0;
 	static constexpr const GLuint kTemperatureIndex = 1;
