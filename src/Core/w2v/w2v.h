@@ -38,10 +38,12 @@ private:
     size_t objects_count_;
     size_t current_umap_dim_{0};
 
-    /* Uses a w2v model on the input file, trains the model, then stores w2v_embedding_, initial_dim_ and objects_count_ */
+    /* Uses a w2v model on the input file, trains the model, then stores w2v_embedding_, initial_dim_ and
+     * objects_count_ */
     void InitW2VEmbedding(const std::string& filename);
 
-    /* Uses prepared w2v_embedding to calculate and store into umap_embedding_ a umap embedding of the target_dim dimension */
+    /* Uses prepared w2v_embedding to calculate and store into umap_embedding_ a umap embedding of the
+     * target_dim dimension */
     void SetUmapEmbedding(size_t target_dim);
 
     /* Returns the coordinates of the object at the given index */

@@ -14,83 +14,82 @@
 #define ERROR_MESSAGE_TRAIN_FAILED "W2V: Model failed to train: "
 
 namespace {
-    static const constexpr size_t kDefaultCells = 1024;
+static const constexpr size_t kDefaultCells = 1024;
 
-    static w2v::trainSettings_t GetW2VModelSettings() {
-        w2v::trainSettings_t settings;
-        settings.endOfSentenceChars = "";
-        settings.wordDelimiterChars = "";
-        settings.minWordFreq = 1;
-        settings.withSG = true;
-        settings.threads = 8;
-        settings.iterations = 40;
-        settings.withHS = true;
-        settings.maxWordLen = 8;
-        return settings;
-    }
+static w2v::trainSettings_t GetW2VModelSettings() {
+    w2v::trainSettings_t settings;
+    settings.endOfSentenceChars = "";
+    settings.wordDelimiterChars = "";
+    settings.minWordFreq = 1;
+    settings.withSG = true;
+    settings.threads = 8;
+    settings.iterations = 40;
+    settings.withHS = true;
+    settings.maxWordLen = 8;
+    return settings;
+}
 
-    static void TrainModel(w2v::w2vModel_t* model, const w2v::trainSettings_t& settings, const std::string& filename) {
-        const auto trained = model->train(settings, filename, "", [] (float _percent) {
-                                std::cout << "\rParsing train data... "
-                                        << std::fixed << std::setprecision(2)
-                                        << _percent << "%" << std::flush;
-                            },
-                            [] (std::size_t _vocWords, std::size_t _trainWords, std::size_t _totalWords) {
-                                std::cout << std::endl
-                                        << "Vocabulary size: " << _vocWords << std::endl
-                                        << "Train words: " << _trainWords << std::endl
-                                        << "Total words: " << _totalWords << std::endl
-                                        << std::endl;
-                            },
-                            [] (float _alpha, float _percent) {
-                                std::cout << '\r'
-                                        << "alpha: "
-                                        << std::fixed << std::setprecision(6)
-                                        << _alpha
-                                        << ", progress: "
-                                        << std::fixed << std::setprecision(2)
-                                        << _percent << "%"
-                                        << std::flush;
-                            });
-        if (!trained) {
-            std::string error_message = ERROR_MESSAGE_TRAIN_FAILED;
-            error_message += model->errMsg();
-            throw std::runtime_error(error_message);
-        }
-    }
-
-    static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
-        const auto total_objects = model->modelSize() - 1;
-        std::vector<double> data(total_objects * dim);
-        size_t object = 0;
-        for (const auto& [word, vector] : model->map()) {
-            if (word == "</s>") {
-                continue;
-            }
-            for (size_t feature = 0; feature < dim; ++feature) {
-                data[feature * total_objects + object] = vector.at(feature);
-            }
-            ++object;
-        }
-        return data;
-    }
-
-    static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, size_t target_dim, size_t objects_count, size_t initial_dim) {
-        std::vector<double> embedding(objects_count * target_dim);
-        umappp::Umap x;
-        x.set_num_threads(std::thread::hardware_concurrency());
-        x.set_parallel_optimization(true);
-        x.set_num_neighbors(20);
-        x.set_num_epochs(50);
-        auto proxy = x.initialize(initial_dim, objects_count, data.data(), target_dim, embedding.data());
-        for (int iter = 0; iter < 50; ++iter) {
-            proxy.run(iter);
-        }
-        return embedding;
+static void TrainModel(w2v::w2vModel_t* model, const w2v::trainSettings_t& settings,
+                       const std::string& filename) {
+    const auto trained = model->train(
+        settings, filename, "",
+        [](float _percent) {
+            std::cout << "\rParsing train data... " << std::fixed << std::setprecision(2) << _percent << "%"
+                      << std::flush;
+        },
+        [](std::size_t _vocWords, std::size_t _trainWords, std::size_t _totalWords) {
+            std::cout << std::endl
+                      << "Vocabulary size: " << _vocWords << std::endl
+                      << "Train words: " << _trainWords << std::endl
+                      << "Total words: " << _totalWords << std::endl
+                      << std::endl;
+        },
+        [](float _alpha, float _percent) {
+            std::cout << '\r' << "alpha: " << std::fixed << std::setprecision(6) << _alpha
+                      << ", progress: " << std::fixed << std::setprecision(2) << _percent << "%"
+                      << std::flush;
+        });
+    if (!trained) {
+        std::string error_message = ERROR_MESSAGE_TRAIN_FAILED;
+        error_message += model->errMsg();
+        throw std::runtime_error(error_message);
     }
 }
 
-W2VHandler::W2VHandler(const std::string& filename): plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells) {
+static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
+    const auto total_objects = model->modelSize() - 1;
+    std::vector<double> data(total_objects * dim);
+    size_t object = 0;
+    for (const auto& [word, vector] : model->map()) {
+        if (word == "</s>") {
+            continue;
+        }
+        for (size_t feature = 0; feature < dim; ++feature) {
+            data[feature * total_objects + object] = vector.at(feature);
+        }
+        ++object;
+    }
+    return data;
+}
+
+static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, size_t target_dim,
+                                            size_t objects_count, size_t initial_dim) {
+    std::vector<double> embedding(objects_count * target_dim);
+    umappp::Umap x;
+    x.set_num_threads(std::thread::hardware_concurrency());
+    x.set_parallel_optimization(true);
+    x.set_num_neighbors(20);
+    x.set_num_epochs(50);
+    auto proxy = x.initialize(initial_dim, objects_count, data.data(), target_dim, embedding.data());
+    for (int iter = 0; iter < 50; ++iter) {
+        proxy.run(iter);
+    }
+    return embedding;
+}
+}  // namespace
+
+W2VHandler::W2VHandler(const std::string& filename)
+    : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells) {
     InitW2VEmbedding(filename);
     SetDimension(2);
 }
@@ -98,7 +97,7 @@ W2VHandler::W2VHandler(const std::string& filename): plot_(std::make_unique<Plot
 void W2VHandler::InitW2VEmbedding(const std::string& filename) {
     const auto settings = GetW2VModelSettings();
     auto model = std::make_unique<w2v::w2vModel_t>();
-    TrainModel(model.get(),settings, filename);
+    TrainModel(model.get(), settings, filename);
     initial_dim_ = settings.size;
     w2v_embedding_ = std::move(GetW2VEmbedding(model.get(), initial_dim_));
     objects_count_ = w2v_embedding_.size() / initial_dim_;
@@ -131,7 +130,7 @@ std::vector<double> W2VHandler::GetObjectAtIndex(size_t index) const {
     std::vector<double> output(current_umap_dim_);
     for (size_t i = 0; i < current_umap_dim_; ++i) {
         output[i] = umap_embedding_.at(i * objects_count_ + index);
-    } 
+    }
     return output;
 }
 
@@ -153,7 +152,6 @@ std::pair<std::vector<double>, std::vector<double>> W2VHandler::GetMinMax() cons
     return {std::move(mins), std::move(maxs)};
 }
 
-
 std::vector<float> W2VHandler::GetPreparedData() const {
     const auto [mins, maxs] = std::move(GetMinMax());
     Clamper clamper(mins, maxs);
@@ -165,11 +163,10 @@ std::vector<float> W2VHandler::GetPreparedData() const {
         for (const auto coord : object) {
             output.push_back(coord);
         }
-        output.push_back(1.0f); // temp no color change
+        output.push_back(1.0f);  // temp no color change
     }
     return output;
 }
-
 
 const IRenderable* W2VHandler::GetPlot() const {
     return plot_.get();
