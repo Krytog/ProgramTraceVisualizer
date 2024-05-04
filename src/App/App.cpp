@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
+#include <Controllers/W2VController/W2VController.h>
 #include "App/AppStateMachine.h"
 #include "Core/IPmoves/IPmovesHandler/IPmovesHandler.h"
 #include "Core/w2v/w2v.h"
@@ -58,6 +59,9 @@ void App::FrameMainLogic() {
             controllers::ipmoves::Synchronize(&ui_manager_, ip_moves_handler_.get());
             ip_moves_handler_->Update();
             break;
+        }
+        case States::FILE_W2V: {
+            controllers::w2vhandler::Synchronize(&ui_manager_, w2v_handler_.get());
         }
         default: {
             return;
@@ -189,7 +193,7 @@ void App::RecreateIPmovesModule() {
 
 void App::EnterW2VMode() {
     if (!w2v_handler_) {
-        w2v_handler_ = std::make_unique<W2VHandler>(current_filename_);
+        w2v_handler_ = std::move(controllers::w2vhandler::Initialize(&ui_manager_, current_filename_));
     }
     ui_manager_.GetViewScene().AddObject(w2v_handler_->GetPlot());
     ui_manager_.GoToW2VMode();
@@ -205,7 +209,7 @@ void App::RecreateW2VModule() {
     if (w2v_handler_) {
         ui_manager_.GetViewScene().RemoveObject(w2v_handler_->GetPlot());
     }
-    w2v_handler_ = std::move(std::make_unique<W2VHandler>(current_filename_));
+    w2v_handler_ = std::move(controllers::w2vhandler::Initialize(&ui_manager_, current_filename_));
     ui_manager_.GetViewScene().AddObject(w2v_handler_->GetPlot());
 }
 
