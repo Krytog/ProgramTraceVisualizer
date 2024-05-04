@@ -95,9 +95,9 @@ void App::InitializeStateMachine() {
     state_machine_.AddCallback({States::NO_FILE_IP, States::FILE_IP}, [this]() { EnterIPmovesMode(); });
     state_machine_.AddCallback({States::NO_FILE_W2V, States::FILE_W2V}, [this]() { EnterW2VMode(); });
     state_machine_.AddCallback({States::NO_FILE_IP, States::NO_FILE_W2V},
-                               []() { std::cout << "IP -> W2V: NO FILE" << std::endl; });
+                               []() { });
     state_machine_.AddCallback({States::NO_FILE_W2V, States::NO_FILE_IP},
-                               []() { std::cout << "W2V -> IP: NO FILE" << std::endl; });
+                               []() { });
     state_machine_.AddCallback({States::FILE_IP, States::FILE_W2V}, [this]() {
         LeaveIPmovesMode();
         EnterW2VMode();
