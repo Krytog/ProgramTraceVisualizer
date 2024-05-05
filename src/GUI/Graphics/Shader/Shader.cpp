@@ -131,7 +131,7 @@ GLint Shader::GetUniformLocation(const std::string& name) {
     }
     GLint location = glGetUniformLocation(descriptor_, static_cast<const GLchar*>(name.c_str()));
     if (location == -1) {
-        std::string error_message = "Shader: error when settting an uniform: ";
+        std::string error_message = "Shader: error when settting a uniform: ";
         error_message += std::string(name);
         ADD_TO_LOG(error_message);
         throw std::runtime_error(SHADER_SET_UNIFORM_ERROR_MESSAGE);
