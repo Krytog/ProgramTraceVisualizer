@@ -17,6 +17,7 @@ add_library(UI
 	Scenes/IPmovesControlScene/IPmovesControlScene.cpp
 	Helpers/Alignment.cpp
 	Widgets/WaitingWidget.cpp
+	Widgets/ProgressWidget.cpp
 		)
 
 target_link_libraries(UI PRIVATE glfw)
