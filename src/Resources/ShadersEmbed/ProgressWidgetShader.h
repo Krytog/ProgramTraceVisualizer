@@ -1,6 +1,6 @@
 #pragma once
 
-// From: https://www.shadertoy.com/view/NtcyWn
+// From: https://www.shadertoy.com/view/NtcyWn and https://www.shadertoy.com/view/Xdyyzd
 
 static const constexpr char* kProgressWidgetShaderFrag = R"(
 #version 330 core
