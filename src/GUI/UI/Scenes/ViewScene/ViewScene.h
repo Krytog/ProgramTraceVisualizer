@@ -30,6 +30,9 @@ public:
     /* Sets frametime that will be rendered and used to calculate FPS */
     void SetFrametime(double frametime);
 
+    /* Returns the size of the view port. Notice that this size is slightly different from the scene size */
+    [[nodiscard]] std::pair<float, float> GetViewPortSize() const;
+
 private:
     /* Renders the scene*/
     void RenderInner() const override;
