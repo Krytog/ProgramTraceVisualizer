@@ -8,6 +8,7 @@ static const constexpr char* kProgressWidgetShaderFrag = R"(
 uniform float time;
 uniform float width;
 uniform float height;
+uniform bool progress_mode = true;
 
 out vec4 final_color;
 
@@ -62,8 +63,42 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     fragColor = interpolated_color;
 }
 
+#define PI 3.14159265359
+
+vec3 hsb2rgb( in vec3 c ){
+    vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                             6.0)-3.0)-1.0,
+                     0.0,
+                     1.0 );
+    rgb = rgb*rgb*(3.0-2.0*rgb);
+    return c.z * mix( vec3(1.0), rgb, c.y);
+}
+
+vec2 rotate2D (vec2 _st, float _angle) {
+    _st =  mat2(cos(_angle),-sin(_angle),
+                sin(_angle),cos(_angle)) * _st;
+    return _st;
+}
+
+void mainImage2( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 p = (2.0*fragCoord.xy-vec2(width, height))/width;
+    p *= 1.6;
+    vec3 color = hsb2rgb(vec3(fract(time*.1),1.,1.));
+    float r = length(p);
+    float w = .3;
+    p = rotate2D(p,(r*PI*6.-time*2.));
+    color *= smoothstep(-w,.0,p.x)*smoothstep(w,.0,p.x);
+    color *= abs(1./(sin(pow(r,2.)*2.-time*1.3)*6.))*.4;
+	fragColor = vec4(color, 1.);
+}
+
 void main() {
-	mainImage(final_color, gl_FragCoord.xy);
+    if (progress_mode) {
+        mainImage(final_color, gl_FragCoord.xy);
+    } else {
+        mainImage2(final_color, gl_FragCoord.xy);
+    }
 }
 
 )";

@@ -17,7 +17,7 @@ public:
     /* Sets the resolution of the screen, so it can be accessed in the shader code */
     void SetResolution(float width, float height);
 
-private:
+protected:
     VertexObjectIndexed mesh_;
     Shader shader_;
 };

@@ -70,12 +70,12 @@ private:
     size_t objects_count_;
     size_t current_umap_dim_{0};
 
-    bool is_data_loaded_{false};
-    bool is_first_time_ready_{true};
+    std::atomic<bool> is_data_loaded_{false};
 
     std::unique_ptr<ProgressWidget> progress_wigdet_;
     std::unique_ptr<std::thread> worker_;
     std::atomic<bool> ready_{false};
+    std::atomic<bool> is_umap_embedding_recalc_pending_{false};
     std::atomic<size_t> different_words_count_{0};
     std::atomic<size_t> total_words_count_{0};
     std::atomic<float> parsing_progress_{0};

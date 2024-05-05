@@ -84,7 +84,9 @@ static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, siz
 }  // namespace
 
 W2VHandler::W2VHandler(const std::string& filename)
-    : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells), progress_wigdet_(std::make_unique<ProgressWidget>()) {
+    : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)),
+      plot_size_(kDefaultCells),
+      progress_wigdet_(std::make_unique<ProgressWidget>()) {
     StartPrepare(filename);
 }
 
@@ -108,11 +110,15 @@ void W2VHandler::InitW2VEmbedding(const std::string& filename) {
 }
 
 void W2VHandler::SetUmapEmbedding(size_t target_dim) {
-    if (current_umap_dim_ == target_dim) {
-        return;
-    }
-    umap_embedding_ = std::move(GetUMAPEmbedding(w2v_embedding_, target_dim, objects_count_, initial_dim_));
-    current_umap_dim_ = target_dim;
+    worker_->join();
+    worker_ = std::move(std::make_unique<std::thread>([this, target_dim]() {
+        ready_ = false;
+        umap_embedding_ =
+            std::move(GetUMAPEmbedding(w2v_embedding_, target_dim, objects_count_, initial_dim_));
+        is_data_loaded_ = false;
+        ready_ = true;
+    }));
+    is_umap_embedding_recalc_pending_ = false;
 }
 
 void W2VHandler::SetPlotSize(size_t cells) {
@@ -125,8 +131,12 @@ size_t W2VHandler::GetPlotSize() const {
 }
 
 void W2VHandler::SetDimension(size_t dimension) {
-    SetUmapEmbedding(dimension);
-    is_data_loaded_ = false;
+    if (current_umap_dim_ == dimension) {
+        return;
+    }
+    current_umap_dim_ = dimension;
+    ready_ = false;
+    is_umap_embedding_recalc_pending_ = true;
 }
 
 std::vector<double> W2VHandler::GetObjectAtIndex(size_t index) const {
@@ -186,9 +196,8 @@ void W2VHandler::StartPrepare(const std::string& filename) {
     worker_ = std::make_unique<std::thread>([this, &filename]() {
         InitW2VEmbedding(filename);
         training_progress_ = 100.0f;
-        const constexpr size_t kDefaultDimension = 2;
+        static const constexpr size_t kDefaultDimension = 2;
         SetDimension(kDefaultDimension);
-        ready_ = true;
     });
 }
 
@@ -215,16 +224,16 @@ void W2VHandler::LoadData() {
 }
 
 void W2VHandler::Update() {
-    if (!ready_) {
+    if (is_umap_embedding_recalc_pending_) {
+        progress_wigdet_->GoToWaitingMode();
+        SetUmapEmbedding(current_umap_dim_);
+    }
+    if (ready_) {
+        if (!is_data_loaded_) {
+            LoadData();
+        }
+    } else {
         progress_wigdet_->SetProgress(training_progress_);
-        return;
-    }
-    if (is_first_time_ready_) {
-        is_first_time_ready_ = false;
-        progress_wigdet_.reset(nullptr);
-    }
-    if (!is_data_loaded_) {
-        LoadData();
     }
 }
 

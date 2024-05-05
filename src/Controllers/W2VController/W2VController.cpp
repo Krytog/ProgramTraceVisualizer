@@ -3,7 +3,6 @@
 #include <Core/w2v/w2v.h>
 #include <GUI/UI/UIManager/UIManager.h>
 #include "Graphics/Primitives/IRenderable.h"
-#include "LightTimer/LightTimer.h"
 #include "UI/Scenes/DetailsScene/DetailsScene.h"
 
 #include <memory>
@@ -41,6 +40,7 @@ bool IsParsingFinished(const W2VHandler* handler) {
 
 static const IRenderable* prev_plot = nullptr;
 static bool is_first_time_ready = true;
+
 }  // namespace
 
 namespace controllers::w2vhandler {
@@ -55,6 +55,11 @@ void Synchronize(UIManager* ui_manager, W2VHandler* handler) {
         }
         // apply input;
     } else {
+        if (!is_first_time_ready) {
+            ui_manager->GetViewScene().RemoveObject(prev_plot);
+            ui_manager->GetViewScene().AddObject(handler->GetPlot());
+            is_first_time_ready = true;
+        }
         const auto [width, height] = ui_manager->GetViewScene().GetViewPortSize();
         handler->SetProgressParams(width, height);
     }
