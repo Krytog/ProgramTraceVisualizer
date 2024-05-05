@@ -52,12 +52,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float circle = smoothstep(RADIUS+AA, RADIUS-AA, abs(length(uv) - RADIUS) + RADIUS - THICKNESS);
     float radial = (atan(uv.x, -uv.y) / 3.14159265359 * 0.5) + 0.5;
     float alpha = time / 100.0f;
-    alpha = min(alpha, 0.9999f);
+    alpha = min(alpha, 0.99999f);
     radial += alpha;
     circle *= step(fract(radial), fract(alpha));
-    
-    circle = max(circle, DrawCircle(uv, vec2(0,-RADIUS), THICKNESS));
-    circle = max(circle, DrawCircle(RotationUV(uv, alpha), vec2(0,-RADIUS), THICKNESS));
 
     vec4 raw_color = vec4(circle, circle, circle, 1.0);
     vec4 interpolated_color = InterpolateColor(raw_color, alpha);
