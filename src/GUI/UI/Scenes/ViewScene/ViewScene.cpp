@@ -3,12 +3,19 @@
 #include <Graphics/Primitives/IRenderable.h>
 #include <imgui.h>
 #include <GLFW/glfw3.h>
+#include <cmath>
 #include <limits>
+#include "Graphics/RenderBuffer/RenderBuffer.h"
 
 #define ViewScene_InnerName "View"
 
 namespace {
     static const constexpr float kTextHeightOffset = 30.0f;  // it's magic constant
+
+    bool AreEqual(float lhs, float rhs) {
+        static const constexpr float kPrecision = 1e-6;
+        return std::abs(lhs - rhs) < kPrecision;
+    }
 }
 
 ViewScene::ViewScene(const std::pair<float, float>& position, const std::pair<float, float>& size)
@@ -61,10 +68,11 @@ void ViewScene::RenderUI() const {
                  ImVec2{size_.first, size_.second - kTextHeightOffset}, ImVec2{0, 1}, ImVec2{1, 0});
 }
 
-void ViewScene::Resize(const std::pair<float, float>& new_size) {
-    if (new_size.first != size_.first || new_size.second != size_.second) {
-        render_buffer_.Resize(new_size.first, new_size.second);
-        size_ = new_size;
+void ViewScene::UpdateOnResize(const std::pair<float, float>& posiiton, const std::pair<float, float>& size) {
+    position_ = posiiton;
+    if (!AreEqual(size.first, size_.first) || !AreEqual(size.second, size_.second)) {
+        render_buffer_.Resize(size.first, size.second);
+        size_ = size;
     }
 }
 

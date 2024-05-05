@@ -17,8 +17,8 @@ public:
     /* Callback triggered when mouse scrolls */
     void OnMouseScroll(double delta);
 
-    /* Resizes the scene and the underlaying render buffer */
-    void Resize(const std::pair<float, float>& new_size);
+    /* Override UpdateOnResize from BasicScene, as we need to resize the rendering buffer */
+    void UpdateOnResize(const std::pair<float, float>& posiiton, const std::pair<float, float>& size);
 
     /* Adds an object to this scene. Returns true if the object is added for the first time and false
      * otherwise */
