@@ -2,6 +2,7 @@
 
 #include <Core/Plotting/Plot2DMesh/Plot2DMesh.h>
 #include <GUI/Graphics/Primitives/IRenderable.h>
+#include <GUI/UI/Widgets/ProgressWidget.h>
 
 #include <string>
 #include <memory>
@@ -57,6 +58,9 @@ public:
     /* Updates the state of W2VHandler */
     void Update();
 
+    /* Passes width and height into ProgressWidget. Only useful when W2VHandler is preparing */
+    void SetProgressParams(float width, float height);
+
 private:
     std::unique_ptr<Plot2DMesh> plot_;
     std::vector<double> w2v_embedding_;
@@ -69,6 +73,7 @@ private:
     bool is_data_loaded_{false};
     bool is_first_time_ready_{true};
 
+    std::unique_ptr<ProgressWidget> progress_wigdet_;
     std::unique_ptr<std::thread> worker_;
     std::atomic<bool> ready_{false};
     std::atomic<size_t> different_words_count_{0};

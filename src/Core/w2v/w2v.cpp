@@ -1,5 +1,6 @@
 #include "w2v.h"
 #include "Clamping.h"
+#include "UI/Widgets/ProgressWidget.h"
 #include "UmapWrapper.h"
 
 #include <memory>
@@ -83,7 +84,7 @@ static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, siz
 }  // namespace
 
 W2VHandler::W2VHandler(const std::string& filename)
-    : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells) {
+    : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)), plot_size_(kDefaultCells), progress_wigdet_(std::make_unique<ProgressWidget>()) {
     StartPrepare(filename);
 }
 
@@ -171,6 +172,9 @@ std::vector<float> W2VHandler::GetPreparedData() const {
 }
 
 const IRenderable* W2VHandler::GetPlot() const {
+    if (!ready_) {
+        return progress_wigdet_.get();
+    }
     return plot_.get();
 }
 
@@ -181,10 +185,10 @@ bool W2VHandler::IsReady() const {
 void W2VHandler::StartPrepare(const std::string& filename) {
     worker_ = std::make_unique<std::thread>([this, &filename]() {
         InitW2VEmbedding(filename);
+        training_progress_ = 100.0f;
         const constexpr size_t kDefaultDimension = 2;
         SetDimension(kDefaultDimension);
         ready_ = true;
-        training_progress_ = 100.0f;
     });
 }
 
@@ -212,14 +216,21 @@ void W2VHandler::LoadData() {
 
 void W2VHandler::Update() {
     if (!ready_) {
-        // some logic when the data is not ready
+        progress_wigdet_->SetProgress(training_progress_);
         return;
     }
     if (is_first_time_ready_) {
         is_first_time_ready_ = false;
-        plot_ = std::move(std::make_unique<Plot2DMesh>(plot_size_));
+        progress_wigdet_.reset(nullptr);
     }
     if (!is_data_loaded_) {
         LoadData();
     }
+}
+
+void W2VHandler::SetProgressParams(float width, float height) {
+    if (!progress_wigdet_) {
+        return;
+    }
+    progress_wigdet_->SetResolution(width, height);
 }

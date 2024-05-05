@@ -3,6 +3,7 @@
 #include <Core/w2v/w2v.h>
 #include <GUI/UI/UIManager/UIManager.h>
 #include "Graphics/Primitives/IRenderable.h"
+#include "LightTimer/LightTimer.h"
 #include "UI/Scenes/DetailsScene/DetailsScene.h"
 
 #include <memory>
@@ -53,6 +54,9 @@ void Synchronize(UIManager* ui_manager, W2VHandler* handler) {
             ui_manager->GetViewScene().AddObject(handler->GetPlot());
         }
         // apply input;
+    } else {
+        const auto [width, height] = ui_manager->GetViewScene().GetViewPortSize();
+        handler->SetProgressParams(width, height);
     }
     prev_plot = handler->GetPlot();
     DetailsScene* details = &ui_manager->GetDetailsScene();
