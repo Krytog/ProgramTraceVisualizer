@@ -1,6 +1,7 @@
 add_library(Controllers
     IPmovesController/IPmovesController.cpp
     W2VController/W2VController.cpp
+    WaitingController/WaitingController.cpp
         )
 
 target_link_libraries(Controllers PRIVATE IPmoves)
