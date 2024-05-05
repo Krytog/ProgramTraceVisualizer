@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AppStateMachine.h"
+#include "Graphics/Primitives/IRenderable.h"
 
 #include <GUI/Window/Window.h>
 #include <GUI/UI/UIManager/UIManager.h>
@@ -87,11 +88,18 @@ private:
     /* Discards all modules. Should be called when a new file is opened */
     void DiscardAllModules();
 
+    /* Enters waiting mode. Creates a new waiting_handler_, adds it to the ViewScene */
+    void EnterWaitingMode();
+
+    /* Leaves waiting mode. Removes waiting_handler_ from the ViewScene and discards it */
+    void LeaveWaitingMode();
+
     LightTimer run_timer_;
     Window window_;
     UIManager ui_manager_;
     std::unique_ptr<IPmovesHandler> ip_moves_handler_;
     std::unique_ptr<W2VHandler> w2v_handler_;
+    std::unique_ptr<IRenderable> waiting_handler_;
     AppStateMachine state_machine_;
     std::string current_filename_;
 };

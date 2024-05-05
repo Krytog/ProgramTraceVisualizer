@@ -5,11 +5,13 @@
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
 #include <Controllers/W2VController/W2VController.h>
-#include "App/AppStateMachine.h"
-#include "Core/IPmoves/IPmovesHandler/IPmovesHandler.h"
-#include "Core/w2v/w2v.h"
+#include <GUI/UI/Widgets/WaitingWidget.h>
+#include <App/AppStateMachine.h>
+#include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
+#include <Core/w2v/w2v.h>
 #include "UI/UIManager/UIManager.h"
 #include <portable-file-dialogs.h>
+
 #include <memory>
 #include <stdexcept>
 
@@ -92,8 +94,14 @@ void App::InitializeStateMachine() {
     using States = AppStateMachine::States;
     const constexpr States kStartState = States::NO_FILE_IP;
     state_machine_ = AppStateMachine(kStartState);
-    state_machine_.AddCallback({States::NO_FILE_IP, States::FILE_IP}, [this]() { EnterIPmovesMode(); });
-    state_machine_.AddCallback({States::NO_FILE_W2V, States::FILE_W2V}, [this]() { EnterW2VMode(); });
+    state_machine_.AddCallback({States::NO_FILE_IP, States::FILE_IP}, [this]() { 
+        LeaveWaitingMode();
+        EnterIPmovesMode(); 
+    });
+    state_machine_.AddCallback({States::NO_FILE_W2V, States::FILE_W2V}, [this]() { 
+        LeaveWaitingMode();
+        EnterW2VMode();
+    });
     state_machine_.AddCallback({States::NO_FILE_IP, States::NO_FILE_W2V},
                                []() { });
     state_machine_.AddCallback({States::NO_FILE_W2V, States::NO_FILE_IP},
@@ -165,8 +173,8 @@ void App::InitializeUICallbacks() {
 }
 
 void App::InitializeUI() {
-    ui_manager_.GoToWaitingForFileMode();
     InitializeUICallbacks();
+    EnterWaitingMode();
 }
 
 void App::EnterIPmovesMode() {
@@ -222,4 +230,15 @@ void App::DiscardAllModules() {
         ui_manager_.GetViewScene().RemoveObject(w2v_handler_->GetPlot());
     }
     w2v_handler_ = nullptr;
+}
+
+void App::EnterWaitingMode() {
+    ui_manager_.GoToWaitingForFileMode();
+    waiting_handler_ = std::make_unique<WaitingWidget>();
+    ui_manager_.GetViewScene().AddObject(waiting_handler_.get());
+}
+
+void App::LeaveWaitingMode() {
+    ui_manager_.GetViewScene().RemoveObject(waiting_handler_.get());
+    waiting_handler_.reset(nullptr);
 }
