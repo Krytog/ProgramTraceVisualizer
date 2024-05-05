@@ -1,5 +1,4 @@
 #include "ShaderWidget.h"
-#include "GUI/Graphics/Shader/Shader.h"
 
 namespace {
 
@@ -50,4 +49,9 @@ void ShaderWidget::SetTime(float time) {
 void ShaderWidget::SetResolution(float width, float height) {
     shader_.SetUniform("width", width);
     shader_.SetUniform("height", height);
+}
+
+void ShaderWidget::Render() const {
+    shader_.Use();
+    mesh_.Draw(VertexObject::DrawMode::TRIANGLES);
 }
