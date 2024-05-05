@@ -5,7 +5,7 @@
 #include <Core/Plotting/HilbertCurve/HilbertCurveManager.h>
 #include <Controllers/IPmovesController/IPmovesController.h>
 #include <Controllers/W2VController/W2VController.h>
-#include <GUI/UI/Widgets/WaitingWidget.h>
+#include <Controllers/WaitingController/WaitingController.h>
 #include <App/AppStateMachine.h>
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <Core/w2v/w2v.h>
@@ -55,6 +55,11 @@ void App::LoopIteration() {
 }
 
 void App::FrameMainLogic() {
+    if (!state_machine_.HasFile()) {
+        controllers::waiting::Update(&ui_manager_, waiting_handler_.get());
+        return;
+    }
+
     using States = AppStateMachine::States;
     switch (state_machine_.GetState()) {
         case States::FILE_IP: {

@@ -9,6 +9,7 @@
 #include <Utils/LightTimer/LightTimer.h>
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <Core/w2v/w2v.h>
+#include <GUI/UI/Widgets/WaitingWidget.h>
 #include <memory>
 
 class App {
@@ -99,7 +100,7 @@ private:
     UIManager ui_manager_;
     std::unique_ptr<IPmovesHandler> ip_moves_handler_;
     std::unique_ptr<W2VHandler> w2v_handler_;
-    std::unique_ptr<IRenderable> waiting_handler_;
+    std::unique_ptr<WaitingWidget> waiting_handler_;
     AppStateMachine state_machine_;
     std::string current_filename_;
 };
