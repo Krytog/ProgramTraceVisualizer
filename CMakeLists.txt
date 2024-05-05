@@ -20,11 +20,27 @@ set(BASEPATH "${CMAKE_SOURCE_DIR}")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native -funroll-loops -ftree-vectorize -DNDEBUG")
 
-add_subdirectory(3rdparty/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
-add_subdirectory(3rdparty/glew ${CMAKE_CURRENT_BINARY_DIR}/glew)
-add_subdirectory(3rdparty/GLM ${CMAKE_CURRENT_BINARY_DIR}/glm)
-add_subdirectory(3rdparty/word2vec++ ${CMAKE_CURRENT_BINARY_DIR}/word2vec++)
-add_subdirectory(3rdparty/umap ${CMAKE_CURRENT_BINARY_DIR}/umap)
+add_subdirectory(3rdparty/glew ${CMAKE_CURRENT_BINARY_DIR}/glew EXCLUDE_FROM_ALL)
+add_subdirectory(3rdparty/GLM ${CMAKE_CURRENT_BINARY_DIR}/glm EXCLUDE_FROM_ALL)
+add_subdirectory(3rdparty/word2vec++ ${CMAKE_CURRENT_BINARY_DIR}/word2vec++ EXCLUDE_FROM_ALL)
+
+
+# the following lib is verbose as hell (and messy), so we need to shut it
+function(message)
+    if (NOT MESSAGE_QUIET)
+        _message(${ARGN})
+    endif()
+endfunction()
+
+set(BUILD_TESTING OFF)
+set(MESSAGE_QUIET ON)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+add_subdirectory(3rdparty/umap ${CMAKE_CURRENT_BINARY_DIR}/umap EXCLUDE_FROM_ALL) 
+set(MESSAGE_QUIET OFF)
+
+# The following library has to be installed after umap. Otherwise, there will be conflict in uninstall target
+add_subdirectory(3rdparty/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw EXCLUDE_FROM_ALL)
+
 add_subdirectory(src/GUI)
 add_subdirectory(src/Utils)
 add_subdirectory(src/Core)
