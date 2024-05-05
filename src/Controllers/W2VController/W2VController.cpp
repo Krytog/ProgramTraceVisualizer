@@ -38,6 +38,18 @@ bool IsParsingFinished(const W2VHandler* handler) {
     return handler->GetParsingProgress() >= 100.0f;
 }
 
+bool IsTrainingFinished(const W2VHandler* handler) {
+    return handler->GetTrainingProgress() >= 100.0f;
+}
+
+void UpdateUmapEmbeddingStatus(DetailsScene* details, const W2VHandler* handler) {
+    if (handler->IsReady()) {
+        details->PushLine("Umap is ready and rendered!");
+    } else {
+        details->PushLine("Waiting for umap embedding...");
+    }
+}
+
 static const IRenderable* prev_plot = nullptr;
 static bool is_first_time_ready = true;
 
@@ -73,6 +85,10 @@ void Synchronize(UIManager* ui_manager, W2VHandler* handler) {
     UpdateDifferentWordsCount(details, handler);
     UpdateTotalWordsCount(details, handler);
     UpdateTrainingProgress(details, handler);
+    if (!IsTrainingFinished(handler)) {
+        return;
+    }
+    UpdateUmapEmbeddingStatus(details, handler);
 }
 
 std::unique_ptr<W2VHandler> Initialize(UIManager* ui_manager, const std::string& filename) {
