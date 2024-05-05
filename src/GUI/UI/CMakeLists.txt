@@ -16,6 +16,7 @@ add_library(UI
 	Scenes/OptionsScene/OptionsScene.cpp
 	Scenes/IPmovesControlScene/IPmovesControlScene.cpp
 	Helpers/Alignment.cpp
+	Widgets/WaitingWidget.cpp
 		)
 
 target_link_libraries(UI PRIVATE glfw)

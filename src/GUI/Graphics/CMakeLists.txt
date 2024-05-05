@@ -5,6 +5,7 @@ add_library(Graphics
 	VertexObjects/VertexObjectCustom.cpp
 	RenderBuffer/RenderBuffer.cpp
 	Primitives/Cube/Cube.cpp
+	Primitives/ShaderWidget/ShaderWidget.cpp
 		)
 
 target_link_libraries(Graphics PRIVATE glfw)
