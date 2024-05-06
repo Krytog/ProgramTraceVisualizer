@@ -50,7 +50,7 @@ static void TrainModel(w2v::w2vModel_t* model, const w2v::trainSettings_t& setti
         },
         [stats](float alpha, float percent) {
             (void)alpha;
-            *(stats->training_progress_) = percent * std::thread::hardware_concurrency();
+            *(stats->training_progress_) = percent;
         });
     if (!trained) {
         std::string error_message = ERROR_MESSAGE_TRAIN_FAILED;
