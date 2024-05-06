@@ -69,7 +69,7 @@ namespace w2v {
          * @param _id thread ID, starting from 0
          * @param _sharedData sharedData object instantiated outside of the thread
         */
-        trainThread_t(uint8_t _id, const sharedData_t &_sharedData);
+        trainThread_t(off_t from, off_t to, const sharedData_t &_sharedData);
 
         /**
          * Launchs the thread

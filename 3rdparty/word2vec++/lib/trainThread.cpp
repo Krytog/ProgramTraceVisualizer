@@ -11,7 +11,7 @@
 #include "trainThread.hpp"
 
 namespace w2v {
-    trainThread_t::trainThread_t(uint8_t _id, const sharedData_t &_sharedData) :
+    trainThread_t::trainThread_t(off_t from, off_t to, const sharedData_t &_sharedData) :
             m_sharedData(_sharedData), m_randomDevice(), m_randomGenerator(m_randomDevice()),
             m_rndWindowShift(0, static_cast<short>((m_sharedData.trainSettings->window - 1))),
             m_downSampling(), m_nsDistribution(), m_hiddenLayerVals(), m_hiddenLayerErrors(),
@@ -47,14 +47,10 @@ namespace w2v {
         if (!m_sharedData.fileMapper) {
             throw std::runtime_error("file mapper object is not initialized");
         }
-        auto shift = m_sharedData.fileMapper->size() / m_sharedData.trainSettings->threads;
-        auto startFrom = shift * _id;
-        auto stopAt = (_id == m_sharedData.trainSettings->threads - 1)
-                      ? (m_sharedData.fileMapper->size() - 1) : (shift * (_id + 1));
         m_wordReader.reset(new wordReader_t<fileMapper_t>(*m_sharedData.fileMapper,
                                                           m_sharedData.trainSettings->wordDelimiterChars,
                                                           m_sharedData.trainSettings->endOfSentenceChars,
-                                                          startFrom, stopAt, m_sharedData.trainSettings->maxWordLen));
+                                                          from, to, m_sharedData.trainSettings->maxWordLen));
     }
 
     void trainThread_t::worker(std::vector<float> &_trainMatrix) noexcept {

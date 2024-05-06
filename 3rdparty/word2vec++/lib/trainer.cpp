@@ -58,9 +58,12 @@ namespace w2v {
 
         m_matrixSize = sharedData.trainSettings->size * sharedData.vocabulary->size();
 
-        for (uint8_t i = 0; i < _trainSettings->threads; ++i) {
-            m_threads.emplace_back(new trainThread_t(i, sharedData));
+        const auto words_per_thread = sharedData.vocabulary->trainWords() / _trainSettings->threads;
+        const auto shift = words_per_thread * sizeof(uintptr_t);
+        for (uint8_t i = 1; i < _trainSettings->threads; ++i) {
+            m_threads.emplace_back(new trainThread_t((i - 1) * shift, i * shift, sharedData));
         }
+        m_threads.emplace_back(new trainThread_t((_trainSettings->threads - 1) * shift, sharedData.fileMapper->size(), sharedData));
     }
 
     void trainer_t::operator()(std::vector<float> &_trainMatrix) noexcept {

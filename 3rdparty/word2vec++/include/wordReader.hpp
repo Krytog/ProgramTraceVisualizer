@@ -53,10 +53,10 @@ namespace w2v {
                 m_wordDelimiterChars(std::move(_wordDelimiterChars)),
                 m_endOfSentenceChars(std::move(_endOfSentenceChars)),
                 m_maxWordLen(_maxWordLen), m_offset(_offset),
-                m_startFrom(m_offset), m_stopAt((_stopAt == 0)?_mapper.size() - 1:_stopAt),
+                m_startFrom(m_offset), m_stopAt((_stopAt == 0)?_mapper.size():_stopAt),
                 m_word(m_maxWordLen, 0) {
 
-            if (m_stopAt >= m_mapper.size()) {
+            if (m_stopAt > m_mapper.size()) {
                 throw std::range_error("wordReader: bounds are out of the file size");
             }
             if (m_offset > m_stopAt) {
@@ -84,7 +84,7 @@ namespace w2v {
          * @returns true if word is succesfuly parsed, false in case of EOF or end of parsing block reached (_stopAt).
         */
         inline bool nextWord(std::string &_word) noexcept {
-            while (m_offset <= m_stopAt) {
+            while (m_offset < m_stopAt) {
                 char ch = m_mapper.data()[m_offset++];
                 if (m_wordDelimiterChars.find(ch) != std::string::npos) { // is it a word/sentence delimiter?
                     if (m_endOfSentenceChars.find(ch) != std::string::npos) { // is it the end of sentence (EOS)?
