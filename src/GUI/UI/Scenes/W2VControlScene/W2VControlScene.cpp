@@ -87,8 +87,7 @@ void W2VControlScene::SettingsButton() const {
         ImGui::OpenPopup("W2V Settings");
     }
     if (ImGui::BeginPopup("W2V Settings")) {
-        ImGui::Text("Output dimension: ");
-        ImGui::SliderInt("##Output dimension", &dimension_, 2, 3);
+        ImGui::SeparatorText("Runtime settings");
 
         ImGui::Text("Color: ");
         ImGui::SameLine();
@@ -96,6 +95,11 @@ void W2VControlScene::SettingsButton() const {
 
         ImGui::Text("Cells: ");
         ImGui::InputInt("##Cells", &cells_);
+
+        ImGui::SeparatorText("Recalculation settings");
+
+        ImGui::Text("Output dimension: ");
+        ImGui::SliderInt("##Output dimension", &dimension_, 2, 3);
 
         ImGui::Text("Neighbours: ");
         ImGui::InputInt("##Neighbours", &neighbours_);
