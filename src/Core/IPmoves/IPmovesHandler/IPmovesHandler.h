@@ -94,8 +94,8 @@ private:
     Plot2DMesh plot_;
 
     /* Parameters */
-    unsigned hilbert_degree_;
-    size_t cells_;
-    size_t advance_count_;
+    unsigned hilbert_degree_{0};
+    size_t cells_{0};
+    size_t advance_count_{0};
     bool is_paused_{false};
 };
