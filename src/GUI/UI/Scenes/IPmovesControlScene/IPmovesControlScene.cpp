@@ -12,16 +12,16 @@
 
 namespace {
 const constexpr ImGuiColorEditFlags kColorEditFlags =
-    ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview;
+    ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview | ImGuiWindowFlags_NoSavedSettings;
 
 static const constexpr float kInitProgress = 0.0f;
 static const constexpr bool kInitPause = true;
 static const constexpr float kInitNewColor[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-static const constexpr float kInitOldColor[4] = {0.0f, 0.0f, 1.0f, 1.0f};
-static const constexpr int kInitSlidingWindowSize = 10;
-static const constexpr int kInitAdvance = 1;
-static const constexpr int kInitHilbertDegree = 5;
-static const constexpr int kInitMaxMemory = 1;
+static const constexpr float kInitOldColor[4] = {1.0f, 0.0f, 0.0f, 0.0f};
+static const constexpr int kInitSlidingWindowSize = 200;
+static const constexpr int kInitAdvance = 10;
+static const constexpr int kInitHilbertDegree = 10;
+static const constexpr int kInitMaxMemory = 10;
 }  // namespace
 
 IPmovesControlScene::IPmovesControlScene(const std::pair<float, float>& position,
