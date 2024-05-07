@@ -78,7 +78,9 @@ static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
 static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, size_t target_dim,
                                             size_t objects_count, size_t initial_dim) {
     std::vector<double> embedding(objects_count * target_dim);
-    umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data());
+    const constexpr size_t kNeighbours = 20;
+    const constexpr size_t kIterations = 250;
+    umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data(), kNeighbours, kIterations);
     return embedding;
 }
 }  // namespace
