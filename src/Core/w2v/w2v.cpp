@@ -11,6 +11,7 @@
 
 #include <stdexcept>
 #include <thread>
+#include <fstream>
 
 #define ERROR_MESSAGE_TRAIN_FAILED "W2V: Model failed to train: "
 
@@ -62,15 +63,18 @@ static void TrainModel(w2v::w2vModel_t* model, const w2v::trainSettings_t& setti
 static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
     const auto total_objects = model->modelSize() - 1;
     std::vector<double> data(total_objects * dim);
-    size_t object = 0;
+    size_t position = 0;
+    std::ofstream out("dump.embd");
     for (const auto& [word, vector] : model->map()) {
         if (word == "</s>") {
             continue;
         }
         for (size_t feature = 0; feature < dim; ++feature) {
-            data[feature * total_objects + object] = vector.at(feature);
+            data[position] = vector.at(feature);
+            out << vector.at(feature) << " ";
         }
-        ++object;
+        out << "\n";
+        ++position;
     }
     return data;
 }
@@ -79,7 +83,7 @@ static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, siz
                                             size_t objects_count, size_t initial_dim) {
     std::vector<double> embedding(objects_count * target_dim);
     const constexpr size_t kNeighbours = 20;
-    const constexpr size_t kIterations = 250;
+    const constexpr size_t kIterations = 300;
     umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data(), kNeighbours, kIterations);
     return embedding;
 }
@@ -144,7 +148,7 @@ void W2VHandler::SetDimension(size_t dimension) {
 std::vector<double> W2VHandler::GetObjectAtIndex(size_t index) const {
     std::vector<double> output(current_umap_dim_);
     for (size_t i = 0; i < current_umap_dim_; ++i) {
-        output[i] = umap_embedding_.at(i * objects_count_ + index);
+        output[i] = umap_embedding_.at(i + index * current_umap_dim_);
     }
     return output;
 }
@@ -156,11 +160,11 @@ std::pair<std::vector<double>, std::vector<double>> W2VHandler::GetMinMax() cons
         mins[i] = std::numeric_limits<double>::max();
         maxs[i] = std::numeric_limits<double>::min();
         for (size_t j = 0; j < objects_count_; ++j) {
-            if (mins[i] > umap_embedding_.at(i * objects_count_ + j)) {
-                mins[i] = umap_embedding_.at(i * objects_count_ + j);
+            if (mins[i] > umap_embedding_.at(i + j * current_umap_dim_)) {
+                mins[i] = umap_embedding_.at(i + j * current_umap_dim_);
             }
-            if (maxs[i] < umap_embedding_.at(i * objects_count_ + j)) {
-                maxs[i] = umap_embedding_.at(i * objects_count_ + j);
+            if (maxs[i] < umap_embedding_.at(i + j * current_umap_dim_)) {
+                maxs[i] = umap_embedding_.at(i + j * current_umap_dim_);
             }
         }
     }

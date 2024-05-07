@@ -10,6 +10,7 @@ void TrainEmbedding(size_t initial_dim, size_t objects_count, const double* inpu
     x.set_parallel_optimization(true);
     x.set_num_neighbors(neighbours);
     x.set_num_epochs(iterations);
+    x.set_bandwidth(5);
     auto proxy = x.initialize(initial_dim, objects_count, input, target_dim, output);
     for (int iter = 0; iter < iterations; ++iter) {
         proxy.run(iter);
