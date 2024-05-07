@@ -13,6 +13,15 @@
 
 class W2VHandler {
 public:
+    struct Params {
+        size_t dimension;
+        float color[4];
+        size_t neighbours;
+        size_t epochs;
+        size_t cells;
+        float min_dist;
+    };
+
     W2VHandler(const std::string& filename);
 
     W2VHandler(const W2VHandler& other) = delete;
@@ -61,14 +70,16 @@ public:
     /* Passes width and height into ProgressWidget. Only useful when W2VHandler is preparing */
     void SetProgressParams(float width, float height);
 
+    /* Starts recalculating umap mapping */
+    void StartRecalculate(const Params& params);
+
 private:
     std::unique_ptr<Plot2DMesh> plot_;
     std::vector<double> w2v_embedding_;
     std::vector<double> umap_embedding_;
-    size_t plot_size_;
-    size_t initial_dim_;
-    size_t objects_count_;
-    size_t current_umap_dim_{0};
+    size_t initial_dim_{0};
+    size_t objects_count_{0};
+    Params current_params_;
 
     std::atomic<bool> is_data_loaded_{false};
 

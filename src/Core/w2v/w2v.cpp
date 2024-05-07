@@ -87,12 +87,18 @@ static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, siz
     umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data(), kNeighbours, kIterations);
     return embedding;
 }
+
+static size_t GetLinearIndex(size_t object_index, size_t dimension_index, size_t dimensions) {
+    return dimension_index + object_index * dimensions;
+}
+
 }  // namespace
 
 W2VHandler::W2VHandler(const std::string& filename)
     : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)),
-      plot_size_(kDefaultCells),
       progress_wigdet_(std::make_unique<ProgressWidget>()) {
+        current_params_.dimension = 0;
+        current_params_.cells = 0;
     StartPrepare(filename);
 }
 
@@ -129,42 +135,44 @@ void W2VHandler::SetUmapEmbedding(size_t target_dim) {
 
 void W2VHandler::SetPlotSize(size_t cells) {
     plot_->SetGridSize(cells);
-    plot_size_ = cells;
+    current_params_.cells = cells;
 }
 
 size_t W2VHandler::GetPlotSize() const {
-    return plot_size_;
+    return current_params_.cells;
 }
 
 void W2VHandler::SetDimension(size_t dimension) {
-    if (current_umap_dim_ == dimension) {
-        return;
-    }
-    current_umap_dim_ = dimension;
+    current_params_.dimension = dimension;
     ready_ = false;
     is_umap_embedding_recalc_pending_ = true;
 }
 
+size_t W2VHandler::GetDimension() const {
+    return current_params_.dimension;
+}
+
 std::vector<double> W2VHandler::GetObjectAtIndex(size_t index) const {
-    std::vector<double> output(current_umap_dim_);
-    for (size_t i = 0; i < current_umap_dim_; ++i) {
-        output[i] = umap_embedding_.at(i + index * current_umap_dim_);
+    std::vector<double> output(current_params_.dimension);
+    for (size_t i = 0; i < current_params_.dimension; ++i) {
+        output[i] = umap_embedding_.at(GetLinearIndex(index, i,  current_params_.dimension));
     }
     return output;
 }
 
 std::pair<std::vector<double>, std::vector<double>> W2VHandler::GetMinMax() const {
-    std::vector<double> mins(current_umap_dim_);
-    std::vector<double> maxs(current_umap_dim_);
-    for (size_t i = 0; i < current_umap_dim_; ++i) {
+    std::vector<double> mins(current_params_.dimension);
+    std::vector<double> maxs(current_params_.dimension);
+    for (size_t i = 0; i < current_params_.dimension; ++i) {
         mins[i] = std::numeric_limits<double>::max();
         maxs[i] = std::numeric_limits<double>::min();
         for (size_t j = 0; j < objects_count_; ++j) {
-            if (mins[i] > umap_embedding_.at(i + j * current_umap_dim_)) {
-                mins[i] = umap_embedding_.at(i + j * current_umap_dim_);
+            const auto current = umap_embedding_.at(GetLinearIndex(j, i, current_params_.dimension));
+            if (mins[i] > current) {
+                mins[i] = current;
             }
-            if (maxs[i] < umap_embedding_.at(i + j * current_umap_dim_)) {
-                maxs[i] = umap_embedding_.at(i + j * current_umap_dim_);
+            if (maxs[i] < current) {
+                maxs[i] = current;
             }
         }
     }
@@ -175,7 +183,7 @@ std::vector<float> W2VHandler::GetPreparedData() const {
     const auto [mins, maxs] = std::move(GetMinMax());
     Clamper clamper(mins, maxs);
     std::vector<float> output;
-    output.reserve(objects_count_ * (current_umap_dim_ + 1));
+    output.reserve(objects_count_ * (current_params_.dimension + 1));
     for (size_t i = 0; i < objects_count_; ++i) {
         auto object = std::move(GetObjectAtIndex(i));
         clamper.ClampValue(object);
@@ -203,7 +211,6 @@ void W2VHandler::StartPrepare(const std::string& filename) {
         InitW2VEmbedding(filename);
         training_progress_ = 100.0f;
         static const constexpr size_t kDefaultDimension = 2;
-        SetDimension(kDefaultDimension);
     });
 }
 
@@ -232,7 +239,7 @@ void W2VHandler::LoadData() {
 void W2VHandler::Update() {
     if (is_umap_embedding_recalc_pending_) {
         progress_wigdet_->GoToWaitingMode();
-        SetUmapEmbedding(current_umap_dim_);
+        SetUmapEmbedding(current_params_.dimension);
     }
     if (ready_) {
         if (!is_data_loaded_) {
@@ -248,4 +255,12 @@ void W2VHandler::SetProgressParams(float width, float height) {
         return;
     }
     progress_wigdet_->SetResolution(width, height);
+}
+
+void W2VHandler::StartRecalculate(const Params& params) {
+    current_params_ = params;
+    if (training_progress_ < 100.0f) {
+        return;
+    }
+    SetDimension(params.dimension);
 }
