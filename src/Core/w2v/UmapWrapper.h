@@ -7,8 +7,8 @@ namespace umap {
 struct TrainParams {
     size_t neighbours{15};
     size_t epochs{300};
-    float min_distance{0.1};
-    float bandwidth{1};
+    float min_distance{0.01};
+    float bandwidth{5};
     float local_conectivity{1};
 };
 

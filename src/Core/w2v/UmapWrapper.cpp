@@ -14,8 +14,6 @@ void TrainEmbedding(size_t initial_dim, size_t objects_count, const double* inpu
     x.set_min_dist(params.min_distance);
     x.set_local_connectivity(params.local_conectivity);
     auto proxy = x.initialize(initial_dim, objects_count, input, target_dim, output);
-    for (int iter = 0; iter < params.epochs; ++iter) {
-        proxy.run(iter);
-    }
+    proxy.run(params.epochs);
 }
 }  // namespace umap
