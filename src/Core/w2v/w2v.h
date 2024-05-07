@@ -38,6 +38,9 @@ public:
     /* Returns the current plot size */
     [[nodiscard]] size_t GetPlotSize() const;
 
+    /* Sets the color of the plot */
+    void SetColor(const float* color);
+
     /* Sets the current umap dimension. If changed, it recalculates the entire embedding, so it can be slow */
     void SetDimension(size_t dimension);
 

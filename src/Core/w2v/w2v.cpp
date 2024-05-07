@@ -80,11 +80,14 @@ static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
 }
 
 static std::vector<double> GetUMAPEmbedding(const std::vector<double>& data, size_t target_dim,
-                                            size_t objects_count, size_t initial_dim) {
+                                            size_t objects_count, size_t initial_dim,
+                                            const W2VHandler::Params& params) {
     std::vector<double> embedding(objects_count * target_dim);
-    const constexpr size_t kNeighbours = 20;
-    const constexpr size_t kIterations = 300;
-    umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data(), kNeighbours, kIterations);
+    umap::TrainParams train_params;
+    train_params.neighbours = params.neighbours;
+    train_params.epochs = params.epochs;
+    train_params.min_distance = params.min_dist;
+    umap::TrainEmbedding(initial_dim, objects_count, data.data(), target_dim, embedding.data(), train_params);
     return embedding;
 }
 
@@ -97,8 +100,8 @@ static size_t GetLinearIndex(size_t object_index, size_t dimension_index, size_t
 W2VHandler::W2VHandler(const std::string& filename)
     : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)),
       progress_wigdet_(std::make_unique<ProgressWidget>()) {
-        current_params_.dimension = 0;
-        current_params_.cells = 0;
+    current_params_.dimension = 0;
+    current_params_.cells = 0;
     StartPrepare(filename);
 }
 
@@ -125,8 +128,8 @@ void W2VHandler::SetUmapEmbedding(size_t target_dim) {
     worker_->join();
     worker_ = std::move(std::make_unique<std::thread>([this, target_dim]() {
         ready_ = false;
-        umap_embedding_ =
-            std::move(GetUMAPEmbedding(w2v_embedding_, target_dim, objects_count_, initial_dim_));
+        umap_embedding_ = std::move(
+            GetUMAPEmbedding(w2v_embedding_, target_dim, objects_count_, initial_dim_, current_params_));
         is_data_loaded_ = false;
         ready_ = true;
     }));
@@ -155,7 +158,7 @@ size_t W2VHandler::GetDimension() const {
 std::vector<double> W2VHandler::GetObjectAtIndex(size_t index) const {
     std::vector<double> output(current_params_.dimension);
     for (size_t i = 0; i < current_params_.dimension; ++i) {
-        output[i] = umap_embedding_.at(GetLinearIndex(index, i,  current_params_.dimension));
+        output[i] = umap_embedding_.at(GetLinearIndex(index, i, current_params_.dimension));
     }
     return output;
 }
@@ -263,4 +266,10 @@ void W2VHandler::StartRecalculate(const Params& params) {
         return;
     }
     SetDimension(params.dimension);
+    SetPlotSize(params.cells);
+    plot_->SetColorForNewest(params.color);
+}
+
+void W2VHandler::SetColor(const float* color) {
+    plot_->SetColorForNewest(color);
 }
