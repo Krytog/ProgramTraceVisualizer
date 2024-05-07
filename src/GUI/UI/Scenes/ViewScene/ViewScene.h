@@ -11,11 +11,15 @@ class ViewScene : public BasicScene {
 public:
     ViewScene(const std::pair<float, float>& position, const std::pair<float, float>& size);
 
-    /* Callback triggered when mouse moves */
-    void OnMouseMove(double x, double y);
+    /* Returns the delta of mouse position since the last frame */
+    [[nodiscard]] std::pair<float, float> GetMouseDelta() const;
 
-    /* Callback triggered when mouse scrolls */
-    void OnMouseScroll(double delta);
+    /* Returns the value of mouse scroll (0 is no scroll, a positive value if scrolls upwards and a negative
+     * value if scrolls downwards)*/
+    [[nodiscard]] float GetMouseScroll() const;
+
+    /* Returns whether the left mouse button is pressed within the current frame */
+    [[nodiscard]] bool IsMousePressed() const;
 
     /* Override UpdateOnResize from BasicScene, as we need to resize the rendering buffer */
     void UpdateOnResize(const std::pair<float, float>& posiiton, const std::pair<float, float>& size);
@@ -43,7 +47,15 @@ private:
     /* Renders UI elements of the scene, draws the content of the inner buffer */
     void RenderUI() const;
 
+    /* Takes raw input from ImGui and stores it so it can be accessed by controllers. Should be marked const
+     * as it's called from render inner */
+    void UpdateMouseInput() const;
+
     std::unordered_set<const IRenderable*> renderable_objects_;
     RenderBuffer render_buffer_;
-    double frametime_;;
+    double frametime_;
+
+    mutable std::pair<float, float> mouse_delta_{0, 0};
+    mutable float mouse_scroll_{0};
+    mutable bool is_mouse_pressed_{false};
 };

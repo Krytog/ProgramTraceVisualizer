@@ -10,13 +10,13 @@
 #define ViewScene_InnerName "View"
 
 namespace {
-    static const constexpr float kTextHeightOffset = 30.0f;  // it's magic constant
+static const constexpr float kTextHeightOffset = 30.0f;  // it's magic constant
 
-    bool AreEqual(float lhs, float rhs) {
-        static const constexpr float kPrecision = 1e-6;
-        return std::abs(lhs - rhs) < kPrecision;
-    }
+bool AreEqual(float lhs, float rhs) {
+    static const constexpr float kPrecision = 1e-6;
+    return std::abs(lhs - rhs) < kPrecision;
 }
+}  // namespace
 
 ViewScene::ViewScene(const std::pair<float, float>& position, const std::pair<float, float>& size)
     : BasicScene(position, size, ViewScene_InnerName),
@@ -42,9 +42,24 @@ bool ViewScene::RemoveObject(const IRenderable* object) {
     return true;
 }
 
+void ViewScene::UpdateMouseInput() const {
+    if (ImGui::IsItemHovered()) {
+        const auto& io = ImGui::GetIO();
+        mouse_delta_.first = io.MouseDelta.x;
+        mouse_delta_.second = io.MouseDelta.y;
+        mouse_scroll_ = io.MouseWheel;
+        is_mouse_pressed_ = ImGui::IsMouseDown(0);  // 0 is left mouse button
+    } else {
+        mouse_delta_ = {0, 0};
+        mouse_scroll_ = 0;
+        is_mouse_pressed_ = false;
+    }
+}
+
 void ViewScene::RenderInner() const {
     RenderObjects();
     RenderUI();
+    UpdateMouseInput();
 }
 
 void ViewScene::RenderObjects() const {
@@ -82,4 +97,16 @@ void ViewScene::SetFrametime(double frametime) {
 
 std::pair<float, float> ViewScene::GetViewPortSize() const {
     return {size_.first, size_.second - kTextHeightOffset};
+}
+
+std::pair<float, float> ViewScene::GetMouseDelta() const {
+    return mouse_delta_;
+}
+
+float ViewScene::GetMouseScroll() const {
+    return mouse_scroll_;
+}
+
+bool ViewScene::IsMousePressed() const {
+    return is_mouse_pressed_;
 }
