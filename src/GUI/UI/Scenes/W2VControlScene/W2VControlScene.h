@@ -9,16 +9,12 @@ class W2VControlScene : public BasicScene {
 public:
     W2VControlScene(const std::pair<float, float>& position, const std::pair<float, float>& size);
 
-    /* The following fuctions work as follows: they return a pair of <bool, T>. If the bool == true, then the
-    T is new input from the user. Otherwise, the user hasn't inputed anything new (from the last time this
-    function was called) yet. */
-
-    [[nodiscard]] std::pair<bool, int> GetInputDimension();
-    [[nodiscard]] std::pair<bool, Color> GetInputColor();
-    [[nodiscard]] std::pair<bool, int> GetInputNeighbours();
-    [[nodiscard]] std::pair<bool, int> GetInputEpochs();
-    [[nodiscard]] std::pair<bool, int> GetInputCells();
-    [[nodiscard]] std::pair<bool, float> GetInputMinDist();
+    [[nodiscard]] int GetInputDimension();
+    [[nodiscard]] const float* GetInputColor();
+    [[nodiscard]] int GetInputNeighbours();
+    [[nodiscard]] int GetInputEpochs();
+    [[nodiscard]] int GetInputCells();
+    [[nodiscard]] float GetInputMinDist();
 
     struct W2VControlState {
         int dimension;
@@ -27,7 +23,6 @@ public:
         int epochs;
         int cells;
         float min_dist;
-        bool is_pending_recalculation;
     };
 
     /* Returns the current state. It should be used only to initialize a new W2VHandler. For updates, use
@@ -43,6 +38,10 @@ public:
     /* When the recalculation is done, this method should be invoked to reset the apply button */
     void OnRecalculationFinished();
 
+    /* Sets the dimension status that will be rendered in the UI. If real_dimension = 0, then recalc is in
+     * progress  */
+    void SetRealDimension(int real_dimension);
+
 private:
     void RenderInner() const override;
 
@@ -53,11 +52,14 @@ private:
 
     /* A lot of mutable variables here as Render of IRenderable is const, but DearImGui rendering and state
      * change always come together */
-    mutable ValueWithPrev<int> dimension_;
-    mutable ValueWithPrev<Color> color_;
-    mutable ValueWithPrev<int> neighbours_;
-    mutable ValueWithPrev<int> epochs_;
-    mutable ValueWithPrev<int> cells_;
-    mutable ValueWithPrev<float> min_dist_;
+    mutable int dimension_;
+    mutable float color_[4];
+    mutable int neighbours_;
+    mutable int epochs_;
+    mutable int cells_;
+    mutable float min_dist_;
+
     mutable ValueWithPrev<bool> is_pending_recalculation_;
+
+    int real_dimension_{0};
 };

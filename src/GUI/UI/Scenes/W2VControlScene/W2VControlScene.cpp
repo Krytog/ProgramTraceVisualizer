@@ -10,9 +10,17 @@
 #define DoubleInit(x) \
     { x, x }
 
+#define AssignColor(x, color)         \
+    do {                              \
+        for (int i = 0; i < 4; ++i) { \
+            x[i] = color[i];          \
+        }                             \
+    } while (0)
+
 namespace {
 const constexpr ImGuiColorEditFlags kColorEditFlags =
-    ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview | ImGuiWindowFlags_NoSavedSettings;
+    ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview |
+    ImGuiWindowFlags_NoSavedSettings;
 
 static const constexpr int kInitDimension = 2;
 static const constexpr float kInitColor[4] = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -23,15 +31,14 @@ static const constexpr float kInitMinDist = 0.1f;
 static const constexpr bool kInitIsPendingRecalculation = false;
 }  // namespace
 
-W2VControlScene::W2VControlScene(const std::pair<float, float>& position,
-                                         const std::pair<float, float>& size)
+W2VControlScene::W2VControlScene(const std::pair<float, float>& position, const std::pair<float, float>& size)
     : BasicScene(position, size, W2VControlScene_InnerName),
-      dimension_(DoubleInit(kInitDimension)),
-      color_(DoubleInit(UnpackColor(kInitColor))),
-      neighbours_(DoubleInit(kInitNeighbours)),
-      epochs_(DoubleInit(kInitEpochs)),
-      cells_(DoubleInit(kInitCells)),
-      min_dist_(DoubleInit(kInitMinDist)),
+      dimension_(kInitDimension),
+      color_(UnpackColor(kInitColor)),
+      neighbours_(kInitNeighbours),
+      epochs_(kInitEpochs),
+      cells_(kInitCells),
+      min_dist_(kInitMinDist),
       is_pending_recalculation_(DoubleInit(kInitIsPendingRecalculation)) {
 }
 
@@ -43,33 +50,36 @@ void W2VControlScene::RenderInner() const {
     SettingsButton();
 }
 
-std::pair<bool, int> W2VControlScene::GetInputDimension() {
-    return GetValueAndChange(dimension_);
+int W2VControlScene::GetInputDimension() {
+    return dimension_;
 }
 
-std::pair<bool, W2VControlScene::Color> W2VControlScene::GetInputColor() {
-    return GetValueAndChange(color_);
+const float* W2VControlScene::GetInputColor() {
+    return color_;
 }
 
-std::pair<bool, int> W2VControlScene::GetInputNeighbours() {
-    return GetValueAndChange(neighbours_);
+int W2VControlScene::GetInputNeighbours() {
+    return neighbours_;
 }
 
-std::pair<bool, int> W2VControlScene::GetInputEpochs() {
-    return GetValueAndChange(epochs_);
+int W2VControlScene::GetInputEpochs() {
+    return epochs_;
 }
 
-std::pair<bool, int> W2VControlScene::GetInputCells() {
-    return GetValueAndChange(cells_);
+int W2VControlScene::GetInputCells() {
+    return cells_;
 }
 
-std::pair<bool, float> W2VControlScene::GetInputMinDist() {
-    return GetValueAndChange(min_dist_);
+float W2VControlScene::GetInputMinDist() {
+    return min_dist_;
 }
-
 
 void W2VControlScene::DimensionInfo() const {
-    ALIGNMENT_AT_BEGIN(ImGui::Text("Dimension: %dD", dimension_.cur_value_));
+    if (!real_dimension_) {
+        ALIGNMENT_AT_BEGIN(ImGui::Text("Visualization is not ready"));
+        return;
+    }
+    ALIGNMENT_AT_BEGIN(ImGui::Text("Dimension: %dD", real_dimension_));
 }
 
 void W2VControlScene::SettingsButton() const {
@@ -78,23 +88,23 @@ void W2VControlScene::SettingsButton() const {
     }
     if (ImGui::BeginPopup("W2V Settings")) {
         ImGui::Text("Output dimension: ");
-        ImGui::SliderInt("##Output dimension", &dimension_.cur_value_, 1, 2);
+        ImGui::SliderInt("##Output dimension", &dimension_, 2, 3);
 
         ImGui::Text("Color: ");
         ImGui::SameLine();
-        ImGui::ColorEdit4("##Color", color_.cur_value_, kColorEditFlags);
+        ImGui::ColorEdit4("##Color", color_, kColorEditFlags);
 
         ImGui::Text("Cells: ");
-        ImGui::InputInt("##Cells", &cells_.cur_value_);
+        ImGui::InputInt("##Cells", &cells_);
 
         ImGui::Text("Neighbours: ");
-        ImGui::InputInt("##Neighbours", &neighbours_.cur_value_);
+        ImGui::InputInt("##Neighbours", &neighbours_);
 
         ImGui::Text("Epochs: ");
-        ImGui::InputInt("##Epochs", &epochs_.cur_value_);
+        ImGui::InputInt("##Epochs", &epochs_);
 
         ImGui::Text("Min dist: ");
-        ImGui::InputFloat("##Min dist", &min_dist_.cur_value_);
+        ImGui::InputFloat("##Min dist", &min_dist_);
 
         ImGui::EndPopup();
     }
@@ -110,25 +120,30 @@ void W2VControlScene::CalculateButton() const {
     }
 }
 
+void W2VControlScene::OnRecalculationFinished() {
+    is_pending_recalculation_.cur_value_ = false;
+}
+
 W2VControlScene::W2VControlState W2VControlScene::GetState() const {
-    W2VControlState state{
-        .dimension = dimension_.cur_value_,
-        .color = {UnpackColor(color_.cur_value_)},
-        .neighbours = neighbours_.cur_value_,
-        .epochs = epochs_.cur_value_,
-        .cells = cells_.cur_value_,
-        .min_dist = min_dist_.cur_value_,
-        .is_pending_recalculation = is_pending_recalculation_.cur_value_,
-    };
+    W2VControlState state{.dimension = dimension_,
+                          .color = {UnpackColor(color_)},
+                          .neighbours = neighbours_,
+                          .epochs = epochs_,
+                          .cells = cells_,
+                          .min_dist = min_dist_};
     return state;
 }
 
 void W2VControlScene::ResetState() {
-    dimension_ = DoubleInit(kInitDimension);
-    color_ = DoubleInit(UnpackColor(kInitColor));
-    neighbours_ = DoubleInit(kInitNeighbours);
-    epochs_ = DoubleInit(kInitEpochs);
-    cells_ = DoubleInit(kInitCells);
-    min_dist_ = DoubleInit(kInitMinDist);
+    dimension_ = kInitDimension;
+    AssignColor(color_, kInitColor);
+    neighbours_ = kInitNeighbours;
+    epochs_ = kInitEpochs;
+    cells_ = kInitCells;
+    min_dist_ = kInitMinDist;
     is_pending_recalculation_ = DoubleInit(kInitIsPendingRecalculation);
+}
+
+void W2VControlScene::SetRealDimension(int real_dimension) {
+    real_dimension_ = real_dimension;
 }
