@@ -15,6 +15,7 @@ add_library(UI
 	Scenes/BasicScene/BasicScene.cpp
 	Scenes/OptionsScene/OptionsScene.cpp
 	Scenes/IPmovesControlScene/IPmovesControlScene.cpp
+	Scenes/W2VControlScene/W2VControlScene.cpp
 	Helpers/Alignment.cpp
 	Widgets/WaitingWidget.cpp
 	Widgets/ProgressWidget.cpp

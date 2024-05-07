@@ -4,6 +4,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
+#include "UI/Scenes/W2VControlScene/W2VControlScene.h"
 
 #define GLSL_VERSION "#version 330"
 
@@ -13,6 +14,7 @@
         view_scene_.x;           \
         details_scene_.x;        \
         ipmovescontrol_scene_.x; \
+        w2vcontrol_scene_.x;     \
     } while (false)
 
 #define GET_SCENE_POS_AND_SIZE(name, arg) Get##name##ScenePos(arg, mode_), Get##name##SceneSize(arg, mode_)
@@ -24,7 +26,7 @@ static const constexpr float kOptionsWidgetHeight = 20.0f;
 
 static const constexpr float kViewSceneWidthCoef = 0.75f;
 
-static const constexpr float kIPmovesControlSceneHeight = 30.0f;
+static const constexpr float kControlSceneHeight = 30.0f;
 
 static const constexpr std::pair<float, float> GetViewScenePos(const std::pair<int, int>& window_size,
                                                                Mode mode = Mode::Waiting) {
@@ -35,8 +37,8 @@ static const constexpr std::pair<float, float> GetViewScenePos(const std::pair<i
 static const constexpr std::pair<float, float> GetViewSceneSize(const std::pair<int, int>& window_size,
                                                                 Mode mode = Mode::Waiting) {
     float height = window_size.second - kOptionsWidgetHeight;
-    if (mode == Mode::IP) {
-        height = window_size.second - kOptionsWidgetHeight - kIPmovesControlSceneHeight;
+    if (mode != Mode::Waiting) {
+        height = window_size.second - kOptionsWidgetHeight - kControlSceneHeight;
     }
     const float width = kViewSceneWidthCoef * window_size.first;
     return {width, height};
@@ -77,7 +79,7 @@ static const constexpr std::pair<float, float> GetIPmovesControlScenePos(
         return {0, 0};
     }
     return {(1.0f - kViewSceneWidthCoef) * window_size.first,
-            window_size.second - kIPmovesControlSceneHeight};
+            window_size.second - kControlSceneHeight};
 }
 
 static const constexpr std::pair<float, float> GetIPmovesControlSceneSize(
@@ -85,7 +87,26 @@ static const constexpr std::pair<float, float> GetIPmovesControlSceneSize(
     if (mode != Mode::IP) {
         return {0, 0};
     }
-    const float height = kIPmovesControlSceneHeight;
+    const float height = kControlSceneHeight;
+    const float width = kViewSceneWidthCoef * window_size.first;
+    return {width, height};
+}
+
+static const constexpr std::pair<float, float> GetW2VControlScenePos(
+    const std::pair<int, int>& window_size, Mode mode = Mode::Waiting) {
+    if (mode != Mode::W2V) {
+        return {0, 0};
+    }
+    return {(1.0f - kViewSceneWidthCoef) * window_size.first,
+            window_size.second - kControlSceneHeight};
+}
+
+static const constexpr std::pair<float, float> GetW2VControlSceneSize(
+    const std::pair<int, int>& window_size, Mode mode = Mode::Waiting) {
+    if (mode != Mode::W2V) {
+        return {0, 0};
+    }
+    const float height = kControlSceneHeight;
     const float width = kViewSceneWidthCoef * window_size.first;
     return {width, height};
 }
@@ -98,7 +119,8 @@ UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_
       view_scene_(GetViewScenePos(window_size), GetViewSceneSize(window_size)),
       details_scene_(GetDetailsScenePos(window_size), GetDetailsSceneSize(window_size)),
       options_scene_(GetOptionsScenePos(window_size), GetOptionsSceneSize(window_size)),
-      ipmovescontrol_scene_(GetIPmovesControlScenePos(window_size), GetIPmovesControlSceneSize(window_size)) {
+      ipmovescontrol_scene_(GetIPmovesControlScenePos(window_size), GetIPmovesControlSceneSize(window_size)),
+      w2vcontrol_scene_(GetW2VControlScenePos(window_size), GetW2VControlSceneSize(window_size)) {
     InitImGui(glfw_window);
 }
 
@@ -140,6 +162,10 @@ IPmovesControlScene& UIManager::GetIPmovesControlScene() {
     return ipmovescontrol_scene_;
 }
 
+W2VControlScene& UIManager::GetW2VControlScene() {
+    return w2vcontrol_scene_;
+}
+
 void UIManager::RenderAllScenes() const {
     FOREACH_SCENE(Render());
 }
@@ -150,6 +176,7 @@ void UIManager::Resize(const std::pair<int, int>& new_size) {
     view_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(View, new_size));
     details_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(Details, new_size));
     ipmovescontrol_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(IPmovesControl, new_size));
+    w2vcontrol_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(W2VControl, new_size));
 }
 
 void UIManager::GoToWaitingForFileMode() {
@@ -159,6 +186,7 @@ void UIManager::GoToWaitingForFileMode() {
     details_scene_.PushLine("Waiting for trace file...");
     details_scene_.PushLine("Press \"File\" menu button to open a file");
     ipmovescontrol_scene_.SetVisibility(false);
+    w2vcontrol_scene_.SetVisibility(false);
     mode_ = Mode::Waiting;
 }
 
@@ -167,6 +195,7 @@ void UIManager::GoToIPmovesMode() {
         details_scene_.PopBackLine();
     }
     ipmovescontrol_scene_.SetVisibility(true);
+    w2vcontrol_scene_.SetVisibility(false);
     mode_ = Mode::IP;
 }
 
@@ -175,5 +204,6 @@ void UIManager::GoToW2VMode() {
         details_scene_.PopBackLine();
     }
     ipmovescontrol_scene_.SetVisibility(false);
+    w2vcontrol_scene_.SetVisibility(true);
     mode_ = Mode::W2V;
 }

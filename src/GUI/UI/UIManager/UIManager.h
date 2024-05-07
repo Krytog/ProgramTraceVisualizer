@@ -4,6 +4,7 @@
 #include <UI/Scenes/DetailsScene/DetailsScene.h>
 #include <UI/Scenes/OptionsScene/OptionsScene.h>
 #include <UI/Scenes/IPmovesControlScene/IPmovesControlScene.h>
+#include <UI/Scenes/W2VControlScene/W2VControlScene.h>
 
 #include <utility>
 
@@ -21,17 +22,20 @@ public:
     /* Draws all the UI into the render buffer */
     void DrawUI() const;
 
-    /* Returns the reference to the ViewScene of the UI */
+    /* Returns a reference to the ViewScene of the UI */
     ViewScene& GetViewScene();
 
-    /* Returns the reference to the DetailsScene of the UI */
+    /* Returns a reference to the DetailsScene of the UI */
     DetailsScene& GetDetailsScene();
 
-    /* Returns the reference to the OptionsScene of the UI */
+    /* Returns a reference to the OptionsScene of the UI */
     OptionsScene& GetOptionsScene();
 
-    /* Returns the reference to the IPmovesControlScene of the UI */
+    /* Returns a reference to the IPmovesControlScene of the UI */
     IPmovesControlScene& GetIPmovesControlScene();
+
+    /* Returns a reference to the W2VControlScene of the UI */
+    W2VControlScene& GetW2VControlScene();
 
     /* Sets UI to the waiting for file mode */
     void GoToWaitingForFileMode();
@@ -56,4 +60,5 @@ private:
     DetailsScene details_scene_;
     OptionsScene options_scene_;
     IPmovesControlScene ipmovescontrol_scene_;
+    W2VControlScene w2vcontrol_scene_;
 };
