@@ -50,11 +50,11 @@ static const constexpr char* kPlot2DShaderFrag = R"(
 in float temperature;
 out vec4 color;
 
-uniform vec4 newest_color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-uniform vec4 oldest_color = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+uniform vec4 high_color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+uniform vec4 low_color = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
 vec4 get_color(float temp) {
-	vec4 interpolated = temp * newest_color + (1 - temp) * oldest_color;
+	vec4 interpolated = temp * high_color + (1 - temp) * low_color;
 	return interpolated;
 }
 
