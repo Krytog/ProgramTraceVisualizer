@@ -1,5 +1,6 @@
 #include "w2v.h"
 #include "Clamping.h"
+#include "Core/Plotting/PlotMesh/Plot3DMesh.h"
 #include "UI/Widgets/ProgressWidget.h"
 #include "UmapWrapper.h"
 
@@ -96,8 +97,7 @@ static size_t GetLinearIndex(size_t object_index, size_t dimension_index, size_t
 }  // namespace
 
 W2VHandler::W2VHandler(const std::string& filename)
-    : plot_(std::make_unique<Plot2DMesh>(kDefaultCells)),
-      progress_wigdet_(std::make_unique<ProgressWidget>()) {
+    : progress_wigdet_(std::make_unique<ProgressWidget>()) {
     current_params_.dimension = 0;
     current_params_.cells = 0;
     StartPrepare(filename);
@@ -268,10 +268,20 @@ void W2VHandler::StartRecalculate(const Params& params) {
         return;
     }
     SetDimension(params.dimension);
-    SetPlotSize(params.cells);
+    RecreatePlot();
     plot_->SetHighColor(params.color);
 }
 
 void W2VHandler::SetColor(const float* color) {
     plot_->SetHighColor(color);
+}
+
+void W2VHandler::RecreatePlot() {
+    if (current_params_.dimension == 2) {
+        plot_as_plot3d_ = nullptr;
+        plot_ = std::make_unique<Plot2DMesh>(current_params_.cells);
+    } else {
+        plot_ = std::make_unique<Plot3DMesh>(current_params_.cells);
+        plot_as_plot3d_ = dynamic_cast<Plot3DMesh*>(plot_.get());
+    }
 }

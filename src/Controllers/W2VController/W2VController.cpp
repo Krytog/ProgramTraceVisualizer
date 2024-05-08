@@ -107,7 +107,7 @@ void ApplyInput(UIManager* ui_manager, W2VHandler* handler) {
     auto* controlls = &ui_manager->GetW2VControlScene();
     const auto [is_new, is_pending] = controlls->IsPendingRecalculation();
     if (is_new && is_pending) {
-        if (!IsTrainingFinished(handler)) { // user pressed button too early
+        if (!IsTrainingFinished(handler)) { // user pressed the button too early
             controlls->OnRecalculationFinished(); // resets the button
         }
         const auto controlls_state = controlls->GetState();
@@ -115,8 +115,10 @@ void ApplyInput(UIManager* ui_manager, W2VHandler* handler) {
         handler->StartRecalculate(params);
         controlls->SetRealDimension(0);
     }
-    handler->SetPlotSize(controlls->GetInputCells());
-    handler->SetColor(controlls->GetInputColor());
+    if (handler->IsReady()) {
+        handler->SetPlotSize(controlls->GetInputCells());
+        handler->SetColor(controlls->GetInputColor());
+    }
 }
 
 }  // namespace

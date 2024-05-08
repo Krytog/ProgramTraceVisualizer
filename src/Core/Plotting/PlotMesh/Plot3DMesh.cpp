@@ -6,7 +6,7 @@
 
 namespace {
 static constexpr const VertexObject::ArgPack kVertexObjectConfig{
-    .data = nullptr, .data_size = 0, .args_per_vertex = 3, .memory_mode = VertexObject::MemoryMode::STREAM};
+    .data = nullptr, .data_size = 0, .args_per_vertex = 4, .memory_mode = VertexObject::MemoryMode::STREAM};
 
 static constexpr const Shader::ShaderConfig kShaderConfig{
     .VertexShaderSourceType = Shader::SourceType::STRING,
@@ -33,10 +33,12 @@ Plot3DMesh::Plot3DMesh(const size_t grid_size) : PlotMesh(kVertexObjectConfig, k
     transform_matrix_ = glm::mat4(1.0f);
     view_matrix_ = glm::translate(transform_matrix_, glm::vec3(0.0f, 0.0f, -5.0f));
     projection_matrix_ = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
+    ApplyMatrices();
 }
 
 void Plot3DMesh::ApplyMatrices() {
     const auto final_matrix = projection_matrix_ * view_matrix_ * transform_matrix_;
+    shader_.SetUniform(ShaderUniformName_Transform, final_matrix);
 }
 
 glm::mat4 Plot3DMesh::GetCameraTransform() const {

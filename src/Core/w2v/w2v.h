@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/Plotting/PlotMesh/Plot2DMesh.h>
+#include <Core/Plotting/PlotMesh/Plot3DMesh.h>
 #include <GUI/Graphics/Primitives/IRenderable.h>
 #include <GUI/UI/Widgets/ProgressWidget.h>
 
@@ -77,7 +78,8 @@ public:
     void StartRecalculate(const Params& params);
 
 private:
-    std::unique_ptr<Plot2DMesh> plot_;
+    std::unique_ptr<PlotMesh> plot_;
+    Plot3DMesh* plot_as_plot3d_{nullptr};
     std::vector<double> w2v_embedding_;
     std::vector<double> umap_embedding_;
     size_t initial_dim_{0};
@@ -114,4 +116,7 @@ private:
 
     /* Loads embedding into plot for rendering */
     void LoadData();
+
+    /* Recreates plot according to the current dimension in params */
+    void RecreatePlot();
 };
