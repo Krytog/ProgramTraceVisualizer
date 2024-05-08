@@ -6,8 +6,6 @@
 #include <memory>
 #include <string>
 #include <word2vec++/include/word2vec.hpp>
-#include "Core/Plotting/Plot2DMesh/Plot2DMesh.h"
-#include "Graphics/Primitives/IRenderable.h"
 
 #include <stdexcept>
 #include <thread>
@@ -271,9 +269,9 @@ void W2VHandler::StartRecalculate(const Params& params) {
     }
     SetDimension(params.dimension);
     SetPlotSize(params.cells);
-    plot_->SetColorForNewest(params.color);
+    plot_->SetHighColor(params.color);
 }
 
 void W2VHandler::SetColor(const float* color) {
-    plot_->SetColorForNewest(color);
+    plot_->SetHighColor(color);
 }

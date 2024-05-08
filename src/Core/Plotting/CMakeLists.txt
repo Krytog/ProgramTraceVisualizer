@@ -1,5 +1,7 @@
 add_library(Plotting
-	Plot2DMesh/Plot2DMesh.cpp
+	PlotMesh/PlotMesh.cpp
+	PlotMesh/Plot2DMesh.cpp
+	PlotMesh/Plot3DMesh.cpp
 	HilbertCurve/HilbertCurve.cpp
 	HilbertCurve/HilbertCurveManager.cpp
 		)

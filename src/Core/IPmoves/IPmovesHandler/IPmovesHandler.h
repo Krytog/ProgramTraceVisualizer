@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/Plotting/Plot2DMesh/Plot2DMesh.h>
+#include <Core/Plotting/PlotMesh/Plot2DMesh.h>
 #include <Core/Plotting/HilbertCurve/HilbertCurve.h>
 #include <Core/IPmoves/Clamping/DataClamper.h>
 #include <Core/IPmoves/IPmovesHandler/AddressBuffer.h>

@@ -10,7 +10,6 @@
 #include <mutex>
 #include <vector>
 #include <unordered_map>
-#include "Core/Plotting/Plot2DMesh/Plot2DMesh.h"
 
 namespace {
 struct MinMaxWorkerArgs {
@@ -224,11 +223,11 @@ void IPmovesHandler::Update() {
 }
 
 void IPmovesHandler::SetColorForNewest(const float* color) {
-    plot_.SetColorForNewest(color);
+    plot_.SetHighColor(color);
 }
 
 void IPmovesHandler::SetColorForOldest(const float* color) {
-    plot_.SetColorForOldest(color);
+    plot_.SetLowColor(color);
 }
 
 void IPmovesHandler::FillCurrentAddresses() {
