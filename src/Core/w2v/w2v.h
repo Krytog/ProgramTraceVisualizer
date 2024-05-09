@@ -71,11 +71,14 @@ public:
     /* Updates the state of W2VHandler */
     void Update();
 
-    /* Passes width and height into ProgressWidget. Only useful when W2VHandler is preparing */
-    void SetProgressParams(float width, float height);
+    /* Passes width and height to all the systems that need them */
+    void SetViewPortSize(float width, float height);
 
     /* Starts recalculating umap mapping */
     void StartRecalculate(const Params& params);
+
+    /* If current mode is 3d, then passes the data into Plot3DMesh to control the camera. Otherwise, does nothing */
+    void PassMouseInput(float x, float y, float scroll);
 
 private:
     std::unique_ptr<PlotMesh> plot_;

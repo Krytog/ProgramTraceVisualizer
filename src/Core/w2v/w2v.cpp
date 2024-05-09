@@ -237,7 +237,9 @@ float W2VHandler::GetTrainingProgress() const {
 
 void W2VHandler::LoadData() {
     const auto data = std::move(GetPreparedData());
-    plot_->LoadData(data.data(), data.size() * sizeof(GLfloat));
+    //plot_->LoadData(data.data(), data.size() * sizeof(GLfloat));
+    std::vector<float> real_data = {0.0f, 0.0f, 0.0f, 1.0f};
+    plot_->LoadData(real_data.data(), real_data.size() * sizeof(float));
     is_data_loaded_ = true;
 }
 
@@ -250,16 +252,22 @@ void W2VHandler::Update() {
         if (!is_data_loaded_) {
             LoadData();
         }
+        if (plot_as_plot3d_) {
+            plot_as_plot3d_->LoadTransformFromCamera();
+        }
     } else {
         progress_wigdet_->SetProgress(training_progress_);
     }
 }
 
-void W2VHandler::SetProgressParams(float width, float height) {
-    if (!progress_wigdet_) {
+void W2VHandler::SetViewPortSize(float width, float height) {
+    if (progress_wigdet_) {
+        progress_wigdet_->SetResolution(width, height);
         return;
     }
-    progress_wigdet_->SetResolution(width, height);
+    if (plot_as_plot3d_) {
+        plot_as_plot3d_->SetViewPortSize(width, height);
+    }
 }
 
 void W2VHandler::StartRecalculate(const Params& params) {
@@ -284,4 +292,12 @@ void W2VHandler::RecreatePlot() {
         plot_ = std::make_unique<Plot3DMesh>(current_params_.cells);
         plot_as_plot3d_ = dynamic_cast<Plot3DMesh*>(plot_.get());
     }
+}
+
+void W2VHandler::PassMouseInput(float x, float y, float scroll) {
+    if (!plot_as_plot3d_) {
+        return;
+    }
+    plot_as_plot3d_->HandleMouseMove(x, y);
+    plot_as_plot3d_->HandleMouseScroll(scroll);
 }

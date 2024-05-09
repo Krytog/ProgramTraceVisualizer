@@ -13,7 +13,7 @@ public:
     virtual ~PlotMesh();
 
     /* Renders the plot mesh */
-    void Render() const override;
+    virtual void Render() const override;
 
     /* Sets new grid_size */
     void SetGridSize(const size_t grid_size);

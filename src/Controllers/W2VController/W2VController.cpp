@@ -85,9 +85,9 @@ void SynchronizePlot(UIManager* ui_manager, W2VHandler* handler) {
             ui_manager->GetViewScene().AddObject(handler->GetPlot());
             is_first_time_ready = true;
         }
-        const auto [width, height] = ui_manager->GetViewScene().GetViewPortSize();
-        handler->SetProgressParams(width, height);
     }
+    const auto [width, height] = ui_manager->GetViewScene().GetViewPortSize();
+    handler->SetViewPortSize(width, height);
     prev_plot = handler->GetPlot();
 }
 
@@ -119,7 +119,15 @@ void ApplyInput(UIManager* ui_manager, W2VHandler* handler) {
         handler->SetPlotSize(controlls->GetInputCells());
         handler->SetColor(controlls->GetInputColor());
     }
-}
+    const auto* view_port = &ui_manager->GetViewScene();
+    const auto [delta_x, delta_y] = view_port->GetMouseDelta();
+    const auto scroll = view_port->GetMouseScroll();
+    if (view_port->IsMousePressed()) {
+        handler->PassMouseInput(delta_x, delta_y, scroll);
+    } else {
+        handler->PassMouseInput(0, 0, scroll);
+    }
+ }
 
 }  // namespace
 
