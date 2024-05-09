@@ -34,7 +34,7 @@ private:
 
         void HandleMouseMove(float x, float y, float strength = 0.01f);
 
-        void HandleMouseScroll(float mouse_scroll, float strength = 0.5f);
+        void HandleMouseScroll(float mouse_scroll, float strength = 0.05f);
 
         void SetScreenRatio(float widht, float height);
 

@@ -77,14 +77,14 @@ void Plot3DMesh::Camera3D::HandleMouseMove(float x, float y, float strength) {
 }
 
 void Plot3DMesh::Camera3D::HandleMouseScroll(float mouse_scroll, float strength) {
-    distance_ += -mouse_scroll * strength * distance_;
+    distance_ += -mouse_scroll * strength;
 }
 
 void Plot3DMesh::Camera3D::Reset() {
     projection_matrix_ = glm::perspective(kFow, kRatio, kNear, kFar);
     pitch_ = 0;
     yaw_ = 0;
-    distance_ = 5.0f;
+    distance_ = 3.0f;
     target_ = {0.0f, 0.0f, 0.0f};
 }
 
