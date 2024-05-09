@@ -25,6 +25,8 @@ static const constexpr float kFow = 45.0f;
 static const constexpr float kRatio = 1.0f;
 static const constexpr float kNear = 0.1f;
 static const constexpr float kFar = 100.0f;
+
+static const constexpr float kPitchLimit = 1.56f;
 }  // namespace
 
 #define ShaderUniformName_Transform "transform"
@@ -62,10 +64,16 @@ void Plot3DMesh::Camera3D::SetScreenRatio(float width, float height) {
 }
 
 void Plot3DMesh::Camera3D::HandleMouseMove(float x, float y, float strength) {
-    const auto up_component = glm::rotate(glm::quat{glm::vec3{-pitch_, -yaw_, 0.0f}}, glm::vec3{0.0f, 1.0f, 0.0f});
+    const auto up_component =
+        glm::rotate(glm::quat{glm::vec3{-pitch_, -yaw_, 0.0f}}, glm::vec3{0.0f, 1.0f, 0.0f});
     const float sign = up_component.y < 0 ? -1.0f : 1.0f;
     yaw_ += sign * x * strength;
     pitch_ += y * strength;
+    if (pitch_ > kPitchLimit) {
+        pitch_ = kPitchLimit;
+    } else if (pitch_ < -kPitchLimit) {
+        pitch_ = -kPitchLimit;
+    }
 }
 
 void Plot3DMesh::Camera3D::HandleMouseScroll(float mouse_scroll, float strength) {
@@ -89,7 +97,7 @@ void Plot3DMesh::HandleMouseScroll(float scroll) {
 }
 
 void Plot3DMesh::LoadTransformFromCamera() {
-    //shader_.SetUniform(ShaderUniformName_Transform, camera_.GetViewTransform());
+    // shader_.SetUniform(ShaderUniformName_Transform, camera_.GetViewTransform());
     cube_.SetTransform(camera_.GetViewTransform());
 }
 
