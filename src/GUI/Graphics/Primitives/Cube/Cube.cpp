@@ -1,5 +1,7 @@
 #include "Cube.h"
 
+#include <Resources/ShadersEmbed/CubeShaders.h>
+
 static constexpr const GLfloat kVerticies[] = {
 	0.5f, -0.5f, -0.5f, 113 / 255.0f, 28 / 255.0f, 145 / 255.0f,
 	0.5f, 0.5f, -0.5f, 113 / 255.0f, 28 / 255.0f, 145 / 255.0f,
@@ -19,11 +21,8 @@ static constexpr const VertexObjectIndexed::ArgPack kArgs{ .data = kVerticies, .
 														   .indices = kIndicies, .indices_size = sizeof(kIndicies), 
 														   .memory_mode = VertexObject::MemoryMode::STATIC };
 
-static constexpr const GLchar* kVertexShaderPath = "../src/Resources/Shaders/Cube.vert";
-static constexpr const GLchar* kFragmentShaderPath = "../src/Resources/Shaders/Cube.frag";
-
-static constexpr const Shader::ShaderConfig kShaderConfig{ .VertexShaderSourceType = Shader::SourceType::FILE, .VertexShaderSource = kVertexShaderPath,
-														   .FragmentShaderSourceType = Shader::SourceType::FILE, .FragmentShaderSource = kFragmentShaderPath,
+static constexpr const Shader::ShaderConfig kShaderConfig{ .VertexShaderSourceType = Shader::SourceType::STRING, .VertexShaderSource = kCubeShaderVert,
+														   .FragmentShaderSourceType = Shader::SourceType::STRING, .FragmentShaderSource = kCubeShaderFrag,
 														   .GeometryShaderSourceType = Shader::SourceType::NONE, .GeometryShaderSource = ""};
 
 Cube::Cube() : mesh_(kArgs), shader_(kShaderConfig) {
