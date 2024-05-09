@@ -2,8 +2,6 @@
 
 #include <Core/Plotting/PlotMesh/PlotMesh.h>
 #include <glm/glm.hpp>
-#include "glm/fwd.hpp"
-#include <GUI/Graphics/Primitives/Cube/Cube.h>
 
 class Plot3DMesh : public PlotMesh {
 public:
@@ -24,8 +22,6 @@ public:
 
     /* Resets the camera to the defaults */
     void ResetCamera();
-
-    void Render() const override;
 
 private:
     class Camera3D {
@@ -54,5 +50,4 @@ private:
     };
 
     Camera3D camera_;
-    Cube cube_;
 };

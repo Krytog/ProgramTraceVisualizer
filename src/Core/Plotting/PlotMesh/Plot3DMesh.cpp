@@ -97,14 +97,9 @@ void Plot3DMesh::HandleMouseScroll(float scroll) {
 }
 
 void Plot3DMesh::LoadTransformFromCamera() {
-    // shader_.SetUniform(ShaderUniformName_Transform, camera_.GetViewTransform());
-    cube_.SetTransform(camera_.GetViewTransform());
+    shader_.SetUniform(ShaderUniformName_Transform, camera_.GetViewTransform());
 }
 
 void Plot3DMesh::SetViewPortSize(float width, float height) {
     camera_.SetScreenRatio(width, height);
-}
-
-void Plot3DMesh::Render() const {
-    cube_.Render();
 }

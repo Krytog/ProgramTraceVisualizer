@@ -237,9 +237,7 @@ float W2VHandler::GetTrainingProgress() const {
 
 void W2VHandler::LoadData() {
     const auto data = std::move(GetPreparedData());
-    //plot_->LoadData(data.data(), data.size() * sizeof(GLfloat));
-    std::vector<float> real_data = {0.0f, 0.0f, 0.0f, 1.0f};
-    plot_->LoadData(real_data.data(), real_data.size() * sizeof(float));
+    plot_->LoadData(data.data(), data.size() * sizeof(GLfloat));
     is_data_loaded_ = true;
 }
 
