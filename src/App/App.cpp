@@ -6,6 +6,7 @@
 #include <Controllers/IPmovesController/IPmovesController.h>
 #include <Controllers/W2VController/W2VController.h>
 #include <Controllers/WaitingController/WaitingController.h>
+#include <Controllers/TrajectoryController/TrajectoryController.h>
 #include <App/AppStateMachine.h>
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <Core/w2v/w2v.h>
@@ -69,6 +70,11 @@ void App::FrameMainLogic() {
         }
         case States::FILE_W2V: {
             controllers::w2vhandler::Synchronize(&ui_manager_, w2v_handler_.get());
+            break;
+        }
+        case States::FILE_TRAJECTORY: {
+            controllers::trajectory::Synchronize(&ui_manager_, trajectory_handler_.get());
+            break;
         }
         default: {
             return;
@@ -107,17 +113,33 @@ void App::InitializeStateMachine() {
         LeaveWaitingMode();
         EnterW2VMode();
     });
-    state_machine_.AddCallback({States::NO_FILE_IP, States::NO_FILE_W2V},
-                               []() { });
-    state_machine_.AddCallback({States::NO_FILE_W2V, States::NO_FILE_IP},
-                               []() { });
+    state_machine_.AddCallback({States::NO_FILE_TRAJECTORY, States::FILE_TRAJECTORY}, [this]() { 
+        LeaveWaitingMode();
+        EnterTrajectoryMode();
+    });
     state_machine_.AddCallback({States::FILE_IP, States::FILE_W2V}, [this]() {
         LeaveIPmovesMode();
         EnterW2VMode();
     });
+    state_machine_.AddCallback({States::FILE_IP, States::FILE_TRAJECTORY}, [this]() {
+        LeaveIPmovesMode();
+        EnterTrajectoryMode();
+    });
     state_machine_.AddCallback({States::FILE_W2V, States::FILE_IP}, [this]() {
         LeaveW2VMode();
         EnterIPmovesMode();
+    });
+    state_machine_.AddCallback({States::FILE_W2V, States::FILE_TRAJECTORY}, [this]() {
+        LeaveW2VMode();
+        EnterTrajectoryMode();
+    });
+    state_machine_.AddCallback({States::FILE_TRAJECTORY, States::FILE_IP}, [this]() {
+        LeaveTrajectoryMode();
+        EnterIPmovesMode();
+    });
+    state_machine_.AddCallback({States::FILE_TRAJECTORY, States::FILE_W2V}, [this]() {
+        LeaveTrajectoryMode();
+        EnterW2VMode();
     });
 }
 
@@ -166,6 +188,12 @@ void App::InitializeUICallbacks() {
                 }
                 break;
             }
+            case AppStateMachine::States::FILE_TRAJECTORY: {
+                if (prev_state == AppStateMachine::States::FILE_TRAJECTORY) {
+                    RecreateTrajectoryModule();
+                }
+                break;
+            }
             default: {
                 throw std::runtime_error(ERROR_MESSAGE_STATE_MACHINE_FAILED);
             }
@@ -175,6 +203,8 @@ void App::InitializeUICallbacks() {
         [this]() { state_machine_.GoToStateIgnoringFile(AppStateMachine::States::FILE_IP); });
     options_scene.SetModeW2VCallback(
         [this]() { state_machine_.GoToStateIgnoringFile(AppStateMachine::States::FILE_W2V); });
+    options_scene.SetModeTrajectoryCallback(
+        [this]() { state_machine_.GoToStateIgnoringFile(AppStateMachine::States::FILE_TRAJECTORY); });
 }
 
 void App::InitializeUI() {
@@ -235,6 +265,10 @@ void App::DiscardAllModules() {
         ui_manager_.GetViewScene().RemoveObject(w2v_handler_->GetPlot());
     }
     w2v_handler_ = nullptr;
+    if (trajectory_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(trajectory_handler_->GetPlot());
+    }
+    trajectory_handler_ = nullptr;
 }
 
 void App::EnterWaitingMode() {
@@ -246,4 +280,26 @@ void App::EnterWaitingMode() {
 void App::LeaveWaitingMode() {
     ui_manager_.GetViewScene().RemoveObject(waiting_handler_.get());
     waiting_handler_.reset(nullptr);
+}
+
+void App::EnterTrajectoryMode() {
+    if (!trajectory_handler_) {
+        trajectory_handler_ = std::move(controllers::trajectory::Initialize(&ui_manager_, current_filename_));
+    }
+    ui_manager_.GetViewScene().AddObject(trajectory_handler_->GetPlot());
+    ui_manager_.GoToTrajectoryMode();
+}
+
+void App::LeaveTrajectoryMode() {
+    if (trajectory_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(trajectory_handler_->GetPlot());
+    }
+}
+
+void App::RecreateTrajectoryModule() {
+    if (trajectory_handler_) {
+        ui_manager_.GetViewScene().RemoveObject(trajectory_handler_->GetPlot());
+    }
+    trajectory_handler_ = std::move(controllers::trajectory::Initialize(&ui_manager_, current_filename_));
+    ui_manager_.GetViewScene().AddObject(trajectory_handler_->GetPlot());
 }

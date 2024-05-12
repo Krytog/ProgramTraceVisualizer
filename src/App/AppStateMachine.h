@@ -10,8 +10,10 @@ public:
         FILE = (1u << 31),
         NO_FILE_IP = 1,
         FILE_IP = FILE | NO_FILE_IP,
-        NO_FILE_W2V = (1U << 1),
-        FILE_W2V = FILE | NO_FILE_W2V
+        NO_FILE_W2V = (1u << 1),
+        FILE_W2V = FILE | NO_FILE_W2V,
+        NO_FILE_TRAJECTORY = (1u << 2),
+        FILE_TRAJECTORY = FILE | NO_FILE_TRAJECTORY
     };
 
     using Callback = std::function<void()>;

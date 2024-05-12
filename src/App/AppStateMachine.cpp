@@ -8,10 +8,19 @@ AppStateMachine::AppStateMachine(States state) : state_(state) {
     states_graph_ = {
         {{States::NO_FILE_IP, States::FILE_IP}, []() {}},
         {{States::NO_FILE_IP, States::NO_FILE_W2V}, []() {}},
+        {{States::NO_FILE_IP, States::NO_FILE_TRAJECTORY}, []() {}},
         {{States::NO_FILE_W2V, States::NO_FILE_IP}, []() {}},
         {{States::NO_FILE_W2V, States::FILE_W2V}, []() {}},
+        {{States::NO_FILE_W2V, States::NO_FILE_TRAJECTORY}, []() {}},
+        {{States::NO_FILE_TRAJECTORY, States::NO_FILE_IP}, []() {}},
+        {{States::NO_FILE_TRAJECTORY, States::NO_FILE_W2V}, []() {}},
+        {{States::NO_FILE_TRAJECTORY, States::FILE_TRAJECTORY}, []() {}},
         {{States::FILE_IP, States::FILE_W2V}, []() {}},
+        {{States::FILE_IP, States::FILE_TRAJECTORY}, []() {}},
         {{States::FILE_W2V, States::FILE_IP}, []() {}},
+        {{States::FILE_W2V, States::FILE_TRAJECTORY}, []() {}},
+        {{States::FILE_TRAJECTORY, States::FILE_IP}, []() {}},
+        {{States::FILE_TRAJECTORY, States::FILE_W2V}, []() {}},
     };
 }
 

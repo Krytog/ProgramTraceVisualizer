@@ -9,7 +9,10 @@
 #include <Utils/LightTimer/LightTimer.h>
 #include <Core/IPmoves/IPmovesHandler/IPmovesHandler.h>
 #include <Core/w2v/w2v.h>
+#include <Core/Trajectory/TrajectoryHandler.h>
 #include <GUI/UI/Widgets/WaitingWidget.h>
+
+
 #include <memory>
 
 class App {
@@ -95,11 +98,22 @@ private:
     /* Leaves waiting mode. Removes waiting_handler_ from the ViewScene and discards it */
     void LeaveWaitingMode();
 
+    /* Does all the required work to enter Trajectory mode */
+    void EnterTrajectoryMode();
+
+    /* Does all the required work to leave Trajectory mode */
+    void LeaveTrajectoryMode();
+
+    /* Recreates TrajectoryModule. Should be called when the underlying file is updated */
+    void RecreateTrajectoryModule();
+
+
     LightTimer run_timer_;
     Window window_;
     UIManager ui_manager_;
     std::unique_ptr<IPmovesHandler> ip_moves_handler_;
     std::unique_ptr<W2VHandler> w2v_handler_;
+    std::unique_ptr<TrajectoryHandler> trajectory_handler_;
     std::unique_ptr<WaitingWidget> waiting_handler_;
     AppStateMachine state_machine_;
     std::string current_filename_;
