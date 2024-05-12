@@ -90,7 +90,7 @@ void TrajectoryHandler::SetMinMax() {
     }
 }
 
-TrajectoryHandler::TrajectoryHandler(const std::string& filename): file_(filename) {
+TrajectoryHandler::TrajectoryHandler(const std::string& filename): file_(filename), plot_(std::make_unique<Plot2DMesh>(1)) {
     SetMinMax();
     FillAddresses();
 }
@@ -145,7 +145,7 @@ void TrajectoryHandler::Create3DVisualization() {
     AbsoluteDataClamper<uintptr_t> clamper(min_, max_);
     const auto* hilbert_curve = HilbertCurveManager::GetHilbertCurve(hilbert_degree_);
     if (layer_offset_ <= 0) { // not set
-        layer_offset_ = 1.0f / addresses_.size();
+        layer_offset_ = 2.0f / addresses_.size();
     }
     const float total_height = layer_offset_ * addresses_.size();
     std::vector<float> data;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Core/Plotting/PlotMesh/PlotMesh.h>
 #include <Core/Plotting/PlotMesh/Plot3DMesh.h>
 #include <Utils/FileReader/FileReader.h>
 
