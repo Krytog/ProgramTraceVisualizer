@@ -10,7 +10,6 @@
 
 #include <stdexcept>
 #include <thread>
-#include <fstream>
 
 #define ERROR_MESSAGE_TRAIN_FAILED "W2V: Model failed to train: "
 
@@ -63,17 +62,13 @@ static std::vector<double> GetW2VEmbedding(w2v::w2vModel_t* model, size_t dim) {
     const auto total_objects = model->modelSize() - 1;
     std::vector<double> data(total_objects * dim);
     size_t position = 0;
-    std::ofstream out("dump.embd");
     for (const auto& [word, vector] : model->map()) {
         if (word == "</s>") {
             continue;
         }
         for (size_t feature = 0; feature < dim; ++feature) {
             data[position] = vector.at(feature);
-            out << vector.at(feature) << " ";
         }
-        out << "\n";
-        ++position;
     }
     return data;
 }
@@ -109,8 +104,6 @@ W2VHandler::~W2VHandler() {
     }
 }
 
-//#include "kek.h"
-
 void W2VHandler::InitW2VEmbedding(const std::string& filename) {
     const auto settings = GetW2VModelSettings();
     auto model = std::make_unique<w2v::w2vModel_t>();
@@ -121,8 +114,6 @@ void W2VHandler::InitW2VEmbedding(const std::string& filename) {
     TrainModel(model.get(), settings, filename, &stats);
     initial_dim_ = settings.size;
     w2v_embedding_ = std::move(GetW2VEmbedding(model.get(), initial_dim_));
-    //w2v_embedding_ = kData;
-    //initial_dim_ = 64;
     objects_count_ = w2v_embedding_.size() / initial_dim_;
 }
 

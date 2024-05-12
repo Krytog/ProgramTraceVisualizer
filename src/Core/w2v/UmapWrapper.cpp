@@ -13,6 +13,8 @@ void TrainEmbedding(size_t initial_dim, size_t objects_count, const double* inpu
     x.set_bandwidth(params.bandwidth);
     x.set_min_dist(params.min_distance);
     x.set_local_connectivity(params.local_conectivity);
+    x.set_a(0);
+    x.set_b(0);
     auto proxy = x.initialize(initial_dim, objects_count, input, target_dim, output);
     proxy.run(params.epochs);
 }
