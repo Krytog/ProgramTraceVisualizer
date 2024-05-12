@@ -22,7 +22,7 @@ std::optional<std::string> GetFilename() {
     return f.result().back();
 }
 
-enum class Mode { IP, W2V };
+enum class Mode { IP, W2V, TRAJECTORY };
 
 }  // namespace
 
@@ -70,6 +70,12 @@ void OptionsScene::ModeMenu() const {
                 mode_w2v_callback_();
             }
         }
+        if (ImGui::MenuItem("Trajectory mode", nullptr, mode == Mode::TRAJECTORY)) {
+            if (mode != Mode::TRAJECTORY) {
+                mode = Mode::TRAJECTORY;
+                mode_trajectory_callback_();
+            }
+        }
         ImGui::EndMenu();
     }
 }
@@ -84,4 +90,8 @@ void OptionsScene::SetModeIPCallback(ModeCallback callback) {
 
 void OptionsScene::SetModeW2VCallback(ModeCallback callback) {
     mode_w2v_callback_ = std::move(callback);
+}
+
+void OptionsScene::SetModeTrajectoryCallback(ModeCallback callback) {
+    mode_trajectory_callback_ = std::move(callback);
 }

@@ -2,7 +2,6 @@ set(DearImGui_DIR ${BASEPATH}/3rdparty/DearImGui)
 
 add_library(UI
 	${DearImGui_DIR}/imgui.cpp
-	${DearImGui_DIR}/imgui_demo.cpp
 	${DearImGui_DIR}/imgui_draw.cpp
 	${DearImGui_DIR}/imgui_tables.cpp
 	${DearImGui_DIR}/imgui_widgets.cpp
@@ -16,6 +15,7 @@ add_library(UI
 	Scenes/OptionsScene/OptionsScene.cpp
 	Scenes/IPmovesControlScene/IPmovesControlScene.cpp
 	Scenes/W2VControlScene/W2VControlScene.cpp
+	Scenes/TrajectoryControlScene/TrajectoryControlScene.cpp
 	Helpers/Alignment.cpp
 	Widgets/WaitingWidget.cpp
 	Widgets/ProgressWidget.cpp

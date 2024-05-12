@@ -4,6 +4,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
+#include "UI/Scenes/TrajectoryControlScene/TrajectoryControlScene.h"
 #include "UI/Scenes/W2VControlScene/W2VControlScene.h"
 
 #define GLSL_VERSION "#version 330"
@@ -15,6 +16,7 @@
         details_scene_.x;        \
         ipmovescontrol_scene_.x; \
         w2vcontrol_scene_.x;     \
+        trajectorycontrol_scene_.x; \
     } while (false)
 
 #define GET_SCENE_POS_AND_SIZE(name, arg) Get##name##ScenePos(arg, mode_), Get##name##SceneSize(arg, mode_)
@@ -111,6 +113,25 @@ static const constexpr std::pair<float, float> GetW2VControlSceneSize(
     return {width, height};
 }
 
+static const constexpr std::pair<float, float> GetTrajectoryControlScenePos(
+    const std::pair<int, int>& window_size, Mode mode = Mode::Waiting) {
+    if (mode != Mode::Trajectory) {
+        return {0, 0};
+    }
+    return {(1.0f - kViewSceneWidthCoef) * window_size.first,
+            window_size.second - kControlSceneHeight};
+}
+
+static const constexpr std::pair<float, float> GetTrajectoryControlSceneSize(
+    const std::pair<int, int>& window_size, Mode mode = Mode::Waiting) {
+    if (mode != Mode::Trajectory) {
+        return {0, 0};
+    }
+    const float height = kControlSceneHeight;
+    const float width = kViewSceneWidthCoef * window_size.first;
+    return {width, height};
+}
+
 }  // namespace
 
 UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_size)
@@ -120,7 +141,8 @@ UIManager::UIManager(GLFWwindow* glfw_window, const std::pair<int, int>& window_
       details_scene_(GetDetailsScenePos(window_size), GetDetailsSceneSize(window_size)),
       options_scene_(GetOptionsScenePos(window_size), GetOptionsSceneSize(window_size)),
       ipmovescontrol_scene_(GetIPmovesControlScenePos(window_size), GetIPmovesControlSceneSize(window_size)),
-      w2vcontrol_scene_(GetW2VControlScenePos(window_size), GetW2VControlSceneSize(window_size)) {
+      w2vcontrol_scene_(GetW2VControlScenePos(window_size), GetW2VControlSceneSize(window_size)),
+      trajectorycontrol_scene_(GetTrajectoryControlScenePos(window_size), GetTrajectoryControlSceneSize(window_size)) {
     InitImGui(glfw_window);
 }
 
@@ -166,6 +188,10 @@ W2VControlScene& UIManager::GetW2VControlScene() {
     return w2vcontrol_scene_;
 }
 
+TrajectoryControlScene& UIManager::GetTrajectoryControlScene() {
+    return trajectorycontrol_scene_;
+}
+
 void UIManager::RenderAllScenes() const {
     FOREACH_SCENE(Render());
 }
@@ -177,6 +203,7 @@ void UIManager::Resize(const std::pair<int, int>& new_size) {
     details_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(Details, new_size));
     ipmovescontrol_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(IPmovesControl, new_size));
     w2vcontrol_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(W2VControl, new_size));
+    trajectorycontrol_scene_.UpdateOnResize(GET_SCENE_POS_AND_SIZE(TrajectoryControl, new_size));
 }
 
 void UIManager::GoToWaitingForFileMode() {
@@ -187,6 +214,7 @@ void UIManager::GoToWaitingForFileMode() {
     details_scene_.PushLine("Press \"File\" menu button to open a file");
     ipmovescontrol_scene_.SetVisibility(false);
     w2vcontrol_scene_.SetVisibility(false);
+    trajectorycontrol_scene_.SetVisibility(false);
     mode_ = Mode::Waiting;
 }
 
@@ -196,6 +224,7 @@ void UIManager::GoToIPmovesMode() {
     }
     ipmovescontrol_scene_.SetVisibility(true);
     w2vcontrol_scene_.SetVisibility(false);
+    trajectorycontrol_scene_.SetVisibility(false);
     mode_ = Mode::IP;
 }
 
@@ -205,5 +234,16 @@ void UIManager::GoToW2VMode() {
     }
     ipmovescontrol_scene_.SetVisibility(false);
     w2vcontrol_scene_.SetVisibility(true);
+    trajectorycontrol_scene_.SetVisibility(false);
     mode_ = Mode::W2V;
+}
+
+void UIManager::GoToTrajectoryMode() {
+    while (!details_scene_.GetInnerBuffer().empty()) {
+        details_scene_.PopBackLine();
+    }
+    ipmovescontrol_scene_.SetVisibility(false);
+    w2vcontrol_scene_.SetVisibility(false);
+    trajectorycontrol_scene_.SetVisibility(true);
+    mode_ = Mode::Trajectory;
 }

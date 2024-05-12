@@ -20,6 +20,9 @@ public:
     /* Sets a callback that will be executed when w2v mode is selected */
     void SetModeW2VCallback(ModeCallback callback);
 
+    /* Sets a callback that will be executed when trajectory mode is selected */
+    void SetModeTrajectoryCallback(ModeCallback callback);
+
 private:
     void RenderInner() const override;
 
@@ -34,4 +37,5 @@ private:
     OpenFileCallback openfile_callback_;
     ModeCallback mode_ip_callback_;
     ModeCallback mode_w2v_callback_;
+    ModeCallback mode_trajectory_callback_;
 };
