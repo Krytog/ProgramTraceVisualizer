@@ -72,7 +72,7 @@ void TrajectoryControlScene::SettingsButton() const {
     }
     if (ImGui::BeginPopup("Trajectory Settings")) {
         ImGui::Text("Size degree: ");
-        ImGui::SliderInt("##Size degree: ", &hilbert_degree_.cur_value_, 1, 10);
+        ImGui::SliderInt("##Precision degree: ", &hilbert_degree_.cur_value_, 1, 10);
 
         ImGui::Text("Color of the first elements: ");
         ImGui::SameLine();
