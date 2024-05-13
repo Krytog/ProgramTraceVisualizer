@@ -34,7 +34,7 @@ static const constexpr bool kInitIsPendingRecalculation = false;
 W2VControlScene::W2VControlScene(const std::pair<float, float>& position, const std::pair<float, float>& size)
     : BasicScene(position, size, W2VControlScene_InnerName),
       dimension_(kInitDimension),
-      color_(UnpackColor(kInitColor)),
+      color_{UnpackColor(kInitColor)},
       neighbours_(kInitNeighbours),
       epochs_(kInitEpochs),
       cells_(kInitCells),

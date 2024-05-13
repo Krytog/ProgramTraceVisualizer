@@ -14,7 +14,7 @@ static constexpr const ImGuiWindowFlags kWidgetHint =
     ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 std::optional<std::string> GetFilename() {
-    auto f = pfd::open_file("Choose files to read", std::filesystem::current_path(),
+    auto f = pfd::open_file("Choose files to read", std::filesystem::current_path().string(),
                             {"Trace Files (.trace)", "*.trace", "All Files", "*"}, pfd::opt::none);
     if (f.result().empty()) {
         return std::nullopt;
