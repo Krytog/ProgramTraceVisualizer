@@ -8,6 +8,7 @@
 #include <memory>
 #include <limits>
 #include <vector>
+#include <unordered_map>
 
 class TrajectoryHandler {
 public:
@@ -48,6 +49,7 @@ private:
     FileReader file_;
     uintptr_t min_{std::numeric_limits<uintptr_t>::max()};
     uintptr_t max_{std::numeric_limits<uintptr_t>::min()};
+    std::unordered_map<uintptr_t, size_t> addresses_to_id_;
     std::vector<uintptr_t> addresses_;
 
     std::unique_ptr<PlotMesh> plot_;

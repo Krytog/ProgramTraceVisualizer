@@ -2,17 +2,18 @@
 
 #include <Core/Trajectory/TrajectoryHandler.h>
 #include <GUI/UI/UIManager/UIManager.h>
-#include "UI/Scenes/TrajectoryControlScene/TrajectoryControlScene.h"
 
 namespace {
     inline void SynchronizeDimension(UIManager* ui_manager, TrajectoryHandler* handler) {
         const auto handler_dimension = handler->GetDimension();
-        const auto [is_new, required_dimension] = ui_manager->GetTrajectoryControlScene().GetInputDimension();
+        auto* controls = &ui_manager->GetTrajectoryControlScene();
+        const auto [is_new, required_dimension] = controls->GetInputDimension();
         if (is_new && required_dimension != handler_dimension) {
             ui_manager->GetViewScene().RemoveObject(handler->GetPlot());
             handler->SetDimension(required_dimension);
+            controls->SetRealDimension(required_dimension);
             ui_manager->GetViewScene().AddObject(handler->GetPlot());
-            const auto state = ui_manager->GetTrajectoryControlScene().GetState();
+            const auto state = controls->GetState();
             handler->SetBeginColor(state.begin_color);
             handler->SetEndColor(state.end_color);
         }

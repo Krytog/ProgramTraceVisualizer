@@ -114,12 +114,17 @@ void TrajectoryHandler::SetDimension(size_t dimension) {
 void TrajectoryHandler::FillAddresses() {
     addresses_.clear();
     size_t file_offset = 0;
+    size_t unique_addresses = 0;
     while (file_offset < file_.GetSize()) {
         auto [data_chunk, real_size] = file_.GetChunk(file_offset, kDefaultMaxMemory);
         size_t bytes_handled = 0;
         for (size_t i = 0; i < real_size; i += sizeof(uintptr_t)) {
             const uintptr_t address = *reinterpret_cast<uintptr_t*>(data_chunk.get() + i);
             addresses_.push_back(address);
+            if (!addresses_to_id_.contains(address)) {
+                addresses_to_id_[address] = unique_addresses;
+                ++unique_addresses;
+            }
             bytes_handled = (i + sizeof(uintptr_t));
         }
         file_offset += bytes_handled;
@@ -127,11 +132,10 @@ void TrajectoryHandler::FillAddresses() {
 }
 
 void TrajectoryHandler::Create2DVisualization() {
-    AbsoluteDataClamper<uintptr_t> clamper(min_, max_);
     std::vector<float> data;
     data.reserve(addresses_.size() * 3);
     for (size_t i = 0; i < addresses_.size(); ++i) {
-        const float x = 2 * clamper.GetClamped(addresses_[i]) - 1;
+        const float x = 2 * static_cast<float>(addresses_to_id_[addresses_[i]]) / addresses_to_id_.size() - 1;
         const float y = 2 * (static_cast<float>(i) / addresses_.size()) - 1;
         const float color = GetColor(i, addresses_.size());
         data.push_back(x);
@@ -142,7 +146,6 @@ void TrajectoryHandler::Create2DVisualization() {
 }
 
 void TrajectoryHandler::Create3DVisualization() {
-    AbsoluteDataClamper<uintptr_t> clamper(min_, max_);
     const auto* hilbert_curve = HilbertCurveManager::GetHilbertCurve(hilbert_degree_);
     if (layer_offset_ <= 0) { // not set
         layer_offset_ = 2.0f / addresses_.size();
@@ -151,7 +154,7 @@ void TrajectoryHandler::Create3DVisualization() {
     std::vector<float> data;
     data.reserve(addresses_.size() * 4);
     for (size_t i = 0; i < addresses_.size(); ++i) {
-        const float clamped = clamper.GetClamped(addresses_[i]);
+        const float clamped = static_cast<float>(addresses_to_id_[addresses_[i]]) / addresses_to_id_.size();
         const size_t seq_num = clamped * (cells_ * cells_ - 1);
         const auto point = hilbert_curve->Seq2XY(seq_num);
         const auto z = (static_cast<float>(i) / addresses_.size() - 0.5f) * total_height;
@@ -190,6 +193,7 @@ void TrajectoryHandler::PassMouseInput(float x, float y, float scroll) {
     if (plot_as_3d_mesh_) {
         plot_as_3d_mesh_->HandleMouseMove(x, y);
         plot_as_3d_mesh_->HandleMouseScroll(scroll);
+        plot_as_3d_mesh_->LoadTransformFromCamera();
     }
 }
 
