@@ -66,7 +66,7 @@ void ViewScene::RenderObjects() const {
     render_buffer_.Bind();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     render_buffer_.Clear();
-    for (const auto& renderable : renderable_objects_) {
+    for (const auto renderable : renderable_objects_) {
         renderable->Render();
     }
     render_buffer_.Unbind();
