@@ -6,8 +6,10 @@ PorgramTraceVisualizer is a multiplatform application that visualizes traces of 
 ![3](docs/w2v2.PNG) | ![4](docs/trajectory3d_1.PNG)
 
 ## Setup
-  * Clone this repository: git clone https://github.com/Krytog/ProgramTraceVisualizer.git
-  * Get the submodules: git submodule update
+  * Clone this repository: ```git clone https://github.com/Krytog/ProgramTraceVisualizer.git```
+  * Enter the directory: ```cd ProgramTraceVisualizer```
+  * Register the submodules: ```git submodule init```
+  * Get the submodules: ```git submodule update```
   * Create a build directory: ```mkdir build```
   * Enter it: ```cd build```
   * Generate make files: ```cmake ..```
